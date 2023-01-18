@@ -67,7 +67,7 @@ struct ContentView: View {
                     AsyncImage(url: URL(string: "https://halflemons-media.s3.amazonaws.com/2501.jpg")) { image in
                         image.resizable()
                             .aspectRatio(contentMode: .fill)
-                            .frame(maxWidth: .infinity, maxHeight: 300)
+                            .frame(maxWidth: .infinity, maxHeight: 375)
                     } placeholder: {
                         ProgressView()
                     }
@@ -82,7 +82,6 @@ struct ContentView: View {
                                alignment: .leading)
                         .background(.white)
                         .font(.title2)
-//                        .cornerRadius(15)
                         .cornerRadius(15, corners: [.bottomLeft, .bottomRight])
                         .shadow(radius: 20)
                 }
@@ -116,6 +115,15 @@ struct ContentView: View {
             }
             .padding()
             .navigationTitle("FryDay")
+            .navigationBarItems(
+                trailing:
+                    Button{
+                        print("home button tapped")
+                    } label: {
+                        Image(systemName: "house.fill")
+                            .tint(.black)
+                    }
+            )
         }
     }
 }
