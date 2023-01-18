@@ -11,7 +11,7 @@ import SwiftUI
 struct FryDayApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ContentView(rejectAction: {}, acceptAction: {})
         }
     }
 }
