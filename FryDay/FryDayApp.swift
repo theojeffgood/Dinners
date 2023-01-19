@@ -11,7 +11,13 @@ import SwiftUI
 struct FryDayApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView(rejectAction: {}, acceptAction: {})
+            ContentView(recipes: [], rejectAction: {}, acceptAction: {})
         }
     }
+}
+
+struct Recipe: Hashable {
+    var id: Int
+    var title: String
+    var url: URL
 }

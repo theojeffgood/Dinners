@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct ContentView: View {
+    var recipes: [Recipe]
     var rejectAction: () -> ()?
     var acceptAction: () -> ()?
     
@@ -26,8 +27,8 @@ struct ContentView: View {
                     Button(action: {
                         print("matches tapped")
                     }) {
-                        Text("Matches")
-                            .frame(width: 100, height: 35)
+                        Text("❤️ Matches")
+                            .frame(width: 115, height: 35)
                             .foregroundColor(.black)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 5)
@@ -37,7 +38,7 @@ struct ContentView: View {
                     Button(action: {
                         print("likes tapped")
                     }) {
-                        Text("Likes")
+                        Text("👍  Likes")
                             .frame(width: 100, height: 35)
                             .foregroundColor(.black)
                             .overlay(
@@ -48,7 +49,7 @@ struct ContentView: View {
                     Button(action: {
                         print("dislikes tapped")
                     }) {
-                        Text("Dislikes")
+                        Text("👎 Dislikes")
                             .frame(width: 100, height: 35)
                             .foregroundColor(.black)
                             .overlay(
@@ -67,11 +68,11 @@ struct ContentView: View {
                     AsyncImage(url: URL(string: "https://halflemons-media.s3.amazonaws.com/2501.jpg")) { image in
                         image.resizable()
                             .aspectRatio(contentMode: .fill)
-                            .frame(maxWidth: .infinity, maxHeight: 375)
+                            .frame(maxWidth: .infinity, maxHeight: 325)
                     } placeholder: {
                         ProgressView()
                     }
-                        .cornerRadius(15, corners: [.topLeft, .topRight])
+                        .cornerRadius(10, corners: [.topLeft, .topRight])
                         .frame(maxWidth: .infinity)
                         .shadow(radius: 20)
                     
@@ -82,7 +83,7 @@ struct ContentView: View {
                                alignment: .leading)
                         .background(.white)
                         .font(.title2)
-                        .cornerRadius(15, corners: [.bottomLeft, .bottomRight])
+                        .cornerRadius(10, corners: [.bottomLeft, .bottomRight])
                         .shadow(radius: 20)
                 }
                 
@@ -95,7 +96,7 @@ struct ContentView: View {
                             .background(Color.red)
                             .foregroundColor(.black)
                             .cornerRadius(45)
-                            .font(.largeTitle)
+                            .font(.system(size: 48))
                             .shadow(radius: 25)
                     }
                     Spacer()
@@ -107,11 +108,11 @@ struct ContentView: View {
                             .background(Color.green)
                             .foregroundColor(.black)
                             .cornerRadius(45)
-                            .font(.largeTitle)
+                            .font(.system(size: 48))
                             .shadow(radius: 25)
                     }
                 }
-                .padding()
+                .padding(.top)
             }
             .padding()
             .navigationTitle("FryDay")
@@ -130,7 +131,7 @@ struct ContentView: View {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView(rejectAction: {}, acceptAction: {})
+        ContentView(recipes: [], rejectAction: {}, acceptAction: {})
     }
 }
 
