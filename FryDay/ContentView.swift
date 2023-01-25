@@ -12,120 +12,129 @@ struct ContentView: View {
     var rejectAction: () -> ()?
     var acceptAction: () -> ()?
     
+    @State private var showHousehold: Bool = false
     
     var body: some View {
         NavigationView {
-            VStack {
-                Text("Filter")
-                    .frame(maxWidth: .infinity,
-                           alignment: .leading)
-                    .font(.title3)
-                    .foregroundColor(.gray)
-                Spacer()
-                
-                HStack() {
-                    Button(action: {
-                        print("matches tapped")
-                    }) {
-                        Text("❤️ Matches")
-                            .frame(width: 115, height: 35)
-                            .foregroundColor(.black)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 5)
-                                    .stroke(Color.black, lineWidth: 1)
-                                )
-                    }
-                    Button(action: {
-                        print("likes tapped")
-                    }) {
-                        Text("👍  Likes")
-                            .frame(width: 100, height: 35)
-                            .foregroundColor(.black)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 5)
-                                    .stroke(Color.black, lineWidth: 1)
-                                )
-                    }
-                    Button(action: {
-                        print("dislikes tapped")
-                    }) {
-                        Text("👎 Dislikes")
-                            .frame(width: 100, height: 35)
-                            .foregroundColor(.black)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 5)
-                                    .stroke(Color.black, lineWidth: 1)
-                                )
-                    }
+                VStack {
+                    Text("Filter")
+                        .frame(maxWidth: .infinity,
+                               alignment: .leading)
+                        .font(.title3)
+                        .foregroundColor(.gray)
                     Spacer()
-                }
-                
-                Spacer()
-                Spacer()
-                Spacer()
-                
-                VStack(spacing: 0) {
-                    AsyncImage(url: URL(string: "https://halflemons-media.s3.amazonaws.com/2501.jpg")) { image in
-                        image.resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .frame(maxWidth: .infinity, maxHeight: 325)
-                    } placeholder: {
-                        ProgressView()
+                    
+                    HStack() {
+                        Button(action: {
+                            print("matches tapped")
+                        }) {
+                            Text("❤️ Matches")
+                                .frame(width: 115, height: 35)
+                                .foregroundColor(.black)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 5)
+                                        .stroke(Color.black, lineWidth: 1)
+                                )
+                        }
+                        Button(action: {
+                            print("likes tapped")
+                        }) {
+                            Text("👍  Likes")
+                                .frame(width: 100, height: 35)
+                                .foregroundColor(.black)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 5)
+                                        .stroke(Color.black, lineWidth: 1)
+                                )
+                        }
+                        Button(action: {
+                            print("dislikes tapped")
+                        }) {
+                            Text("👎 Dislikes")
+                                .frame(width: 100, height: 35)
+                                .foregroundColor(.black)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 5)
+                                        .stroke(Color.black, lineWidth: 1)
+                                )
+                        }
+                        Spacer()
                     }
+                    
+                    Spacer()
+                    Spacer()
+                    Spacer()
+                    
+                    VStack(spacing: 0) {
+                        AsyncImage(url: URL(string: "https://halflemons-media.s3.amazonaws.com/2501.jpg")) { image in
+                            image
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(maxWidth: .infinity, maxHeight: 325)
+                        } placeholder: {
+                            ProgressView()
+                        }
                         .cornerRadius(10, corners: [.topLeft, .topRight])
                         .frame(maxWidth: .infinity)
                         .shadow(radius: 20)
+                        
+                        Text("Chicken Cacciatore")
+                            .padding(.leading)
+                            .frame(maxWidth: .infinity,
+                                   maxHeight: 100,
+                                   alignment: .leading)
+                            .background(.white)
+                            .font(.title2)
+                            .cornerRadius(10, corners: [.bottomLeft, .bottomRight])
+                            .shadow(radius: 20)
+                    }
                     
-                    Text("Chicken Cacciatore")
-                        .padding(.leading)
-                        .frame(maxWidth: .infinity,
-                               maxHeight: 100,
-                               alignment: .leading)
-                        .background(.white)
-                        .font(.title2)
-                        .cornerRadius(10, corners: [.bottomLeft, .bottomRight])
-                        .shadow(radius: 20)
-                }
-                
-                HStack {
-                    Button(action: {
-                        rejectAction()
-                    }) {
-                        Text("X")
-                            .frame(width: 90, height: 90)
-                            .background(Color.red)
-                            .foregroundColor(.black)
-                            .cornerRadius(45)
-                            .font(.system(size: 48))
-                            .shadow(radius: 25)
+                    HStack {
+                        Button(action: {
+                            rejectAction()
+                        }) {
+                            Text("X")
+                                .frame(width: 90, height: 90)
+                                .background(Color.red)
+                                .foregroundColor(.black)
+                                .cornerRadius(45)
+                                .font(.system(size: 48))
+                                .shadow(radius: 25)
+                        }
+                        Spacer()
+                        Button(action: {
+                            acceptAction()
+                        }) {
+                            Text("✓")
+                                .frame(width: 90, height: 90)
+                                .background(Color.green)
+                                .foregroundColor(.black)
+                                .cornerRadius(45)
+                                .font(.system(size: 48))
+                                .shadow(radius: 25)
+                        }
                     }
-                    Spacer()
-                    Button(action: {
-                        acceptAction()
-                    }) {
-                        Text("✓")
-                            .frame(width: 90, height: 90)
-                            .background(Color.green)
-                            .foregroundColor(.black)
-                            .cornerRadius(45)
-                            .font(.system(size: 48))
-                            .shadow(radius: 25)
-                    }
+                    .padding(.top)
                 }
-                .padding(.top)
+                .padding()
+                .navigationTitle("FryDay")
+                .navigationBarItems(
+                    trailing:
+                        Button{
+                            print("home button tapped")
+                            withAnimation {
+                                showHousehold = true
+                            }
+                        } label: {
+                            Image(systemName: "house.fill")
+                                .tint(.black)
+                        }
+                )
+        }.overlay(alignment: .bottom) {
+            if showHousehold{
+                Household()
             }
-            .padding()
-            .navigationTitle("FryDay")
-            .navigationBarItems(
-                trailing:
-                    Button{
-                        print("home button tapped")
-                    } label: {
-                        Image(systemName: "house.fill")
-                            .tint(.black)
-                    }
-            )
-        }
+        }.ignoresSafeArea()
     }
 }
 

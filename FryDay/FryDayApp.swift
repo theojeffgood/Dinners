@@ -21,3 +21,5 @@ struct Recipe: Hashable {
     var title: String
     var url: URL
 }
+
+

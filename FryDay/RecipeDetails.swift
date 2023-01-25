@@ -8,13 +8,13 @@
 import SwiftUI
 
 struct RecipeDetails: View {
+    var recipeTitle: String = "Recipe Title"
     var recipes: [Recipe]
     
     var body: some View {
         NavigationView {
-            ScrollView{
+            ScrollView {
                 LazyVGrid(columns: [
-                    GridItem(.flexible()),
                     GridItem(.flexible())
                 ]) {
                     ForEach(recipes, id: \.self) { recipe in
@@ -23,7 +23,7 @@ struct RecipeDetails: View {
                 }
             }
             .padding(.top)
-            .navigationTitle("FryDay")
+            .navigationTitle(recipeTitle)
         }
     }
 }
@@ -50,7 +50,8 @@ struct RecipeDetailsCell: View {
 struct RecipesDetails_Previews: PreviewProvider {
     static var previews: some View {
         RecipesList(recipes: [
-            Recipe(id: 1, title: "Chicken Soup", url: URL(string: "https://halflemons-media.s3.amazonaws.com/2503.jpg")!),
-            Recipe(id: 2, title: "Korean Style Burgers", url: URL(string: "https://halflemons-media.s3.amazonaws.com/2502.jpg")!)])
+            Recipe(id: 1, title: "Chicken Soup", url: URL(string: "https://halflemons-media.s3.amazonaws.com/2504.jpg")!),
+//            Recipe(id: 2, title: "Korean Style Burgers", url: URL(string: "https://halflemons-media.s3.amazonaws.com/2502.jpg")!)
+        ])
     }
 }
