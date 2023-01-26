@@ -93,12 +93,12 @@ struct ContentView: View {
                         Button(action: {
                             rejectAction()
                         }) {
-                            Text("X")
+                            Image(systemName: "xmark")
                                 .frame(width: 90, height: 90)
                                 .background(Color.red)
-                                .foregroundColor(.black)
+                                .foregroundColor(.white)
                                 .cornerRadius(45)
-                                .font(.system(size: 48))
+                                .font(.system(size: 48, weight: .bold))
                                 .shadow(radius: 25)
                         }
                         Spacer()
@@ -110,11 +110,12 @@ struct ContentView: View {
                                 .background(Color.green)
                                 .foregroundColor(.black)
                                 .cornerRadius(45)
-                                .font(.system(size: 48))
+                                .font(.system(size: 48, weight: .heavy))
                                 .shadow(radius: 25)
                         }
                     }
-                    .padding(.top)
+//                    .padding()
+                    .padding([.top, .bottom])
                 }
                 .padding()
                 .navigationTitle("FryDay")
@@ -132,7 +133,12 @@ struct ContentView: View {
                 )
         }.overlay(alignment: .bottom) {
             if showHousehold{
-                Household()
+                let dismissHousehold = {
+                    withAnimation {
+                        showHousehold = false
+                    }
+                }
+                Household(dismissAction: dismissHousehold)
             }
         }.ignoresSafeArea()
     }
