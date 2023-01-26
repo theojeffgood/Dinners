@@ -8,9 +8,14 @@
 import SwiftUI
 
 struct ContentView: View {
-    var recipes: [Recipe]
-    var rejectAction: () -> ()?
-    var acceptAction: () -> ()?
+//    var recipes: [Recipe] -- this throws an error
+    @State private var recipes: [Recipe] = [Recipe(id: 1, title: "Chicken Cacciatore", url: URL(string: "https://halflemons-media.s3.amazonaws.com/2501.jpg")!),
+     Recipe(id: 2, title: "Korean Style Burgers", url: URL(string: "https://halflemons-media.s3.amazonaws.com/2502.jpg")!),
+     Recipe(id: 3, title: "Restaurant Salmon", url: URL(string: "https://halflemons-media.s3.amazonaws.com/2403.jpg")!),
+     Recipe(id: 4, title: "Huevos Rotos", url: URL(string: "https://halflemons-media.s3.amazonaws.com/2302.jpg")!),
+     Recipe(id: 5, title: "Oven Roasted Asparagus", url: URL(string: "https://halflemons-media.s3.amazonaws.com/2203.jpg")!)]
+    var rejectAction: () -> Void?
+    var acceptAction: () -> Void?
     
     @State private var showHousehold: Bool = false
     
@@ -24,74 +29,27 @@ struct ContentView: View {
                         .foregroundColor(.gray)
                     Spacer()
                     
-                    HStack() {
-                        Button(action: {
-                            print("matches tapped")
-                        }) {
-                            Text("❤️ Matches")
-                                .frame(width: 115, height: 35)
-                                .foregroundColor(.black)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 5)
-                                        .stroke(Color.black, lineWidth: 1)
-                                )
-                        }
-                        Button(action: {
-                            print("likes tapped")
-                        }) {
-                            Text("👍  Likes")
-                                .frame(width: 100, height: 35)
-                                .foregroundColor(.black)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 5)
-                                        .stroke(Color.black, lineWidth: 1)
-                                )
-                        }
-                        Button(action: {
-                            print("dislikes tapped")
-                        }) {
-                            Text("👎 Dislikes")
-                                .frame(width: 100, height: 35)
-                                .foregroundColor(.black)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 5)
-                                        .stroke(Color.black, lineWidth: 1)
-                                )
-                        }
-                        Spacer()
-                    }
+                    Filters()
                     
                     Spacer()
                     Spacer()
                     Spacer()
                     
-                    VStack(spacing: 0) {
-                        AsyncImage(url: URL(string: "https://halflemons-media.s3.amazonaws.com/2501.jpg")) { image in
-                            image
-                                .resizable()
-                                .aspectRatio(contentMode: .fill)
-                                .frame(maxWidth: .infinity, maxHeight: 325)
-                        } placeholder: {
-                            ProgressView()
+                    ZStack {
+                        ForEach(0..<recipes.count, id: \.self) { index in
+                            RecipeCardView(recipe: recipes[index]){
+                                withAnimation {
+                                    removeCard(at: index)
+                                }
+                            }
+                            .stacked(at: index, in: recipes.count)
                         }
-                        .cornerRadius(10, corners: [.topLeft, .topRight])
-                        .frame(maxWidth: .infinity)
-                        .shadow(radius: 20)
-                        
-                        Text("Chicken Cacciatore")
-                            .padding(.leading)
-                            .frame(maxWidth: .infinity,
-                                   maxHeight: 100,
-                                   alignment: .leading)
-                            .background(.white)
-                            .font(.title2)
-                            .cornerRadius(10, corners: [.bottomLeft, .bottomRight])
-                            .shadow(radius: 20)
                     }
                     
                     HStack {
                         Button(action: {
-                            rejectAction()
+                            removeCard()
+//                            rejectAction()
                         }) {
                             Image(systemName: "xmark")
                                 .frame(width: 90, height: 90)
@@ -103,7 +61,8 @@ struct ContentView: View {
                         }
                         Spacer()
                         Button(action: {
-                            acceptAction()
+                            removeCard()
+//                            acceptAction()
                         }) {
                             Text("✓")
                                 .frame(width: 90, height: 90)
@@ -114,7 +73,6 @@ struct ContentView: View {
                                 .shadow(radius: 25)
                         }
                     }
-//                    .padding()
                     .padding([.top, .bottom])
                 }
                 .padding()
@@ -144,9 +102,32 @@ struct ContentView: View {
     }
 }
 
+extension ContentView{
+    func removeCard(at index: Int? = nil){
+        if let index = index{
+            recipes.remove(at: index)
+        } else{
+            let topRecipeIndex = recipes.endIndex
+            recipes.remove(at: topRecipeIndex - 1)
+        }
+        if recipes.isEmpty{
+            loadRecipes()
+        }
+    }
+    
+    func loadRecipes(){
+        recipes = [Recipe(id: 1, title: "Chicken Cacciatore", url: URL(string: "https://halflemons-media.s3.amazonaws.com/2501.jpg")!),
+         Recipe(id: 2, title: "Korean Style Burgers", url: URL(string: "https://halflemons-media.s3.amazonaws.com/2502.jpg")!),
+         Recipe(id: 3, title: "Restaurant Salmon", url: URL(string: "https://halflemons-media.s3.amazonaws.com/2403.jpg")!),
+         Recipe(id: 4, title: "Huevos Rotos", url: URL(string: "https://halflemons-media.s3.amazonaws.com/2302.jpg")!),
+         Recipe(id: 5, title: "Oven Roasted Asparagus", url: URL(string: "https://halflemons-media.s3.amazonaws.com/2203.jpg")!)]
+    }
+}
+
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView(recipes: [], rejectAction: {}, acceptAction: {})
+        ContentView(
+                    rejectAction: {}, acceptAction: {})
     }
 }
 
@@ -157,6 +138,11 @@ struct ContentView_Previews: PreviewProvider {
 extension View {
     func cornerRadius(_ radius: CGFloat, corners: UIRectCorner) -> some View {
         clipShape( RoundedCorner(radius: radius, corners: corners) )
+    }
+    
+    func stacked(at position: Int, in total: Int) -> some View {
+        let offset = Double(total - position)
+        return self.offset(x: offset * 2, y: offset * 4)
     }
 }
 
@@ -169,4 +155,49 @@ struct RoundedCorner: Shape {
         let path = UIBezierPath(roundedRect: rect, byRoundingCorners: corners, cornerRadii: CGSize(width: radius, height: radius))
         return Path(path.cgPath)
     }
+}
+
+//MARK: -- Extractions
+
+struct Filters: View {
+    
+    var body: some View{
+        HStack() {
+            Button(action: {
+                print("matches tapped")
+            }) {
+                Text("❤️ Matches")
+                    .frame(width: 115, height: 35)
+                    .foregroundColor(.black)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 5)
+                            .stroke(Color.black, lineWidth: 1)
+                    )
+            }
+            Button(action: {
+                print("likes tapped")
+            }) {
+                Text("👍  Likes")
+                    .frame(width: 100, height: 35)
+                    .foregroundColor(.black)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 5)
+                            .stroke(Color.black, lineWidth: 1)
+                    )
+            }
+            Button(action: {
+                print("dislikes tapped")
+            }) {
+                Text("👎 Dislikes")
+                    .frame(width: 100, height: 35)
+                    .foregroundColor(.black)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 5)
+                            .stroke(Color.black, lineWidth: 1)
+                    )
+            }
+            Spacer()
+        }
+    }
+    
 }
