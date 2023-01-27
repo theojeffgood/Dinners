@@ -29,7 +29,7 @@ struct ContentView: View {
                         .foregroundColor(.gray)
                     Spacer()
                     
-                    Filters()
+                    Filters(recipes: recipes)
                     
                     Spacer()
                     Spacer()
@@ -160,42 +160,49 @@ struct RoundedCorner: Shape {
 //MARK: -- Extractions
 
 struct Filters: View {
+    var recipes: [Recipe]
     
     var body: some View{
         HStack() {
-            Button(action: {
-                print("matches tapped")
-            }) {
-                Text("❤️ Matches")
-                    .frame(width: 115, height: 35)
-                    .foregroundColor(.black)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 5)
-                            .stroke(Color.black, lineWidth: 1)
-                    )
-            }
-            Button(action: {
-                print("likes tapped")
-            }) {
-                Text("👍  Likes")
-                    .frame(width: 100, height: 35)
-                    .foregroundColor(.black)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 5)
-                            .stroke(Color.black, lineWidth: 1)
-                    )
-            }
-            Button(action: {
-                print("dislikes tapped")
-            }) {
-                Text("👎 Dislikes")
-                    .frame(width: 100, height: 35)
-                    .foregroundColor(.black)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 5)
-                            .stroke(Color.black, lineWidth: 1)
-                    )
-            }
+            NavigationLink(
+                destination: RecipesList(recipesType: "Matches",
+                                         recipes: recipes),
+                label: {
+                    Text("❤️ Matches")
+                        .frame(width: 115, height: 35)
+                        .foregroundColor(.black)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 5)
+                                .stroke(Color.black, lineWidth: 1)
+                        )
+                })
+            
+            NavigationLink(
+                destination: RecipesList(recipesType: "Likes",
+                                         recipes: recipes),
+                label: {
+                    Text("👍  Likes")
+                        .frame(width: 115, height: 35)
+                        .foregroundColor(.black)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 5)
+                                .stroke(Color.black, lineWidth: 1)
+                        )
+                })
+            
+            NavigationLink(
+                destination: RecipesList(recipesType: "Dislikes",
+                                         recipes: recipes),
+                label: {
+                    Text("👎 Dislikes")
+                        .frame(width: 115, height: 35)
+                        .foregroundColor(.black)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 5)
+                                .stroke(Color.black, lineWidth: 1)
+                        )
+                })
+            
             Spacer()
         }
     }
