@@ -12,20 +12,18 @@ struct RecipesList: View {
     var recipes: [Recipe]
     
     var body: some View {
-        NavigationView {
-            ScrollView{
-                LazyVGrid(columns: [
-                    GridItem(.flexible()),
-                    GridItem(.flexible())
-                ]) {
-                    ForEach(recipes, id: \.self) { recipe in
-                        RecipeCell(recipe: recipe)
-                    }
+        ScrollView{
+            LazyVGrid(columns: [
+                GridItem(.flexible()),
+                GridItem(.flexible())
+            ]) {
+                ForEach(recipes, id: \.self) { recipe in
+                    RecipeCell(recipe: recipe)
                 }
             }
-            .padding([.leading, .trailing], 5.0)
-            .navigationTitle(recipesType)
         }
+        .padding([.leading, .trailing], 5.0)
+        .navigationTitle(recipesType)
     }
 }
 

@@ -98,7 +98,9 @@ struct ContentView: View {
                 }
                 Household(dismissAction: dismissHousehold)
             }
-        }.ignoresSafeArea()
+        }
+        .ignoresSafeArea()
+        .accentColor(.black)
     }
 }
 
@@ -126,8 +128,7 @@ extension ContentView{
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView(
-                    rejectAction: {}, acceptAction: {})
+        ContentView(rejectAction: {}, acceptAction: {})
     }
 }
 

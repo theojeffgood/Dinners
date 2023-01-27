@@ -8,50 +8,63 @@
 import SwiftUI
 
 struct RecipeDetails: View {
-    var recipeTitle: String = "Recipe Title"
-    var recipes: [Recipe]
-    
-    var body: some View {
-        NavigationView {
-            ScrollView {
-                LazyVGrid(columns: [
-                    GridItem(.flexible())
-                ]) {
-                    ForEach(recipes, id: \.self) { recipe in
-                        RecipeCell(recipe: recipe)
-                    }
-                }
-            }
-            .padding(.top)
-            .navigationTitle(recipeTitle)
-        }
-    }
-}
-
-struct RecipeDetailsCell: View {
     var recipe: Recipe
+    var recipeTitle: String = "Recipe Title"
     
     var body: some View {
-        VStack(alignment: .center){
-            Text(recipe.title)
+        VStack(alignment: .center, spacing: 0){
             AsyncImage(url: recipe.url) { image in
                 image
                     .resizable()
                     .aspectRatio(contentMode: .fill)
-                    .frame(maxWidth: .infinity, maxHeight: 375)
-                    .cornerRadius(15, corners: .allCorners)
+//                    .frame(maxWidth: .infinity, maxHeight: 200)
             } placeholder: {
                 ProgressView()
             }
-        }.padding()
+            .cornerRadius(10, corners: [.topLeft, .topRight])
+            .frame(maxWidth: .infinity)
+            .shadow(radius: 10)
+            
+            Text(recipe.title)
+                .padding(.leading)
+                .frame(maxWidth: .infinity,
+                       maxHeight: 100,
+                       alignment: .leading)
+                .background(.white)
+                .font(.title2)
+                .cornerRadius(10, corners: [.bottomLeft, .bottomRight])
+                .shadow(radius: 20)
+        }
+        .padding([.bottom, .top])
+        
+            .navigationTitle(recipeTitle)
     }
 }
 
-struct RecipesDetails_Previews: PreviewProvider {
+//struct RecipeDetailsCell: View {
+//    var recipe: Recipe
+//
+//    var body: some View {
+//        VStack(alignment: .center){
+//            Text(recipe.title)
+//            AsyncImage(url: recipe.url) { image in
+//                image
+//                    .resizable()
+//                    .aspectRatio(contentMode: .fill)
+//                    .frame(maxWidth: .infinity, maxHeight: 375)
+//                    .cornerRadius(15, corners: .allCorners)
+//            } placeholder: {
+//                ProgressView()
+//            }
+//        }.padding()
+//    }
+//}
+
+struct RecipeDetails_Previews: PreviewProvider {
     static var previews: some View {
-        RecipesList(recipes: [
-            Recipe(id: 1, title: "Chicken Soup", url: URL(string: "https://halflemons-media.s3.amazonaws.com/2504.jpg")!),
-//            Recipe(id: 2, title: "Korean Style Burgers", url: URL(string: "https://halflemons-media.s3.amazonaws.com/2502.jpg")!)
-        ])
+        RecipeDetails(recipe:
+                        Recipe(id: 1,
+                               title: "Chicken Soup",
+                               url: URL(string: "https://halflemons-media.s3.amazonaws.com/2504.jpg")!))
     }
 }

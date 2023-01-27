@@ -10,58 +10,61 @@ import SwiftUI
 struct RecipeCardView: View{
     var recipe: Recipe
     var remove: (() -> Void)? = nil
+//    var showRecipeDetails: (() -> Void)? = nil
     
     @State private var offset = CGSize.zero
     
     var body: some View{
-        VStack(spacing: 0) {
-            AsyncImage(url: recipe.url) { image in
-                image
-                    .resizable()
-//                    .aspectRatio(contentMode: .fill)
-            } placeholder: {
-                ProgressView()
-            }
-            .cornerRadius(10, corners: [.topLeft, .topRight])
-            .shadow(radius: 20)
-            
-            Text(recipe.title)
-                .padding(.leading)
-                .frame(maxWidth: .infinity,
-                       maxHeight: 100,
-                       alignment: .leading)
-                .background(.white)
-                .font(.title2)
-                .cornerRadius(10, corners: [.bottomLeft, .bottomRight])
-                .shadow(radius: 20)
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .rotationEffect(.degrees(Double(offset.width / 5)))
-        .offset(x: offset.width, y: 0)
-        .opacity(2 - Double(abs(offset.width / 50) ))
-        .gesture(
-            DragGesture()
-                .onChanged({ gesture in
-                    offset = gesture.translation
-                })
-                .onEnded({ gesture in
-                    if abs(offset.width) > 100{
-                        remove?()
-                    } else {
-                        offset = .zero
+        NavigationLink(
+            destination: RecipeDetails(recipe: recipe, recipeTitle: recipe.title),
+            label: {
+                
+                VStack(spacing: 0) {
+                    AsyncImage(url: recipe.url) { image in
+                        image
+                            .resizable()
+                        //                    .aspectRatio(contentMode: .fill)
+                    } placeholder: {
+                        ProgressView()
                     }
-                })
-        )
-        .onTapGesture {
-            //show recipe details
-        }
+                    .cornerRadius(10, corners: [.topLeft, .topRight])
+                    .shadow(radius: 20)
+                    
+                    Text(recipe.title)
+                        .padding(.leading)
+                        .frame(maxWidth: .infinity,
+                               maxHeight: 100,
+                               alignment: .leading)
+                        .background(.white)
+                        .font(.title2)
+                        .cornerRadius(10, corners: [.bottomLeft, .bottomRight])
+                        .shadow(radius: 20)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .rotationEffect(.degrees(Double(offset.width / 5)))
+                .offset(x: offset.width, y: 0)
+                .opacity(2 - Double(abs(offset.width / 50) ))
+                .gesture(
+                    DragGesture()
+                        .onChanged({ gesture in
+                            offset = gesture.translation
+                        })
+                        .onEnded({ gesture in
+                            if abs(offset.width) > 100{
+                                remove?()
+                            } else {
+                                offset = .zero
+                            }
+                        })
+                )
+            })
     }
 }
 
 struct RecipeCardView_Previews: PreviewProvider {
     static var previews: some View {
         RecipeCardView(recipe: Recipe(id: 5,
-                                      title: "Oven Roasted Asparagus",
+                                      title: "Roasted Asparagus",
                                       url: URL(string: "https://halflemons-media.s3.amazonaws.com/2203.jpg")!))
         .previewLayout(.sizeThatFits)
     }
