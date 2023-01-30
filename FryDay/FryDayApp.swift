@@ -11,15 +11,22 @@ import SwiftUI
 struct FryDayApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView(rejectAction: {}, acceptAction: {})
+            ContentView()
         }
     }
 }
 
-struct Recipe: Hashable {
-    var id: Int
+struct Recipe: Hashable, Codable {
+    var recipeId: Int
     var title: String
-    var url: URL
+    var imageUrl: String = ""
+    var source: String = ""
+    var ingredients: String = ""
+    var websiteUrl: String = ""
+    var cooktime: String? = nil
+    var recipeStatusId: Int = 1
+    
+//    var url: URL = URL(string: "https://www.cnn.com")!
 }
 
 

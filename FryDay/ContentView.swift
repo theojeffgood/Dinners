@@ -9,13 +9,9 @@ import SwiftUI
 
 struct ContentView: View {
 //    var recipes: [Recipe] -- this throws an error
-    @State private var recipes: [Recipe] = [Recipe(id: 1, title: "Chicken Cacciatore", url: URL(string: "https://halflemons-media.s3.amazonaws.com/2501.jpg")!),
-     Recipe(id: 2, title: "Korean Style Burgers", url: URL(string: "https://halflemons-media.s3.amazonaws.com/2502.jpg")!),
-     Recipe(id: 3, title: "Restaurant Salmon", url: URL(string: "https://halflemons-media.s3.amazonaws.com/2403.jpg")!),
-     Recipe(id: 4, title: "Huevos Rotos", url: URL(string: "https://halflemons-media.s3.amazonaws.com/2302.jpg")!),
-     Recipe(id: 5, title: "Oven Roasted Asparagus", url: URL(string: "https://halflemons-media.s3.amazonaws.com/2203.jpg")!)]
-    var rejectAction: () -> Void?
-    var acceptAction: () -> Void?
+    @State private var recipes: [Recipe] = [Recipe(recipeId: 1, title: "Chicken Cacciatore")]
+    @State private var likes: [Recipe] = []
+    @State private var dislikes: [Recipe] = []
     
     @State private var showHousehold: Bool = false
     
@@ -29,7 +25,8 @@ struct ContentView: View {
                         .foregroundColor(.gray)
                     Spacer()
                     
-                    Filters(recipes: recipes)
+                    Filters(likes: $likes.wrappedValue,
+                            dislikes: $dislikes.wrappedValue)
                     
                     Spacer()
                     Spacer()
@@ -48,8 +45,11 @@ struct ContentView: View {
                     
                     HStack {
                         Button(action: {
-                            removeCard()
-//                            rejectAction()
+                            withAnimation {
+                                removeCard()
+                                guard let recipe = recipes.last else { return }
+                                dislikes.append(recipe)
+                            }
                         }) {
                             Image(systemName: "xmark")
                                 .frame(width: 90, height: 90)
@@ -61,8 +61,11 @@ struct ContentView: View {
                         }
                         Spacer()
                         Button(action: {
-                            removeCard()
-//                            acceptAction()
+                            withAnimation {
+                                removeCard()
+                                guard let recipe = recipes.last else { return }
+                                likes.append(recipe)
+                            }
                         }) {
                             Text("✓")
                                 .frame(width: 90, height: 90)
@@ -101,6 +104,9 @@ struct ContentView: View {
         }
         .ignoresSafeArea()
         .accentColor(.black)
+        .onAppear(){
+            loadRecipes()
+        }
     }
 }
 
@@ -118,17 +124,17 @@ extension ContentView{
     }
     
     func loadRecipes(){
-        recipes = [Recipe(id: 1, title: "Chicken Cacciatore", url: URL(string: "https://halflemons-media.s3.amazonaws.com/2501.jpg")!),
-         Recipe(id: 2, title: "Korean Style Burgers", url: URL(string: "https://halflemons-media.s3.amazonaws.com/2502.jpg")!),
-         Recipe(id: 3, title: "Restaurant Salmon", url: URL(string: "https://halflemons-media.s3.amazonaws.com/2403.jpg")!),
-         Recipe(id: 4, title: "Huevos Rotos", url: URL(string: "https://halflemons-media.s3.amazonaws.com/2302.jpg")!),
-         Recipe(id: 5, title: "Oven Roasted Asparagus", url: URL(string: "https://halflemons-media.s3.amazonaws.com/2203.jpg")!)]
+        Task {
+            let recipes = try await Webservice().load (Recipe.all)
+            let shuffledRecipes = recipes.shuffled()
+            self.recipes = Array(shuffledRecipes.prefix(upTo: 10))
+        }
     }
 }
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView(rejectAction: {}, acceptAction: {})
+        ContentView()
     }
 }
 
@@ -161,13 +167,14 @@ struct RoundedCorner: Shape {
 //MARK: -- Extractions
 
 struct Filters: View {
-    var recipes: [Recipe]
+    var likes: [Recipe] = []
+    var dislikes: [Recipe] = []
     
     var body: some View{
         HStack() {
             NavigationLink(
                 destination: RecipesList(recipesType: "Matches",
-                                         recipes: recipes),
+                                         recipes: likes),
                 label: {
                     Text("❤️ Matches")
                         .frame(width: 115, height: 35)
@@ -180,7 +187,7 @@ struct Filters: View {
             
             NavigationLink(
                 destination: RecipesList(recipesType: "Likes",
-                                         recipes: recipes),
+                                         recipes: likes),
                 label: {
                     Text("👍  Likes")
                         .frame(width: 115, height: 35)
@@ -193,7 +200,7 @@ struct Filters: View {
             
             NavigationLink(
                 destination: RecipesList(recipesType: "Dislikes",
-                                         recipes: recipes),
+                                         recipes: dislikes),
                 label: {
                     Text("👎 Dislikes")
                         .frame(width: 115, height: 35)

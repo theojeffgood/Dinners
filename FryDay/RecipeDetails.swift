@@ -13,7 +13,7 @@ struct RecipeDetails: View {
     
     var body: some View {
         VStack(alignment: .center, spacing: 0){
-            AsyncImage(url: recipe.url) { image in
+            AsyncImage(url: URL(string: recipe.imageUrl)) { image in
                 image
                     .resizable()
                     .aspectRatio(contentMode: .fill)
@@ -63,8 +63,6 @@ struct RecipeDetails: View {
 struct RecipeDetails_Previews: PreviewProvider {
     static var previews: some View {
         RecipeDetails(recipe:
-                        Recipe(id: 1,
-                               title: "Chicken Soup",
-                               url: URL(string: "https://halflemons-media.s3.amazonaws.com/2504.jpg")!))
-    }
+                        Recipe(recipeId: 1,
+                               title: "Chicken Soup"))}
 }

@@ -20,7 +20,7 @@ struct RecipeCardView: View{
             label: {
                 
                 VStack(spacing: 0) {
-                    AsyncImage(url: recipe.url) { image in
+                    AsyncImage(url: URL(string: recipe.imageUrl)) { image in
                         image
                             .resizable()
                         //                    .aspectRatio(contentMode: .fill)
@@ -31,6 +31,7 @@ struct RecipeCardView: View{
                     .shadow(radius: 20)
                     
                     Text(recipe.title)
+                        .multilineTextAlignment(.leading)
                         .padding(.leading)
                         .frame(maxWidth: .infinity,
                                maxHeight: 100,
@@ -63,9 +64,8 @@ struct RecipeCardView: View{
 
 struct RecipeCardView_Previews: PreviewProvider {
     static var previews: some View {
-        RecipeCardView(recipe: Recipe(id: 5,
-                                      title: "Roasted Asparagus",
-                                      url: URL(string: "https://halflemons-media.s3.amazonaws.com/2203.jpg")!))
+        RecipeCardView(recipe: Recipe(recipeId: 5,
+                                      title: "Roasted Asparagus"))
         .previewLayout(.sizeThatFits)
     }
 }
