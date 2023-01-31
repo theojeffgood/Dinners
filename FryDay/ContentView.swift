@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ContentView: View {
 //    var recipes: [Recipe] -- this throws an error
-    @State private var recipes: [Recipe] = [Recipe(recipeId: 1, title: "Chicken Cacciatore")]
+    @State private var recipes: [Recipe] = [Recipe(recipeId: 1, title: "Chicken Cacciatore", imageUrl: "https://halflemons-media.s3.amazonaws.com/786.jpg")]
     @State private var likes: [Recipe] = []
     @State private var dislikes: [Recipe] = []
     
@@ -43,7 +43,7 @@ struct ContentView: View {
                         }
                     }
                     
-                    HStack {
+                    HStack(spacing: 65) {
                         Button(action: {
                             withAnimation {
                                 removeCard()
@@ -59,7 +59,6 @@ struct ContentView: View {
                                 .font(.system(size: 48, weight: .bold))
                                 .shadow(radius: 25)
                         }
-                        Spacer()
                         Button(action: {
                             withAnimation {
                                 removeCard()
@@ -127,7 +126,7 @@ extension ContentView{
         Task {
             let recipes = try await Webservice().load (Recipe.all)
             let shuffledRecipes = recipes.shuffled()
-            self.recipes = Array(shuffledRecipes.prefix(upTo: 10))
+            self.recipes = Array(shuffledRecipes.prefix(upTo: 5))
         }
     }
 }
@@ -149,7 +148,7 @@ extension View {
     
     func stacked(at position: Int, in total: Int) -> some View {
         let offset = Double(total - position)
-        return self.offset(x: offset * 2, y: offset * 4)
+        return self.offset(x: 0, y: offset * 4)
     }
 }
 

@@ -49,6 +49,7 @@ struct RecipeCell: View {
                     .shadow(radius: 10)
                     
                     Text(recipe.title)
+                        .multilineTextAlignment(.leading)
                         .padding(.leading)
                         .frame(maxWidth: .infinity,
                                maxHeight: 100,

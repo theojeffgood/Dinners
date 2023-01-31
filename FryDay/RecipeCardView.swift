@@ -23,12 +23,14 @@ struct RecipeCardView: View{
                     AsyncImage(url: URL(string: recipe.imageUrl)) { image in
                         image
                             .resizable()
-                        //                    .aspectRatio(contentMode: .fill)
+                            .scaledToFill()
+                            .frame(width: 350, height: 350)
+                            .clipped()
                     } placeholder: {
                         ProgressView()
                     }
                     .cornerRadius(10, corners: [.topLeft, .topRight])
-                    .shadow(radius: 20)
+                    .shadow(radius: 10)
                     
                     Text(recipe.title)
                         .multilineTextAlignment(.leading)
@@ -39,10 +41,9 @@ struct RecipeCardView: View{
                         .background(.white)
                         .font(.title2)
                         .cornerRadius(10, corners: [.bottomLeft, .bottomRight])
-                        .shadow(radius: 20)
+                        .shadow(radius: 10)
                 }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .rotationEffect(.degrees(Double(offset.width / 5)))
+                .rotationEffect(.degrees(Double(offset.height / 10)))
                 .offset(x: offset.width, y: 0)
                 .opacity(2 - Double(abs(offset.width / 50) ))
                 .gesture(
@@ -65,7 +66,8 @@ struct RecipeCardView: View{
 struct RecipeCardView_Previews: PreviewProvider {
     static var previews: some View {
         RecipeCardView(recipe: Recipe(recipeId: 5,
-                                      title: "Roasted Asparagus"))
+                                      title: "Roasted Asparagus",
+                                     imageUrl: "https://halflemons-media.s3.amazonaws.com/786.jpg"))
         .previewLayout(.sizeThatFits)
     }
 }

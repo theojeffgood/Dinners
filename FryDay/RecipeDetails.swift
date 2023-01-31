@@ -64,5 +64,6 @@ struct RecipeDetails_Previews: PreviewProvider {
     static var previews: some View {
         RecipeDetails(recipe:
                         Recipe(recipeId: 1,
-                               title: "Chicken Soup"))}
+                               title: "Chicken Soup"))
+}
 }
