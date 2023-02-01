@@ -9,6 +9,7 @@ import SwiftUI
 
 struct RecipeCardView: View{
     var recipe: Recipe
+    var isTopRecipe = false
     var remove: (() -> Void)? = nil
 //    var showRecipeDetails: (() -> Void)? = nil
     
@@ -44,12 +45,20 @@ struct RecipeCardView: View{
                         .cornerRadius(10, corners: [.bottomLeft, .bottomRight])
                         .shadow(radius: 10)
                 }
-                .rotationEffect(.degrees(Double(offset.height / 10)))
-                .offset(x: offset.width, y: 0)
+                .onReceive(NotificationCenter.default.publisher(for: Notification.Name.swipeNotification)) { object in
+                    if isTopRecipe,
+                       let swipeDirection = object.userInfo as? [String: Bool],
+                       let swipeRight = swipeDirection["swipeRight"]{
+                        setOffset(swipedRight: swipeRight)
+                    }
+                }
+                .rotationEffect(.degrees(Double(offset.width / 40)))
+                .offset(x: offset.width, y: offset.height * 0.4)
                 .opacity(2 - Double(abs(offset.width / 50) ))
                 .gesture(
                     DragGesture()
                         .onChanged({ gesture in
+                            print("offset: \(offset)")
                             offset = gesture.translation
                         })
                         .onEnded({ gesture in
@@ -62,6 +71,17 @@ struct RecipeCardView: View{
                 )
             })
     }
+    
+    func setOffset(swipedRight: Bool){
+        let swipeLength = swipedRight ? 150 : -150
+        withAnimation {
+            offset = CGSize(width: swipeLength, height: 0)
+        }
+    }
+}
+
+extension Notification.Name {
+    static let swipeNotification = Notification.Name("swipeNotification")
 }
 
 struct RecipeCardView_Previews: PreviewProvider {

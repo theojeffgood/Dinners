@@ -15,24 +15,27 @@ struct RecipeDetails: View {
         List {
             Section(header: RecipeImage(recipe: recipe),
                     footer: Text(recipe.title)
+                .padding()
+                .frame(width: 395, height: 150, alignment: .leading)
                 .multilineTextAlignment(.leading)
+                .background(.yellow)
                 .foregroundColor(.black)
-                .font(.system(size: 25))) { } //EMPTY
+                .font(.system(size: 30, weight: .medium))) { } //EMPTY
             
             Section(header: Text("Ingredients")
-                .frame(height: 45)
+                .frame(width: 500, height: 45)
                 .foregroundColor(.black)
-                .font(.system(size: 18))
+                .font(.system(size: 25, weight: .regular))
             ) {
                 ForEach(recipe.ingredients, id: \.self) { ingredient in
-                    Text("ingredient with id: \(ingredient)")
+                    Text("\u{2022}  ingredient with id: \(ingredient)")
                 }
             }
             
             Section(header: Text("Steps")
-                .frame(height: 45)
+                .frame(width: 500, height: 45)
                 .foregroundColor(.black)
-                .font(.system(size: 20))
+                .font(.system(size: 25, weight: .regular))
             ) {
                 Text("step 1")
                 Text("step 2")
@@ -60,6 +63,7 @@ struct RecipeImage: View {
         AsyncImage(url: URL(string: recipe.imageUrl)) { image in
             image
                 .resizable()
+                .ignoresSafeArea()
                 .aspectRatio(contentMode: .fill)
                 .frame(width: 500, height: 650)
         } placeholder: {

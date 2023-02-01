@@ -34,7 +34,7 @@ struct ContentView: View {
                     
                     ZStack {
                         ForEach(0..<recipes.count, id: \.self) { index in
-                            RecipeCardView(recipe: recipes[index]){
+                            RecipeCardView(recipe: recipes[index], isTopRecipe: (index == recipes.count - 1)){
                                 withAnimation {
                                     removeCard(at: index)
                                 }
@@ -45,10 +45,13 @@ struct ContentView: View {
                     
                     HStack(spacing: 65) {
                         Button(action: {
-                            withAnimation {
-                                removeCard()
-                                guard let recipe = recipes.last else { return }
-                                dislikes.append(recipe)
+                            NotificationCenter.default.post(name: Notification.Name.swipeNotification, object: "Swiped", userInfo: ["swipeRight": false])
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                                withAnimation {
+                                    removeCard()
+                                    guard let recipe = recipes.last else { return }
+                                    dislikes.append(recipe)
+                                }
                             }
                         }) {
                             Image(systemName: "xmark")
@@ -60,10 +63,13 @@ struct ContentView: View {
                                 .shadow(radius: 25)
                         }
                         Button(action: {
-                            withAnimation {
-                                removeCard()
-                                guard let recipe = recipes.last else { return }
-                                likes.append(recipe)
+                            NotificationCenter.default.post(name: Notification.Name.swipeNotification, object: "Swiped", userInfo: ["swipeRight": true])
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                                withAnimation {
+                                    removeCard()
+                                    guard let recipe = recipes.last else { return }
+                                    likes.append(recipe)
+                                }
                             }
                         }) {
                             Text("✓")
