@@ -15,18 +15,3 @@ struct FryDayApp: App {
         }
     }
 }
-
-struct Recipe: Hashable, Codable {
-    var recipeId: Int
-    var title: String
-    var imageUrl: String = ""
-    var source: String = ""
-    var ingredients: String = ""
-    var websiteUrl: String = ""
-    var cooktime: String? = nil
-    var recipeStatusId: Int = 1
-    
-//    var url: URL = URL(string: "https://www.cnn.com")!
-}
-
-

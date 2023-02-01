@@ -16,7 +16,8 @@ struct RecipeCardView: View{
     
     var body: some View{
         NavigationLink(
-            destination: RecipeDetails(recipe: recipe, recipeTitle: recipe.title),
+            destination: RecipeDetails(recipe: recipe,
+                                       recipeTitle: recipe.title),
             label: {
                 
                 VStack(spacing: 0) {

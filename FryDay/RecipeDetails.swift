@@ -12,58 +12,61 @@ struct RecipeDetails: View {
     var recipeTitle: String = "Recipe Title"
     
     var body: some View {
-        VStack(alignment: .center, spacing: 0){
-            AsyncImage(url: URL(string: recipe.imageUrl)) { image in
-                image
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-//                    .frame(maxWidth: .infinity, maxHeight: 200)
-            } placeholder: {
-                ProgressView()
-            }
-            .cornerRadius(10, corners: [.topLeft, .topRight])
-            .frame(maxWidth: .infinity)
-            .shadow(radius: 10)
+        List {
+            Section(header: RecipeImage(recipe: recipe),
+                    footer: Text(recipe.title)
+                .multilineTextAlignment(.leading)
+                .foregroundColor(.black)
+                .font(.system(size: 25))) { } //EMPTY
             
-            Text(recipe.title)
-                .padding(.leading)
-                .frame(maxWidth: .infinity,
-                       maxHeight: 100,
-                       alignment: .leading)
-                .background(.white)
-                .font(.title2)
-                .cornerRadius(10, corners: [.bottomLeft, .bottomRight])
-                .shadow(radius: 20)
+            Section(header: Text("Ingredients")
+                .frame(height: 45)
+                .foregroundColor(.black)
+                .font(.system(size: 18))
+            ) {
+                ForEach(recipe.ingredients, id: \.self) { ingredient in
+                    Text("ingredient with id: \(ingredient)")
+                }
+            }
+            
+            Section(header: Text("Steps")
+                .frame(height: 45)
+                .foregroundColor(.black)
+                .font(.system(size: 20))
+            ) {
+                Text("step 1")
+                Text("step 2")
+                Text("step 3")
+            }
         }
-        .padding([.bottom, .top])
-        
-            .navigationTitle(recipeTitle)
+//        .ignoresSafeArea(edges: [.leading, .trailing, .bottom])
+        .ignoresSafeArea()
+//        .navigationTitle(recipeTitle)
     }
 }
-
-//struct RecipeDetailsCell: View {
-//    var recipe: Recipe
-//
-//    var body: some View {
-//        VStack(alignment: .center){
-//            Text(recipe.title)
-//            AsyncImage(url: recipe.url) { image in
-//                image
-//                    .resizable()
-//                    .aspectRatio(contentMode: .fill)
-//                    .frame(maxWidth: .infinity, maxHeight: 375)
-//                    .cornerRadius(15, corners: .allCorners)
-//            } placeholder: {
-//                ProgressView()
-//            }
-//        }.padding()
-//    }
-//}
 
 struct RecipeDetails_Previews: PreviewProvider {
     static var previews: some View {
         RecipeDetails(recipe:
                         Recipe(recipeId: 1,
                                title: "Chicken Soup"))
+    }
 }
+
+struct RecipeImage: View {
+    var recipe: Recipe
+    
+    var body: some View {
+        AsyncImage(url: URL(string: recipe.imageUrl)) { image in
+            image
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+                .frame(width: 500, height: 650)
+        } placeholder: {
+            ProgressView()
+        }
+        .cornerRadius(10, corners: [.topLeft, .topRight])
+//        .frame(width: 500)
+        .shadow(radius: 10)
+    }
 }
