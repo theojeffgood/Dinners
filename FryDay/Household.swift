@@ -25,8 +25,12 @@ struct Household: View {
 
     
     var body: some View {
-        VStack(spacing: 10){
-            Spacer()
+        VStack(spacing: -15){
+            Rectangle()
+                .fill(Color.gray.opacity(0.5))
+                .onTapGesture {
+                    dismissAction()
+                }
             ZStack{
                 VStack(spacing: 30){
                     HStack(spacing: 5){
@@ -89,10 +93,13 @@ struct Household: View {
                             TextField("Email Address",
                                       text: $emailAddress,
                                       prompt: Text("Enter the email"))
+                            .submitLabel(.send)
+                            .onSubmit {
+                                dismissAction()
+                            }
                                 .padding()
     //                            .border(Color.gray, width: 1)
     //                            .textFieldStyle(.roundedBorder)
-//                                .submitLabel(.send)
                                 .overlay(
                                     RoundedRectangle(cornerRadius: 5)
                                         .stroke(Color.black, lineWidth: 1)
@@ -100,7 +107,6 @@ struct Household: View {
                                 .padding([.bottom])
                                 .padding(.bottom, keyboardHeight)
                                 .onReceive(Publishers.keyboardHeight) { self.keyboardHeight = $0 }
-
                         }
                     }
                 }
@@ -109,10 +115,6 @@ struct Household: View {
                 .background(Color.white)
                 .cornerRadius(20)
             }
-        }
-        .background(Color.gray.opacity(0.5))
-        .onTapGesture {
-//            dismissAction()
         }
         .ignoresSafeArea()
         

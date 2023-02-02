@@ -50,12 +50,12 @@ struct RecipeCell: View {
                     
                     Text(recipe.title)
                         .multilineTextAlignment(.leading)
-                        .padding(.leading)
+                        .padding()
                         .frame(maxWidth: .infinity,
                                maxHeight: 100,
                                alignment: .leading)
                         .background(.white)
-                        .font(.title2)
+                        .font(.system(size: 20, weight: .regular))
                         .cornerRadius(10, corners: [.bottomLeft, .bottomRight])
                         .shadow(radius: 20)
                 }.padding([.bottom, .top])
