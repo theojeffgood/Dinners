@@ -28,11 +28,13 @@ struct RecipeCardView: View{
                             .scaledToFill()
                             .frame(width: 350, height: 350)
                             .clipped()
+                            .opacity(1 - Double(abs(offset.width / 50) ))
+                            .background(colorForOffset(offset))
                     } placeholder: {
                         ProgressView()
                     }
                     .cornerRadius(10, corners: [.topLeft, .topRight])
-                    .shadow(radius: 10)
+                    .shadow(radius: 5)
                     
                     Text(recipe.title)
                         .multilineTextAlignment(.leading)
@@ -43,7 +45,7 @@ struct RecipeCardView: View{
                         .background(.white)
                         .font(.title2)
                         .cornerRadius(10, corners: [.bottomLeft, .bottomRight])
-                        .shadow(radius: 10)
+                        .shadow(radius: 5)
                 }
                 .onReceive(NotificationCenter.default.publisher(for: Notification.Name.swipeNotification)) { object in
                     if isTopRecipe,
@@ -53,29 +55,43 @@ struct RecipeCardView: View{
                     }
                 }
                 .rotationEffect(.degrees(Double(offset.width / 40)))
-                .offset(x: offset.width, y: offset.height * 0.4)
+                .offset(x: offset.width, y: offset.height)
                 .opacity(2 - Double(abs(offset.width / 50) ))
                 .gesture(
                     DragGesture()
                         .onChanged({ gesture in
-                            print("offset: \(offset)")
                             offset = gesture.translation
                         })
                         .onEnded({ gesture in
                             if abs(offset.width) > 100{
                                 remove?()
                             } else {
-                                offset = .zero
+                                withAnimation {
+                                    offset = .zero
+                                }
                             }
                         })
                 )
-            })
+            }).buttonStyle(FlatLinkStyle()) //disable tap-opacity https://stackoverflow.com/a/62311089
     }
     
     func setOffset(swipedRight: Bool){
-        let swipeLength = swipedRight ? 150 : -150
+        let swipeLength = swipedRight ? 125 : -125
         withAnimation {
             offset = CGSize(width: swipeLength, height: 0)
+        }
+    }
+    
+    func colorForOffset(_ offset: CGSize) -> Color{
+        switch offset.width{
+        case 0:
+            return .white
+        case 0.1 ..< 1000:
+            return .green
+        case -1000 ..< 0.1:
+            return .red
+        default:
+            return .white
         }
     }
 }
@@ -90,5 +106,11 @@ struct RecipeCardView_Previews: PreviewProvider {
                                       title: "Roasted Asparagus",
                                      imageUrl: "https://halflemons-media.s3.amazonaws.com/786.jpg"))
         .previewLayout(.sizeThatFits)
+    }
+}
+
+struct FlatLinkStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
     }
 }

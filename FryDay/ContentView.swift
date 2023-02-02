@@ -8,7 +8,8 @@
 import SwiftUI
 
 struct ContentView: View {
-//    var recipes: [Recipe] -- this throws an error
+
+    @State private var allRecipes: [Recipe] = []
     @State private var recipes: [Recipe] = [Recipe(recipeId: 1, title: "Chicken Cacciatore", imageUrl: "https://halflemons-media.s3.amazonaws.com/786.jpg")]
     @State private var likes: [Recipe] = []
     @State private var dislikes: [Recipe] = []
@@ -17,86 +18,96 @@ struct ContentView: View {
     
     var body: some View {
         NavigationView {
-                VStack {
-                    Text("Filter")
-                        .frame(maxWidth: .infinity,
-                               alignment: .leading)
-                        .font(.title3)
-                        .foregroundColor(.gray)
-                    Spacer()
-                    
-                    Filters(likes: $likes.wrappedValue,
-                            dislikes: $dislikes.wrappedValue)
-                    
-                    Spacer()
-                    Spacer()
-                    Spacer()
-                    
-                    ZStack {
-                        ForEach(0..<recipes.count, id: \.self) { index in
-                            RecipeCardView(recipe: recipes[index], isTopRecipe: (index == recipes.count - 1)){
-                                withAnimation {
-                                    removeCard(at: index)
-                                }
-                            }
-                            .stacked(at: index, in: recipes.count)
-                        }
-                    }
-                    
-                    HStack(spacing: 65) {
-                        Button(action: {
-                            NotificationCenter.default.post(name: Notification.Name.swipeNotification, object: "Swiped", userInfo: ["swipeRight": false])
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                                withAnimation {
-                                    removeCard()
-                                    guard let recipe = recipes.last else { return }
-                                    dislikes.append(recipe)
-                                }
-                            }
-                        }) {
-                            Image(systemName: "xmark")
-                                .frame(width: 90, height: 90)
-                                .background(Color.red)
-                                .foregroundColor(.white)
-                                .cornerRadius(45)
-                                .font(.system(size: 48, weight: .bold))
-                                .shadow(radius: 25)
-                        }
-                        Button(action: {
-                            NotificationCenter.default.post(name: Notification.Name.swipeNotification, object: "Swiped", userInfo: ["swipeRight": true])
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                                withAnimation {
-                                    removeCard()
-                                    guard let recipe = recipes.last else { return }
-                                    likes.append(recipe)
-                                }
-                            }
-                        }) {
-                            Text("✓")
-                                .frame(width: 90, height: 90)
-                                .background(Color.green)
-                                .foregroundColor(.black)
-                                .cornerRadius(45)
-                                .font(.system(size: 48, weight: .heavy))
-                                .shadow(radius: 25)
-                        }
-                    }
-                    .padding([.top, .bottom])
-                }
-                .padding()
-                .navigationTitle("FryDay")
-                .navigationBarItems(
-                    trailing:
-                        Button{
-                            print("home button tapped")
+            VStack {
+                Text("Filter")
+                    .frame(maxWidth: .infinity,
+                           alignment: .leading)
+                    .font(.title3)
+                    .foregroundColor(.gray)
+                Spacer()
+                
+                Filters(likes: $likes.wrappedValue,
+                        dislikes: $dislikes.wrappedValue)
+                
+                Spacer()
+                Spacer()
+                Spacer()
+                
+                ZStack {
+                    ForEach(recipes, id: \.self) { recipe in
+                        let index = recipes.firstIndex(of: recipe)!
+                        RecipeCardView(recipe: recipe, isTopRecipe: (recipe == recipes.last)){
                             withAnimation {
-                                showHousehold = true
+                                removeCard(at: index)
+                                addNewCard()
                             }
-                        } label: {
-                            Image(systemName: "house.fill")
-                                .tint(.black)
                         }
-                )
+                        .stacked(at: index, in: recipes.count)
+                    }
+                }
+                
+                HStack(spacing: 65) {
+                    
+                    Button(action: {
+                        NotificationCenter.default.post(name: Notification.Name.swipeNotification,
+                                                        object: "Swiped",
+                                                        userInfo: ["swipeRight": false])
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                            withAnimation {
+                                addNewCard()
+                                removeCard()
+                                guard let recipe = recipes.last else { return }
+                                dislikes.append(recipe)
+                            }
+                        }
+                    }) {
+                        Image(systemName: "xmark")
+                            .frame(width: 90, height: 90)
+                            .background(Color.red)
+                            .foregroundColor(.white)
+                            .cornerRadius(45)
+                            .font(.system(size: 48, weight: .bold))
+                            .shadow(radius: 25)
+                    }
+                    Button(action: {
+                        NotificationCenter.default.post(name: Notification.Name.swipeNotification,
+                                                        object: "Swiped",
+                                                        userInfo: ["swipeRight": true])
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                            withAnimation {
+                                addNewCard()
+                                removeCard()
+                                guard let recipe = recipes.last else { return }
+                                likes.append(recipe)
+                            }
+                        }
+                    }) {
+                        Text("✓")
+                            .frame(width: 90, height: 90)
+                            .background(Color.green)
+                            .foregroundColor(.black)
+                            .cornerRadius(45)
+                            .font(.system(size: 48, weight: .heavy))
+                            .shadow(radius: 25)
+                    }
+                }
+                //                    .padding([.top])
+                .padding(.top, 25)
+            }
+            .padding()
+            .navigationTitle("FryDay")
+            .navigationBarItems(
+                trailing:
+                    Button{
+                        print("home button tapped")
+                        withAnimation {
+                            showHousehold = true
+                        }
+                    } label: {
+                        Image(systemName: "house.fill")
+                            .tint(.black)
+                    }
+            )
         }.overlay(alignment: .bottom) {
             if showHousehold{
                 let dismissHousehold = {
@@ -128,11 +139,23 @@ extension ContentView{
         }
     }
     
+    func addNewCard(){
+        guard let newRecipe = allRecipes.first else { return }
+        recipes.insert(newRecipe, at: 0)
+        allRecipes.removeFirst()
+    }
+    
     func loadRecipes(){
-        Task {
-            let recipes = try await Webservice().load (Recipe.all)
-            let shuffledRecipes = recipes.shuffled()
-            self.recipes = Array(shuffledRecipes.prefix(upTo: 5))
+        if allRecipes.isEmpty{
+            Task {
+                let downloadedRecipes = try await Webservice().load (Recipe.all)
+                allRecipes = downloadedRecipes.shuffled()
+                recipes = Array(allRecipes.prefix(upTo: 3))
+                allRecipes.removeFirst(3)
+            }
+        } else{
+            self.recipes = Array(allRecipes.prefix(upTo: 3))
+            allRecipes.removeFirst(3)
         }
     }
 }
@@ -154,15 +177,15 @@ extension View {
     
     func stacked(at position: Int, in total: Int) -> some View {
         let offset = Double(total - position)
-        return self.offset(x: 0, y: offset * 4)
+        return self.offset(x: 0, y: offset * 9)
     }
 }
 
 struct RoundedCorner: Shape {
-
+    
     var radius: CGFloat = .infinity
     var corners: UIRectCorner = .allCorners
-
+    
     func path(in rect: CGRect) -> Path {
         let path = UIBezierPath(roundedRect: rect, byRoundingCorners: corners, cornerRadii: CGSize(width: radius, height: radius))
         return Path(path.cgPath)
