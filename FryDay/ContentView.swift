@@ -19,19 +19,9 @@ struct ContentView: View {
     var body: some View {
         NavigationView {
             VStack {
-                Text("Filter")
-                    .frame(maxWidth: .infinity,
-                           alignment: .leading)
-                    .font(.title3)
-                    .foregroundColor(.gray)
-                Spacer()
-                
                 Filters(likes: $likes.wrappedValue,
                         dislikes: $dislikes.wrappedValue)
-                
-                Spacer()
-                Spacer()
-                Spacer()
+                .padding(.bottom)
                 
                 ZStack {
                     ForEach(recipes, id: \.self) { recipe in
