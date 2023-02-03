@@ -1,5 +1,5 @@
 //
-//  RecipeDetails.swift
+//  RecipeDetailsView.swift
 //  FryDay
 //
 //  Created by Theo Goodman on 1/19/23.
@@ -7,9 +7,10 @@
 
 import SwiftUI
 
-struct RecipeDetails: View {
+struct RecipeDetailsView: View {
     var recipe: Recipe
     var recipeTitle: String = "Recipe Title"
+    @State var recipeDetails: RecipeDetails? = nil
     
     var body: some View {
         List {
@@ -27,8 +28,9 @@ struct RecipeDetails: View {
                 .foregroundColor(.black)
                 .font(.system(size: 25, weight: .regular))
             ) {
-                ForEach(recipe.ingredients, id: \.self) { ingredient in
-                    Text("\u{2022}  ingredient with id: \(ingredient)")
+                ForEach(recipeDetails?.ingredients ?? [], id: \.self) { ingredient in
+                    Text("\u{2022}  \(ingredient.ingredientText)")
+                        .font(.system(size: 20))
                 }
             }
             
@@ -37,20 +39,37 @@ struct RecipeDetails: View {
                 .foregroundColor(.black)
                 .font(.system(size: 25, weight: .regular))
             ) {
-                Text("step 1")
-                Text("step 2")
-                Text("step 3")
+                ForEach(recipeDetails?.steps ?? [], id: \.self) { step in
+                    let backgroundColor = step.stepNumber.isMultiple(of: 2) ? Color.white : Color.gray.opacity(0.3)
+                    
+                    Text("Step \(step.stepNumber)\n\n\(step.stepText)")
+                        .font(.system(size: 20))
+                        .background(backgroundColor)
+                        .padding([.top,.bottom])
+                    
+//                    if step.stepNumber.isMultiple(of: 2){
+//                        .background(.gray)
+//                    }
+                }
             }
         }
-//        .ignoresSafeArea(edges: [.leading, .trailing, .bottom])
         .ignoresSafeArea()
+        .onAppear(){
+            loadDetails(for: recipe)
+        }
 //        .navigationTitle(recipeTitle)
+    }
+    
+    func loadDetails(for recipe: Recipe){
+        Task {
+            recipeDetails = try await Webservice().load (RecipeDetails.byId(recipe.recipeId))
+        }
     }
 }
 
 struct RecipeDetails_Previews: PreviewProvider {
     static var previews: some View {
-        RecipeDetails(recipe:
+        RecipeDetailsView(recipe:
                         Recipe(recipeId: 1,
                                title: "Chicken Soup"))
     }

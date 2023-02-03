@@ -66,15 +66,15 @@ enum NetworkError: Error {
 }
 
 extension URL {
-    static func forProductById(_ id: Int) -> URL? {
+    static func forRecipeById(_ id: Int) -> URL? {
         var components = URLComponents()
         components.scheme = "https"
-        components.host = "fakestoreapi.com"
-        components.path = "/products/\(id)"
+        components.host = "appdata.halflemons.com"
+        components.path = "/recipedetails/\(id)"
         return components.url
     }
     
-    static var allProducts: URL {
+    static var allRecipes: URL {
         URL(string: "https://appdata.halflemons.com/recipes")!
     }
 }
@@ -83,11 +83,15 @@ extension URL {
 
 extension Recipe {
     static var all: Resource<[Recipe]>{
-        return Resource(url: URL.allProducts)
+        return Resource(url: URL.allRecipes)
     }
     
-    static func byId(_ id: Int) -> Resource<Recipe> {
-        guard let url = URL.forProductById(id) else {
+    
+}
+
+extension RecipeDetails {
+    static func byId(_ id: Int) -> Resource<RecipeDetails> {
+        guard let url = URL.forRecipeById(id) else {
             fatalError("id = \(id) was not found.")
         }
         return Resource(url: url)

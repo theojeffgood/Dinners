@@ -17,7 +17,7 @@ struct RecipeCardView: View{
     
     var body: some View{
         NavigationLink(
-            destination: RecipeDetails(recipe: recipe,
+            destination: RecipeDetailsView(recipe: recipe,
                                        recipeTitle: recipe.title),
             label: {
                 
@@ -28,7 +28,7 @@ struct RecipeCardView: View{
                             .scaledToFill()
                             .frame(width: 350, height: 350)
                             .clipped()
-                            .opacity(1 - Double(abs(offset.width / 50) ))
+                            .opacity(2.0 - Double(abs(offset.width / 50) ))
                             .background(colorForOffset(offset))
                     } placeholder: {
                         ProgressView()
@@ -54,9 +54,9 @@ struct RecipeCardView: View{
                         setOffset(swipedRight: swipeRight)
                     }
                 }
-                .rotationEffect(.degrees(Double(offset.width / 40)))
-                .offset(x: offset.width, y: offset.height)
-                .opacity(2 - Double(abs(offset.width / 50) ))
+                .rotationEffect(.degrees(Double(offset.width / 30)))
+                .offset(x: offset.width * 0.8, y: offset.height * 0.4)
+                .opacity(3 - Double(abs(offset.width / 50) ))
                 .gesture(
                     DragGesture()
                         .onChanged({ gesture in
@@ -85,13 +85,13 @@ struct RecipeCardView: View{
     func colorForOffset(_ offset: CGSize) -> Color{
         switch offset.width{
         case 0:
-            return .white
+            return .clear
         case 0.1 ..< 1000:
             return .green
         case -1000 ..< 0.1:
             return .red
         default:
-            return .white
+            return .clear
         }
     }
 }

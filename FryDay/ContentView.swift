@@ -99,7 +99,6 @@ struct ContentView: View {
             .navigationBarItems(
                 trailing:
                     Button{
-                        print("home button tapped")
                         withAnimation {
                             showHousehold = true
                         }

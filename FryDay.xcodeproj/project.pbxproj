@@ -15,7 +15,7 @@
 		E439227629772E8300CC9E53 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E439227529772E8300CC9E53 /* Preview Assets.xcassets */; };
 		E465A711298307D30058B564 /* RecipeCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E465A710298307D30058B564 /* RecipeCardView.swift */; };
 		E4CB2C80297893CC00A829AE /* RecipesList.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4CB2C7F297893CC00A829AE /* RecipesList.swift */; };
-		E4CB2C822979C28700A829AE /* RecipeDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4CB2C812979C28700A829AE /* RecipeDetails.swift */; };
+		E4CB2C822979C28700A829AE /* RecipeDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4CB2C812979C28700A829AE /* RecipeDetailsView.swift */; };
 		E4F7ECA32989DF6000996CB3 /* Recipe.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4F7ECA22989DF6000996CB3 /* Recipe.swift */; };
 /* End PBXBuildFile section */
 
@@ -30,7 +30,7 @@
 		E439227529772E8300CC9E53 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		E465A710298307D30058B564 /* RecipeCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeCardView.swift; sourceTree = "<group>"; };
 		E4CB2C7F297893CC00A829AE /* RecipesList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipesList.swift; sourceTree = "<group>"; };
-		E4CB2C812979C28700A829AE /* RecipeDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeDetails.swift; sourceTree = "<group>"; };
+		E4CB2C812979C28700A829AE /* RecipeDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeDetailsView.swift; sourceTree = "<group>"; };
 		E4F7ECA22989DF6000996CB3 /* Recipe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Recipe.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -70,7 +70,7 @@
 				E439226F29772E8200CC9E53 /* ContentView.swift */,
 				E465A710298307D30058B564 /* RecipeCardView.swift */,
 				E4CB2C7F297893CC00A829AE /* RecipesList.swift */,
-				E4CB2C812979C28700A829AE /* RecipeDetails.swift */,
+				E4CB2C812979C28700A829AE /* RecipeDetailsView.swift */,
 				E41D5076297DE959003CD008 /* Household.swift */,
 				E439227129772E8300CC9E53 /* Assets.xcassets */,
 				E439227329772E8300CC9E53 /* FryDay.entitlements */,
@@ -158,7 +158,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E465A711298307D30058B564 /* RecipeCardView.swift in Sources */,
-				E4CB2C822979C28700A829AE /* RecipeDetails.swift in Sources */,
+				E4CB2C822979C28700A829AE /* RecipeDetailsView.swift in Sources */,
 				E439227029772E8200CC9E53 /* ContentView.swift in Sources */,
 				E439226E29772E8200CC9E53 /* FryDayApp.swift in Sources */,
 				E41D5077297DE959003CD008 /* Household.swift in Sources */,

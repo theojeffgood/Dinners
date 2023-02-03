@@ -56,3 +56,28 @@ extension Recipe{
 //        ingredients.append(objectsIn: newRecipeIngredients)
     }
 }
+
+//MARK: -- RECIPE DETAILS
+
+struct RecipeDetails: Hashable, Codable {
+    var facts: [Fact]
+    var ingredients: [Ingredient]
+    var steps: [Step]
+}
+
+struct Fact: Hashable, Codable {
+    var recipeId: Int = 0
+    var factType: Int = 0
+    var factText: String = ""
+}
+
+struct Ingredient: Hashable, Codable {
+    var recipeId: Int = 0
+    var ingredientText: String = ""
+}
+
+struct Step: Hashable, Codable {
+    var recipeId: Int = 0
+    var stepNumber: Int = 0
+    var stepText: String = ""
+}

@@ -32,7 +32,7 @@ struct RecipeCell: View {
     
     var body: some View {
         NavigationLink(
-            destination: RecipeDetails(recipe: recipe, recipeTitle: recipe.title),
+            destination: RecipeDetailsView(recipe: recipe, recipeTitle: recipe.title),
             label: {
                 
                 VStack(alignment: .center, spacing: 0){
