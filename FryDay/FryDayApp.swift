@@ -9,9 +9,15 @@ import SwiftUI
 
 @main
 struct FryDayApp: App {
+    
+    init() { }
+
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .onOpenURL { url in
+                    print("url is: \(url)")
+                }
         }
     }
 }

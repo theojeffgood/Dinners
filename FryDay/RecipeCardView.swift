@@ -35,6 +35,7 @@ struct RecipeCardView: View{
                     }
                     .cornerRadius(10, corners: [.topLeft, .topRight])
                     .shadow(radius: 5)
+//                    .frame(width: 350, height: 350) // maybe setting frame here will solve sizing issues?
                     
                     Text(recipe.title)
                         .multilineTextAlignment(.leading)

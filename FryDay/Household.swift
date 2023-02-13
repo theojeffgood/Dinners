@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Combine
+import MessageUI
 
 struct Household: View {
     @State private var users: [User] = []
@@ -18,10 +19,6 @@ struct Household: View {
         case addMember
     }
     var dismissAction: () -> Void
-    
-    //keyboard avoidance: https://www.vadimbulavin.com/how-to-move-swiftui-view-when-keyboard-covers-text-field/
-    @State private var keyboardHeight: CGFloat = 0
-    
     
     var body: some View {
         VStack(spacing: -15){
@@ -106,28 +103,43 @@ struct Household: View {
                     
 //MARK: -- // SEND AN INVITATION //
                 case .addMember:
-                    VStack(alignment: .leading){
-                        Text("Add a member")
-                            .frame(alignment: .leading)
-                            .font(.system(size: 18, weight: .medium))
-                        
-                        TextField("Email Address",
-                                  text: $emailAddress,
-                                  prompt: Text("Enter an email"))
-                        .submitLabel(.send)
-                        .onSubmit {
-                            householdState = .loggedIn
-                            users.append(User(userType: .pending))
-                            emailAddress = ""
+                    VStack(){
+                        Text("Send invitation")
+                            .font(.system(size: 22, weight: .medium))
+                            .multilineTextAlignment(.center)
+                        HStack{
+                            Spacer()
+                            Button(action: {
+                                ShareHelper.shared.sendText()
+//                                householdState = .loggedIn
+//                                users.append(User(userType: .pending))
+                            }) {
+                                Image("imessage")
+//                                    .resizable()
+                            }
+                            Spacer()
+                            Button(action: {
+//                                ShareHelper.shared.sendText()
+//                                householdState = .loggedIn
+//                                users.append(User(userType: .pending))
+                            }) {
+                                Image("whatsapp")
+//                                    .resizable()
+                            }
+                            Spacer()
+                            Button(action: {
+                                ShareHelper.shared.sendEmail(subject: "Join me on MealSwipe",
+                                                             body: "Create a meal plan with me on MealSwipe. Tap to join my account. \n\nhello://com.mealswipe",
+                                                             to: "")
+//                                householdState = .loggedIn
+//                                users.append(User(userType: .pending))
+                            }) {
+                                Image("email")
+//                                    .resizable()
+                            }
+                            Spacer()
                         }
-                        .padding()
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 5)
-                                .stroke(Color.black, lineWidth: 1)
-                        )
                         .padding([.bottom])
-                        .padding(.bottom, keyboardHeight)
-                        .onReceive(Publishers.keyboardHeight) { self.keyboardHeight = $0 }
                     }
                 }
             }
@@ -145,28 +157,6 @@ struct Household_Previews: PreviewProvider {
     static var previews: some View {
         Household(dismissAction: {})
         //            .previewLayout(.sizeThatFits)
-    }
-}
-
-extension Publishers {
-    // 1.
-    static var keyboardHeight: AnyPublisher<CGFloat, Never> {
-        // 2.
-        let willShow = NotificationCenter.default.publisher(for: UIApplication.keyboardWillShowNotification)
-            .map { $0.keyboardHeight }
-        
-        let willHide = NotificationCenter.default.publisher(for: UIApplication.keyboardWillHideNotification)
-            .map { _ in CGFloat(0) }
-        
-        // 3.
-        return MergeMany(willShow, willHide)
-            .eraseToAnyPublisher()
-    }
-}
-
-extension Notification {
-    var keyboardHeight: CGFloat {
-        return (userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect)?.height ?? 0
     }
 }
 
@@ -196,5 +186,68 @@ struct User: Identifiable {
                 return "🥳"
             }
         }
+    }
+}
+
+
+
+class ShareHelper: NSObject {
+    
+    public static let shared = ShareHelper()
+    private override init() {}
+    
+    static func getRootViewController() -> UIViewController? {
+        UIApplication.shared.windows.first?.rootViewController
+    }
+}
+
+//MARK: -- EMAIL
+
+extension ShareHelper: MFMailComposeViewControllerDelegate{
+    
+    func sendEmail(subject: String, body: String, to: String){
+        guard MFMailComposeViewController.canSendMail() else {
+            print("No mail account found")
+            // Todo: Add a way to show banner to user about no mail app found or configured
+            // Utilities.showErrorBanner(title: "No mail account found", subtitle: "Please setup a mail account")
+            return
+        }
+        
+        let picker = MFMailComposeViewController()
+        
+        picker.setSubject(subject)
+        picker.setMessageBody(body, isHTML: true)
+        picker.setToRecipients([to])
+        picker.mailComposeDelegate = self
+        
+        ShareHelper.getRootViewController()?.present(picker, animated: true, completion: nil)
+    }
+    
+    func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
+        ShareHelper.getRootViewController()?.dismiss(animated: true, completion: nil)
+    }
+}
+
+//MARK: -- TEXT MESSAGE
+
+extension ShareHelper: MFMessageComposeViewControllerDelegate{
+    
+    func sendText(){
+        guard MFMessageComposeViewController.canSendText() else {
+            print("No message account found")
+            return
+        }
+        
+        let controller = MFMessageComposeViewController()
+        
+        controller.body = "Create a meal plan with me on MealSwipe. Tap to join my account. \n\nhello://com.mealswipe"
+        controller.messageComposeDelegate = self
+        controller.recipients = []
+        
+        ShareHelper.getRootViewController()?.present(controller, animated: true, completion: nil)
+    }
+    
+    func messageComposeViewController(_ controller: MFMessageComposeViewController, didFinishWith result: MessageComposeResult) {
+        controller.dismiss(animated: true, completion: nil)
     }
 }
