@@ -10,13 +10,15 @@ import Combine
 import MessageUI
 
 struct Household: View {
-    @State private var users: [User] = []
+    
+    @State var users: [User] = []
     @State private var emailAddress: String = ""
     @State private var householdState: HouseholdState = .notLoggedIn
     enum HouseholdState {
         case loggedIn
         case notLoggedIn
         case addMember
+        case inviteSent
     }
     var dismissAction: () -> Void
     
@@ -28,14 +30,17 @@ struct Household: View {
                     dismissAction()
                 }
             VStack(spacing: 30){
-                HStack(spacing: 5){
+                HStack(spacing: 7){
                     Image(systemName: "house.fill")
+                        .resizable()
+                        .frame(width: 25, height: 25)
                     Text("Household")
-                        .font(.system(size: 28, weight: .bold))
+                        .font(.system(size: 30, weight: .bold))
                     Spacer()
                 }
                 
                 switch householdState{
+                    
 //MARK: -- // NOT LOGGED IN //
                 case .notLoggedIn:
                     Text("Please sign in to\n create a household.")
@@ -103,44 +108,51 @@ struct Household: View {
                     
 //MARK: -- // SEND AN INVITATION //
                 case .addMember:
-                    VStack(){
+                    VStack(spacing: 15){
                         Text("Send invitation")
                             .font(.system(size: 22, weight: .medium))
                             .multilineTextAlignment(.center)
-                        HStack{
-                            Spacer()
-                            Button(action: {
-                                ShareHelper.shared.sendText()
-//                                householdState = .loggedIn
-//                                users.append(User(userType: .pending))
-                            }) {
-                                Image("imessage")
-//                                    .resizable()
+                        HStack(spacing: 50){
+                            VStack{
+                                Button(action: {
+                                    ShareHelper.shared.sendText(){
+                                        handleInviteSent()
+                                    }
+                                }) {
+                                    Image("imessage")
+                                }
+                                Text("iMessage")
                             }
-                            Spacer()
-                            Button(action: {
-//                                ShareHelper.shared.sendText()
-//                                householdState = .loggedIn
-//                                users.append(User(userType: .pending))
-                            }) {
-                                Image("whatsapp")
-//                                    .resizable()
+                            VStack{
+                                Button(action: {
+//                                    ShareHelper.shared.sendWhatsApp()
+                                    handleInviteSent()
+                                }) {
+                                    Image("whatsapp")
+                                }
+                                Text("WhatsApp")
                             }
-                            Spacer()
-                            Button(action: {
-                                ShareHelper.shared.sendEmail(subject: "Join me on MealSwipe",
-                                                             body: "Create a meal plan with me on MealSwipe. Tap to join my account. \n\nhello://com.mealswipe",
-                                                             to: "")
-//                                householdState = .loggedIn
-//                                users.append(User(userType: .pending))
-                            }) {
-                                Image("email")
-//                                    .resizable()
+                            VStack{
+                                Button(action: {
+                                    ShareHelper.shared.sendEmail(){
+                                        handleInviteSent()
+                                    }
+                                }) {
+                                    Image("email")
+                                }
+                                Text("Email")
                             }
-                            Spacer()
                         }
                         .padding([.bottom])
                     }
+                    
+                    
+//MARK: -- // INVITE SENT //
+                case .inviteSent:
+                    Text("Invitation sent! 🎉")
+                        .font(.system(size: 30, weight: .medium))
+                        .multilineTextAlignment(.center)
+                        .padding(50)
                 }
             }
             .padding()
@@ -151,50 +163,34 @@ struct Household: View {
         .ignoresSafeArea()
         
     }
+    func handleInviteSent(){
+        withAnimation {
+            householdState = .inviteSent
+        }
+        users.append(User(userType: .pending))
+    }
 }
 
 struct Household_Previews: PreviewProvider {
     static var previews: some View {
-        Household(dismissAction: {})
-        //            .previewLayout(.sizeThatFits)
+        Household(users: [],
+                  dismissAction: {})
     }
 }
 
-
-struct User: Identifiable {
-    var id = UUID()
-    var userType: UserType = .pending
-    
-    enum UserType {
-        case member
-        case pending
-        
-        var text: String{
-            switch self {
-            case .member:
-                return "You"
-            case .pending:
-                return "Pending"
-            }
-        }
-        
-        var image: String{
-            switch self {
-            case .member:
-                return "😎"
-            case .pending:
-                return "🥳"
-            }
-        }
-    }
-}
 
 
 
 class ShareHelper: NSObject {
     
     public static let shared = ShareHelper()
-    private override init() {}
+    private var completion: (() -> Void)?
+    
+    let subject = "Join me on MealSwipe"
+    let body = "Create a meal plan with me! I made an account on MealSwipe. You can join it, free. \n\nhello://com.mealswipe/xR3u1mr"
+    let recipient = ""
+    
+//    private override init() {}
     
     static func getRootViewController() -> UIViewController? {
         UIApplication.shared.windows.first?.rootViewController
@@ -205,7 +201,7 @@ class ShareHelper: NSObject {
 
 extension ShareHelper: MFMailComposeViewControllerDelegate{
     
-    func sendEmail(subject: String, body: String, to: String){
+    func sendEmail(completion: (() -> Void)? = nil){
         guard MFMailComposeViewController.canSendMail() else {
             print("No mail account found")
             // Todo: Add a way to show banner to user about no mail app found or configured
@@ -213,18 +209,28 @@ extension ShareHelper: MFMailComposeViewControllerDelegate{
             return
         }
         
+        self.completion = completion
         let picker = MFMailComposeViewController()
         
-        picker.setSubject(subject)
-        picker.setMessageBody(body, isHTML: true)
-        picker.setToRecipients([to])
+        picker.setSubject(self.subject)
+        picker.setMessageBody(self.body, isHTML: true)
+        picker.setToRecipients([self.recipient])
         picker.mailComposeDelegate = self
         
-        ShareHelper.getRootViewController()?.present(picker, animated: true, completion: nil)
+        ShareHelper.getRootViewController()?.present(picker,
+                                                     animated: true,
+                                                     completion: nil)
     }
     
-    func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
-        ShareHelper.getRootViewController()?.dismiss(animated: true, completion: nil)
+    func mailComposeController(_ controller: MFMailComposeViewController,
+                               didFinishWith result: MFMailComposeResult,
+                               error: Error?) {
+//        ShareHelper.getRootViewController()?.dismiss(animated: true, completion: nil)
+        controller.dismiss(animated: true, completion: nil)
+        if result == .sent{
+            completion?()
+            completion = nil
+        }
     }
 }
 
@@ -232,22 +238,30 @@ extension ShareHelper: MFMailComposeViewControllerDelegate{
 
 extension ShareHelper: MFMessageComposeViewControllerDelegate{
     
-    func sendText(){
+    func sendText(completion: (() -> Void)? = nil){
         guard MFMessageComposeViewController.canSendText() else {
             print("No message account found")
             return
         }
         
+        self.completion = completion
         let controller = MFMessageComposeViewController()
         
-        controller.body = "Create a meal plan with me on MealSwipe. Tap to join my account. \n\nhello://com.mealswipe"
+        controller.body = self.body
         controller.messageComposeDelegate = self
         controller.recipients = []
         
-        ShareHelper.getRootViewController()?.present(controller, animated: true, completion: nil)
+        ShareHelper.getRootViewController()?.present(controller,
+                                                     animated: true,
+                                                     completion: nil)
     }
     
-    func messageComposeViewController(_ controller: MFMessageComposeViewController, didFinishWith result: MessageComposeResult) {
+    func messageComposeViewController(_ controller: MFMessageComposeViewController,
+                                      didFinishWith result: MessageComposeResult) {
         controller.dismiss(animated: true, completion: nil)
+        if result == .sent{
+            completion?()
+            completion = nil
+        }
     }
 }

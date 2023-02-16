@@ -13,6 +13,7 @@ struct ContentView: View {
     @State private var recipes: [Recipe] = [Recipe(recipeId: 1, title: "Chicken Cacciatore", imageUrl: "https://halflemons-media.s3.amazonaws.com/786.jpg")]
     @State private var likes: [Recipe] = []
     @State private var dislikes: [Recipe] = []
+    @State private var users: [User] = []
     
     @State private var showHousehold: Bool = false
     
@@ -104,13 +105,21 @@ struct ContentView: View {
                         showHousehold = false
                     }
                 }
-                Household(dismissAction: dismissHousehold)
+                Household(users: users,
+                          dismissAction: dismissHousehold)
             }
         }
         .ignoresSafeArea()
         .accentColor(.black)
         .onAppear(){
             loadRecipes()
+        }
+        .onOpenURL { url in
+            users = [User(userType: .member), User(userType: .member)]
+            withAnimation {
+                showHousehold = true
+            }
+            print("url is: \(url)")
         }
     }
 }

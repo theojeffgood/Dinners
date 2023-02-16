@@ -33,7 +33,8 @@ struct RecipeDetailsView: View {
                             .font(.system(size: 21))
                         Text("\(ingredient.ingredientText)")
                             .font(.system(size: 21))
-                    }.padding([.top, .bottom], 6)
+                    }
+                    .padding([.top, .bottom], 6)
                 }
             }
             
@@ -115,22 +116,24 @@ struct TitleAndFacts: View {
                 ForEach(recipeFacts, id: \.self) { fact in
                     
                     switch fact.factType{
-                    case 1, 2:
+                    case 1, 2: //recipe source & servings
                         Text("\(fact.factText)")
-                            .font(.system(size: 18, weight: .regular))
+                            .font(.system(size: 18, weight: .medium))
                             .frame(width: width, alignment: .leading)
                             .multilineTextAlignment(.center)
-                    case 3:
-                        Text("\(fact.factText) Minutes")
-                            .font(.system(size: 18, weight: .regular))
+                        
+                    case 3: //recipe cooktime
+                        Text("\(fact.factText) Mins")
+                            .font(.system(size: 18, weight: .medium))
                             .frame(width: width, alignment: .leading)
                             .multilineTextAlignment(.center)
+                        
                     default:
-                        Text("This shouldn't happen")
+                        Text("Unrecognized recipe facts found.")
                     }
                 }
-            }.padding(.bottom)
+            }
+            .padding(.bottom)
         }
-        
     }
 }
