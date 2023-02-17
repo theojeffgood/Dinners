@@ -7,40 +7,40 @@
 
 import Foundation
 
-struct User: Identifiable {
-    var id = UUID()
-    var userType: UserType = .pending
+//struct User: Identifiable {
+//    var id = UUID()
+//    var userType: UserType = .pending
     
-    enum UserType {
-        case member
-        case pending
-        
-        var text: String{
-            switch self {
-            case .member:
-                return "You"
-            case .pending:
-                return "Pending"
-            }
+extension User{
+    var state: UserType{
+        get{
+            return UserType(rawValue: self.userType)!
         }
-        
-        var image: String{
-            switch self {
-            case .member:
-                return "😎"
-            case .pending:
-                return "🥳"
-            }
+        set{
+            self.userType = newValue.rawValue
         }
     }
 }
 
-extension User{
-    mutating func save(){
-        
+enum UserType: Int32 {
+    case member = 0
+    case pending = 1
+    
+    var text: String{
+        switch self {
+        case .member:
+            return "You"
+        case .pending:
+            return "Pending"
+        }
     }
     
-    mutating func delete(){
-        
+    var image: String{
+        switch self {
+        case .member:
+            return "😎"
+        case .pending:
+            return "🥳"
+        }
     }
 }

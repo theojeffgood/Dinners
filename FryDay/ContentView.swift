@@ -13,7 +13,6 @@ struct ContentView: View {
     @State private var recipes: [Recipe] = [Recipe(recipeId: 1, title: "Chicken Cacciatore", imageUrl: "https://halflemons-media.s3.amazonaws.com/786.jpg")]
     @State private var likes: [Recipe] = []
     @State private var dislikes: [Recipe] = []
-    @State private var users: [User] = []
     
     @State private var showHousehold: Bool = false
     
@@ -105,8 +104,7 @@ struct ContentView: View {
                         showHousehold = false
                     }
                 }
-                Household(users: users,
-                          dismissAction: dismissHousehold)
+                Household(dismissAction: dismissHousehold)
             }
         }
         .ignoresSafeArea()
@@ -115,7 +113,6 @@ struct ContentView: View {
             loadRecipes()
         }
         .onOpenURL { url in
-            users = [User(userType: .member), User(userType: .member)]
             withAnimation {
                 showHousehold = true
             }

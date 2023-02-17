@@ -11,7 +11,10 @@ import MessageUI
 
 struct Household: View {
     
-    @State var users: [User] = []
+    @Environment(\.managedObjectContext) var moc
+    @FetchRequest(sortDescriptors: []) var users: FetchedResults<User>
+    
+//    @State var users: [User] = []
     @State private var emailAddress: String = ""
     @State private var householdState: HouseholdState = .notLoggedIn
     enum HouseholdState {
@@ -48,7 +51,13 @@ struct Household: View {
                         .multilineTextAlignment(.center)
                     Button("  Sign in with Apple            ") {
                         withAnimation {
-                            users.append(User(userType: .member))
+//                            users.append(User(userType: .member))
+                            
+                            let user = User(context: moc)
+                            user.id = UUID()
+                            user.userType = UserType.member.rawValue
+                            try? moc.save()
+                            
                             householdState = .loggedIn
                         }
                     }
@@ -66,11 +75,14 @@ struct Household: View {
                                 ZStack{
                                     Circle()
                                         .padding([.leading, .trailing])
-                                    Text(user.userType.image)
+                                    Text(user.state.image)
                                         .font(.system(size: 40))
                                     Button(action: {
+                                        let user = users.last!
+                                        moc.delete(user)
+                                        
                                         withAnimation {
-                                            users.removeLast()
+                                            try? moc.save()
                                             if users.isEmpty{
                                                 householdState = .notLoggedIn
                                             }
@@ -83,7 +95,7 @@ struct Household: View {
                                     .offset(x: 30, y: -30)
                                     .frame(width: 25, height: 25)
                                 }
-                                Text(user.userType.text)
+                                Text(user.state.text)
                             }
                         }
                         
@@ -161,20 +173,29 @@ struct Household: View {
             .cornerRadius(20)
         }
         .ignoresSafeArea()
-        
+        .onAppear(){
+            if !users.isEmpty{
+                householdState = .loggedIn
+            }
+        }
     }
+    
     func handleInviteSent(){
         withAnimation {
             householdState = .inviteSent
         }
-        users.append(User(userType: .pending))
+//        users.append(User(userType: .pending))
+        
+        let user = User(context: moc)
+        user.id = UUID()
+        user.userType = UserType.pending.rawValue
+        try? moc.save()
     }
 }
 
 struct Household_Previews: PreviewProvider {
     static var previews: some View {
-        Household(users: [],
-                  dismissAction: {})
+        Household(dismissAction: {})
     }
 }
 
