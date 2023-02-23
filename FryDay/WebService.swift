@@ -6,8 +6,14 @@
 //
 
 import Foundation
+import CoreData
 
 class Webservice {
+    var moc: NSManagedObjectContext
+    
+    init(context: NSManagedObjectContext) {
+        self.moc = context
+    }
     
     func load<T: Codable>(_ resource: Resource<T>) async throws -> T {
         
@@ -44,14 +50,17 @@ class Webservice {
         }
         
         do {
-            let result = try JSONDecoder().decode(T.self, from: data)
+            let decoder = JSONDecoder()
+            decoder.userInfo[CodingUserInfoKey.managedObjectContext] = moc
+
+            let result = try decoder.decode(T.self, from: data)
             return result
             
         } catch let error{
             if let decodingError = error as? DecodingError{
                 print("decodingError is: \(decodingError)")
             }
-            fatalError()
+            fatalError("Failed to decode data of type: \(T.self)")
         }
         
     }

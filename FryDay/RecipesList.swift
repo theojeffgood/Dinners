@@ -32,11 +32,11 @@ struct RecipeCell: View {
     
     var body: some View {
         NavigationLink(
-            destination: RecipeDetailsView(recipe: recipe, recipeTitle: recipe.title),
+            destination: RecipeDetailsView(recipe: recipe, recipeTitle: recipe.title!),
             label: {
                 
                 VStack(alignment: .center, spacing: 0){
-                    AsyncImage(url: URL(string: recipe.imageUrl)) { image in
+                    AsyncImage(url: URL(string: recipe.imageUrl!)) { image in
                         image
                             .resizable()
                             .aspectRatio(contentMode: .fill)
@@ -48,7 +48,7 @@ struct RecipeCell: View {
                     .frame(maxWidth: .infinity)
                     .shadow(radius: 10)
                     
-                    Text(recipe.title)
+                    Text(recipe.title!)
                         .multilineTextAlignment(.leading)
                         .padding()
                         .frame(maxWidth: .infinity,
@@ -65,12 +65,17 @@ struct RecipeCell: View {
 }
 
 struct RecipesList_Previews: PreviewProvider {
+//    @Environment(\.managedObjectContext) var moc
+    
     static var previews: some View {
-        RecipesList(recipesType: "Matches", recipes: [Recipe(recipeId: 1, title: "Chicken Soup"),
-            Recipe(recipeId: 2, title: "Korean Style Burgers"),
-            Recipe(recipeId: 3, title: "Restaurant Salmon"),
-            Recipe(recipeId: 4, title: "Huevos Rotos"),
-            Recipe(recipeId: 5, title: "Oven Roasted Asparagus"),
-        ])
+//        let recipe = Recipe(context: moc)
+        RecipesList(recipesType: "Matches", recipes: [])
+        
+//        RecipesList(recipesType: "Matches", recipes: [Recipe(recipeId: 1, title: "Chicken Soup"),
+//            Recipe(recipeId: 2, title: "Korean Style Burgers"),
+//            Recipe(recipeId: 3, title: "Restaurant Salmon"),
+//            Recipe(recipeId: 4, title: "Huevos Rotos"),
+//            Recipe(recipeId: 5, title: "Oven Roasted Asparagus"),
+//        ])
     }
 }

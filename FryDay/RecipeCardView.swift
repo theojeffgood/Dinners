@@ -18,11 +18,11 @@ struct RecipeCardView: View{
     var body: some View{
         NavigationLink(
             destination: RecipeDetailsView(recipe: recipe,
-                                       recipeTitle: recipe.title),
+                                       recipeTitle: recipe.title!),
             label: {
                 
                 VStack(spacing: 0) {
-                    AsyncImage(url: URL(string: recipe.imageUrl)) { image in
+                    AsyncImage(url: URL(string: recipe.imageUrl!)) { image in
                         image
                             .resizable()
                             .scaledToFill()
@@ -37,7 +37,7 @@ struct RecipeCardView: View{
                     .shadow(radius: 5)
 //                    .frame(width: 350, height: 350) // maybe setting frame here will solve sizing issues?
                     
-                    Text(recipe.title)
+                    Text(recipe.title!)
                         .multilineTextAlignment(.leading)
                         .padding(.leading)
                         .frame(maxWidth: .infinity,
@@ -101,14 +101,15 @@ extension Notification.Name {
     static let swipeNotification = Notification.Name("swipeNotification")
 }
 
-struct RecipeCardView_Previews: PreviewProvider {
-    static var previews: some View {
-        RecipeCardView(recipe: Recipe(recipeId: 5,
-                                      title: "Roasted Asparagus",
-                                     imageUrl: "https://halflemons-media.s3.amazonaws.com/786.jpg"))
-        .previewLayout(.sizeThatFits)
-    }
-}
+//struct RecipeCardView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        RecipeCardView(recipe: )
+//        RecipeCardView(recipe: Recipe(recipeId: 5,
+//                                      title: "Roasted Asparagus",
+//                                     imageUrl: "https://halflemons-media.s3.amazonaws.com/786.jpg"))
+//        .previewLayout(.sizeThatFits)
+//    }
+//}
 
 struct FlatLinkStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {

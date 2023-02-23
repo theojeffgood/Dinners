@@ -8,6 +8,9 @@
 import SwiftUI
 
 struct RecipeDetailsView: View {
+    
+    @Environment(\.managedObjectContext) var moc
+    
     var recipe: Recipe
     var recipeTitle: String = "Recipe Title"
     @State var recipeDetails: RecipeDetails? = nil
@@ -67,25 +70,25 @@ struct RecipeDetailsView: View {
     
     func loadDetails(for recipe: Recipe){
         Task {
-            recipeDetails = try await Webservice().load (RecipeDetails.byId(recipe.recipeId))
+            recipeDetails = try await Webservice(context: moc).load (RecipeDetails.byId(Int(recipe.recipeId)))
         }
     }
 }
 
-struct RecipeDetails_Previews: PreviewProvider {
-    static var previews: some View {
-        RecipeDetailsView(recipe:
-                        Recipe(recipeId: 1,
-                               title: "Chicken Soup"))
-    }
-}
+//struct RecipeDetails_Previews: PreviewProvider {
+//    static var previews: some View {
+//        RecipeDetailsView(recipe:
+//                        Recipe(recipeId: 1,
+//                               title: "Chicken Soup"))
+//    }
+//}
 
 struct RecipeImage: View {
     var recipe: Recipe
     
     var body: some View {
         let height = UIScreen.main.bounds.size.height - 250
-        AsyncImage(url: URL(string: recipe.imageUrl)) { image in
+        AsyncImage(url: URL(string: recipe.imageUrl!)) { image in
             image
                 .resizable()
                 .ignoresSafeArea()
@@ -105,7 +108,7 @@ struct TitleAndFacts: View {
     
     var body: some View {
         VStack(alignment: .leading){
-            Text((recipe.title))
+            Text((recipe.title!))
                 .font(.system(size: 30, weight: .medium))
                 .padding(.top)
             

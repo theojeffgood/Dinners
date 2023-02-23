@@ -9,12 +9,17 @@ import SwiftUI
 
 struct ContentView: View {
 
-    @State private var allRecipes: [Recipe] = []
-    @State private var recipes: [Recipe] = [Recipe(recipeId: 1, title: "Chicken Cacciatore", imageUrl: "https://halflemons-media.s3.amazonaws.com/786.jpg")]
+    @Environment(\.managedObjectContext) var moc
+    @FetchRequest(sortDescriptors: []) var allRecipes: FetchedResults<Recipe>
+    @State private var recipes: [Recipe] = []
+    
     @State private var likes: [Recipe] = []
     @State private var dislikes: [Recipe] = []
     
     @State private var showHousehold: Bool = false
+    @State private var recipeOffset: Int = 0
+    
+    //    @State private var recipes: [Recipe] = [Recipe(recipeId: 1, title: "Chicken Cacciatore", imageUrl: "https://halflemons-media.s3.amazonaws.com/786.jpg")]
     
     var body: some View {
         NavigationView {
@@ -135,22 +140,23 @@ extension ContentView{
     }
     
     func addNewCard(){
-        guard let newRecipe = allRecipes.first else { return }
+        guard allRecipes.indices.contains(recipeOffset) else { return }
+        let newRecipe = allRecipes[recipeOffset]
         recipes.insert(newRecipe, at: 0)
-        allRecipes.removeFirst()
+        recipeOffset += 1
     }
     
     func loadRecipes(){
         if allRecipes.isEmpty{
             Task {
-                let downloadedRecipes = try await Webservice().load (Recipe.all)
-                allRecipes = downloadedRecipes.shuffled()
-                recipes = Array(allRecipes.prefix(upTo: 3))
-                allRecipes.removeFirst(3)
+                try await Webservice(context: moc).load (Recipe.all)
+                try? moc.save()
+                recipes = Array(allRecipes.shuffled()[recipeOffset ... (recipeOffset + 2)])
+                recipeOffset = 2
             }
         } else{
-            self.recipes = Array(allRecipes.prefix(upTo: 3))
-            allRecipes.removeFirst(3)
+            self.recipes = Array(allRecipes.shuffled()[recipeOffset ... (recipeOffset + 2)])
+            recipeOffset += 2
         }
     }
 }

@@ -73,12 +73,12 @@
 			children = (
 				E439226D29772E8200CC9E53 /* FryDayApp.swift */,
 				E49E8414299EB02C003E4E77 /* DataController.swift */,
-				E4F7ECA22989DF6000996CB3 /* Recipe.swift */,
 				E41D5074297DE372003CD008 /* WebService.swift */,
 				E439226F29772E8200CC9E53 /* ContentView.swift */,
 				E465A710298307D30058B564 /* RecipeCardView.swift */,
 				E4CB2C7F297893CC00A829AE /* RecipesList.swift */,
 				E4CB2C812979C28700A829AE /* RecipeDetailsView.swift */,
+				E4F7ECA22989DF6000996CB3 /* Recipe.swift */,
 				E49E8411299E88DB003E4E77 /* MealSwipe.xcdatamodeld */,
 				E41D5076297DE959003CD008 /* Household.swift */,
 				E49E840F299D88BC003E4E77 /* User.swift */,
