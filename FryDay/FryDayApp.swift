@@ -14,10 +14,16 @@ struct FryDayApp: App {
     init() { }
 
     var body: some Scene {
+        let managedObjectContext = dataController.container.viewContext
+        
         WindowGroup {
             ContentView()
-                .environment(\.managedObjectContext, dataController.container.viewContext)
+                .environment(\.managedObjectContext, managedObjectContext)
                 .onOpenURL { url in
+                    let user = User(context: managedObjectContext)
+                    user.id = UUID()
+                    user.userType = UserType.pending.rawValue
+                    try? managedObjectContext.save()
                     print("url is: \(url)")
                 }
         }
