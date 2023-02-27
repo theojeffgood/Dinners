@@ -10,7 +10,7 @@ import CoreData
 
 class DataController: ObservableObject {
     
-    let container = NSPersistentContainer(name: "MealSwipe")
+    let container = NSPersistentCloudKitContainer(name: "MealSwipe")
     
     init() {
         container.loadPersistentStores { description, error in
@@ -18,6 +18,17 @@ class DataController: ObservableObject {
                 print("Core Data failed to load: \(error.localizedDescription)")
             }
         }
+        
+        // Only initialize the schema when building the app with the
+        // Debug build configuration.
+        #if DEBUG
+        do {
+            // Use the container to initialize the development schema.
+            try container.initializeCloudKitSchema(options: [])
+        } catch {
+            // Handle any errors.
+        }
+        #endif
         
 //        SAVE CHANGES WHEN APP GOES TO BACKGROUND: https://www.donnywals.com/using-core-data-with-swiftui-2-0-and-xcode-12/
 //        let center = NotificationCenter.default
