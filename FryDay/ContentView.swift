@@ -90,7 +90,7 @@ struct ContentView: View {
                 .padding(.top, 25)
             }
             .padding()
-            .navigationTitle("FryDay")
+            .navigationTitle("Dinder")
             .navigationBarItems(
                 trailing:
                     Button{
@@ -98,7 +98,7 @@ struct ContentView: View {
                             showHousehold = true
                         }
                     } label: {
-                        Image(systemName: "house.fill")
+                        Image(systemName: "person.badge.plus")
                             .tint(.black)
                     }
             )
@@ -117,12 +117,12 @@ struct ContentView: View {
         .onAppear(){
             loadRecipes()
         }
-        .onOpenURL { url in
-            withAnimation {
-                showHousehold = true
-            }
-            print("url is: \(url)")
-        }
+//        .onOpenURL { url in
+//            withAnimation {
+//                showHousehold = true
+//            }
+//            print("url is: \(url)")
+//        }
     }
 }
 
