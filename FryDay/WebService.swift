@@ -52,14 +52,15 @@ class Webservice {
         do {
             let decoder = JSONDecoder()
             decoder.userInfo[CodingUserInfoKey.managedObjectContext] = moc
-
-            let result = try decoder.decode(T.self, from: data)
+            let result = try await moc.perform {
+                try decoder.decode(T.self, from: data)
+            }
             return result
-            
         } catch let error{
             if let decodingError = error as? DecodingError{
                 print("decodingError is: \(decodingError)")
             }
+            //            throw error
             fatalError("Failed to decode data of type: \(T.self)")
         }
         
