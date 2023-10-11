@@ -111,3 +111,19 @@ struct Step: Hashable, Codable {
     var stepNumber: Int = 0
     var stepText: String = ""
 }
+
+
+// adopted from the tutorial @ https://www.kodeco.com/29934862-sharing-core-data-with-cloudkit-in-swiftui
+
+//// MARK: Fetch request and managed object properties
+//extension Recipe {
+//  @nonobjc
+//  public class func fetchRequest() -> NSFetchRequest<Recipe> {
+//    return NSFetchRequest<Recipe>(entityName: "Recipe")
+//  }
+//
+//}
+
+//// MARK: Identifiable
+//extension Recipe: Identifiable {
+//}

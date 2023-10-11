@@ -6,13 +6,19 @@
 //
 
 import SwiftUI
-import Combine
-import MessageUI
+//import MessageUI
+import CloudKit
 
 struct Household: View {
     
     @Environment(\.managedObjectContext) var moc
     @FetchRequest(sortDescriptors: []) var users: FetchedResults<User>
+    
+    @State private var share: CKShare?
+    @ObservedObject var recipe: Recipe
+    private let stack = DataController.shared
+    @State private var showShareSheet = false
+
     
 //    @State var users: [User] = []
     @State private var emailAddress: String = ""
@@ -20,7 +26,7 @@ struct Household: View {
     enum HouseholdState {
         case loggedIn
         case notLoggedIn
-        case addMember
+//        case addMember
         case inviteSent
     }
     var dismissAction: () -> Void
@@ -102,9 +108,18 @@ struct Household: View {
                         if users.count < 3{
                             VStack(spacing: 5){
                                 Button(action: {
-                                    withAnimation {
-                                        householdState = .addMember
-                                    }
+//                                    withAnimation {
+//                                        if let share = share {
+//                                          CloudSharingView(share: share, container: stack.ckContainer, recipe: recipe)
+//                                        } else{
+                                            Task {
+                                                await createShare(recipe)
+                                                showShareSheet = true
+//                                                CloudSharingView(share: share!, container: stack.ckContainer, recipe: recipe)
+                                            }
+//                                        }
+//                                        householdState = .addMember
+//                                    }
                                 }) {
                                     Image(systemName: "plus.circle.fill")
                                         .resizable()
@@ -118,45 +133,45 @@ struct Household: View {
                         Spacer()
                     }.frame(height: 100)
                     
-//MARK: -- // SEND AN INVITATION //
-                case .addMember:
-                    VStack(spacing: 15){
-                        Text("Send invitation")
-                            .font(.system(size: 22, weight: .medium))
-                            .multilineTextAlignment(.center)
-                        HStack(spacing: 50){
-                            VStack{
-                                Button(action: {
-                                    ShareHelper.shared.sendText(){
-                                        handleInviteSent()
-                                    }
-                                }) {
-                                    Image("imessage")
-                                }
-                                Text("iMessage")
-                            }
-                            VStack{
-                                Button(action: {
+////MARK: -- // SEND AN INVITATION //
+//                case .addMember:
+//                    VStack(spacing: 15){
+//                        Text("Send invitation")
+//                            .font(.system(size: 22, weight: .medium))
+//                            .multilineTextAlignment(.center)
+//                        HStack(spacing: 50){
+//                            VStack{
+//                                Button(action: {
+//                                    ShareHelper.shared.sendText(){
+//                                        handleInviteSent()
+//                                    }
+//                                }) {
+//                                    Image("imessage")
+//                                }
+//                                Text("iMessage")
+//                            }
+//                            VStack{
+//                                Button(action: {
 //                                    ShareHelper.shared.sendWhatsApp()
-                                    handleInviteSent()
-                                }) {
-                                    Image("whatsapp")
-                                }
-                                Text("WhatsApp")
-                            }
-                            VStack{
-                                Button(action: {
-                                    ShareHelper.shared.sendEmail(){
-                                        handleInviteSent()
-                                    }
-                                }) {
-                                    Image("email")
-                                }
-                                Text("Email")
-                            }
-                        }
-                        .padding([.bottom])
-                    }
+//                                    handleInviteSent()
+//                                }) {
+//                                    Image("whatsapp")
+//                                }
+//                                Text("WhatsApp")
+//                            }
+//                            VStack{
+//                                Button(action: {
+//                                    ShareHelper.shared.sendEmail(){
+//                                        handleInviteSent()
+//                                    }
+//                                }) {
+//                                    Image("email")
+//                                }
+//                                Text("Email")
+//                            }
+//                        }
+//                        .padding([.bottom])
+//                    }
                     
                     
 //MARK: -- // INVITE SENT //
@@ -173,7 +188,13 @@ struct Household: View {
             .cornerRadius(20)
         }
         .ignoresSafeArea()
+        .sheet(isPresented: $showShareSheet, content: {
+          if let share = share {
+            CloudSharingView(share: share, container: stack.ckContainer, recipe: recipe)
+          }
+        })
         .onAppear(){
+//            self.share = stack.getShare(recipe)
             if !users.isEmpty{
                 householdState = .loggedIn
             }
@@ -193,96 +214,72 @@ struct Household: View {
     }
 }
 
-struct Household_Previews: PreviewProvider {
-    static var previews: some View {
-        Household(dismissAction: {})
+//struct Household_Previews: PreviewProvider {
+//    static var previews: some View {
+//        Household(dismissAction: {})
+//    }
+//}
+
+// MARK: -- Returns CKShare participant permission, methods and properties to share
+
+extension Household {
+    private func createShare(_ recipe: Recipe) async {
+        do {
+            let (_, share, _) = try await stack.persistentContainer.share([recipe], to: nil)
+            share[CKShare.SystemFieldKey.title] = recipe.title
+            self.share = share
+        } catch {
+            print("Failed to create share")
+        }
+    }
+    
+    private func string(for permission: CKShare.ParticipantPermission) -> String {
+        switch permission {
+        case .unknown:
+            return "Unknown"
+        case .none:
+            return "None"
+        case .readOnly:
+            return "Read-Only"
+        case .readWrite:
+            return "Read-Write"
+        @unknown default:
+            fatalError("A new value added to CKShare.Participant.Permission")
+        }
+    }
+    
+    private func string(for role: CKShare.ParticipantRole) -> String {
+        switch role {
+        case .owner:
+            return "Owner"
+        case .privateUser:
+            return "Private User"
+        case .publicUser:
+            return "Public User"
+        case .unknown:
+            return "Unknown"
+        @unknown default:
+            fatalError("A new value added to CKShare.Participant.Role")
+        }
+    }
+    
+    private func string(for acceptanceStatus: CKShare.ParticipantAcceptanceStatus) -> String {
+        switch acceptanceStatus {
+        case .accepted:
+            return "Accepted"
+        case .removed:
+            return "Removed"
+        case .pending:
+            return "Invited"
+        case .unknown:
+            return "Unknown"
+        @unknown default:
+            fatalError("A new value added to CKShare.Participant.AcceptanceStatus")
+        }
+    }
+    
+    private var canEdit: Bool {
+        stack.canEdit(object: recipe)
     }
 }
 
-
-
-
-class ShareHelper: NSObject {
-    
-    public static let shared = ShareHelper()
-    private var completion: (() -> Void)?
-    
-    let subject = "Join me on MealSwipe"
-    let body = "Create a meal plan with me! I made an account on MealSwipe. You can join it, free. \n\nhello://com.mealswipe/xR3u1mr"
-    let recipient = ""
-    
-//    private override init() {}
-    
-    static func getRootViewController() -> UIViewController? {
-        UIApplication.shared.windows.first?.rootViewController
-    }
-}
-
-//MARK: -- EMAIL
-
-extension ShareHelper: MFMailComposeViewControllerDelegate{
-    
-    func sendEmail(completion: (() -> Void)? = nil){
-        guard MFMailComposeViewController.canSendMail() else {
-            print("No mail account found")
-            // Todo: Add a way to show banner to user about no mail app found or configured
-            // Utilities.showErrorBanner(title: "No mail account found", subtitle: "Please setup a mail account")
-            return
-        }
-        
-        self.completion = completion
-        let picker = MFMailComposeViewController()
-        
-        picker.setSubject(self.subject)
-        picker.setMessageBody(self.body, isHTML: true)
-        picker.setToRecipients([self.recipient])
-        picker.mailComposeDelegate = self
-        
-        ShareHelper.getRootViewController()?.present(picker,
-                                                     animated: true,
-                                                     completion: nil)
-    }
-    
-    func mailComposeController(_ controller: MFMailComposeViewController,
-                               didFinishWith result: MFMailComposeResult,
-                               error: Error?) {
-//        ShareHelper.getRootViewController()?.dismiss(animated: true, completion: nil)
-        controller.dismiss(animated: true, completion: nil)
-        if result == .sent{
-            completion?()
-            completion = nil
-        }
-    }
-}
-
-//MARK: -- TEXT MESSAGE
-
-extension ShareHelper: MFMessageComposeViewControllerDelegate{
-    
-    func sendText(completion: (() -> Void)? = nil){
-        guard MFMessageComposeViewController.canSendText() else {
-            print("No message account found")
-            return
-        }
-        
-        self.completion = completion
-        let controller = MFMessageComposeViewController()
-        
-        controller.body = self.body
-        controller.messageComposeDelegate = self
-        controller.recipients = []
-        
-        ShareHelper.getRootViewController()?.present(controller,
-                                                     animated: true,
-                                                     completion: nil)
-    }
-    
-    func messageComposeViewController(_ controller: MFMessageComposeViewController,
-                                      didFinishWith result: MessageComposeResult) {
-        controller.dismiss(animated: true, completion: nil)
-        if result == .sent{
-            completion?()
-            completion = nil
-        }
-    }
-}

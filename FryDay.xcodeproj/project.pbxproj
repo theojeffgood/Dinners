@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		E41D5075297DE372003CD008 /* WebService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E41D5074297DE372003CD008 /* WebService.swift */; };
 		E41D5077297DE959003CD008 /* Household.swift in Sources */ = {isa = PBXBuildFile; fileRef = E41D5076297DE959003CD008 /* Household.swift */; };
+		E43634FA2AD5E9BF007F238F /* CloudSharingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E43634F92AD5E9BF007F238F /* CloudSharingController.swift */; };
+		E43634FC2AD6EFCB007F238F /* ShareHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E43634FB2AD6EFCB007F238F /* ShareHelper.swift */; };
 		E439226E29772E8200CC9E53 /* FryDayApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E439226D29772E8200CC9E53 /* FryDayApp.swift */; };
 		E439227029772E8200CC9E53 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E439226F29772E8200CC9E53 /* ContentView.swift */; };
 		E439227229772E8300CC9E53 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E439227129772E8300CC9E53 /* Assets.xcassets */; };
@@ -25,6 +27,8 @@
 /* Begin PBXFileReference section */
 		E41D5074297DE372003CD008 /* WebService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebService.swift; sourceTree = "<group>"; };
 		E41D5076297DE959003CD008 /* Household.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Household.swift; sourceTree = "<group>"; };
+		E43634F92AD5E9BF007F238F /* CloudSharingController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudSharingController.swift; sourceTree = "<group>"; };
+		E43634FB2AD6EFCB007F238F /* ShareHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareHelper.swift; sourceTree = "<group>"; };
 		E439226A29772E8200CC9E53 /* FryDay.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FryDay.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E439226D29772E8200CC9E53 /* FryDayApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FryDayApp.swift; sourceTree = "<group>"; };
 		E439226F29772E8200CC9E53 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -77,10 +81,12 @@
 				E439226F29772E8200CC9E53 /* ContentView.swift */,
 				E465A710298307D30058B564 /* RecipeCardView.swift */,
 				E4CB2C7F297893CC00A829AE /* RecipesList.swift */,
+				E43634F92AD5E9BF007F238F /* CloudSharingController.swift */,
 				E4CB2C812979C28700A829AE /* RecipeDetailsView.swift */,
 				E4F7ECA22989DF6000996CB3 /* Recipe.swift */,
 				E49E8411299E88DB003E4E77 /* MealSwipe.xcdatamodeld */,
 				E41D5076297DE959003CD008 /* Household.swift */,
+				E43634FB2AD6EFCB007F238F /* ShareHelper.swift */,
 				E49E840F299D88BC003E4E77 /* User.swift */,
 				E439227129772E8300CC9E53 /* Assets.xcassets */,
 				E439227329772E8300CC9E53 /* FryDay.entitlements */,
@@ -182,7 +188,9 @@
 				E49E8410299D88BC003E4E77 /* User.swift in Sources */,
 				E41D5075297DE372003CD008 /* WebService.swift in Sources */,
 				E4CB2C80297893CC00A829AE /* RecipesList.swift in Sources */,
+				E43634FA2AD5E9BF007F238F /* CloudSharingController.swift in Sources */,
 				E4F7ECA32989DF6000996CB3 /* Recipe.swift in Sources */,
+				E43634FC2AD6EFCB007F238F /* ShareHelper.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
