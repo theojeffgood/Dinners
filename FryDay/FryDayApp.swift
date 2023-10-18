@@ -45,7 +45,8 @@ final class SceneDelegate: NSObject, UIWindowSceneDelegate {
   func windowScene(_ windowScene: UIWindowScene, userDidAcceptCloudKitShareWith cloudKitShareMetadata: CKShare.Metadata) {
     let shareStore = DataController.shared.sharedPersistentStore
     let persistentContainer = DataController.shared.persistentContainer
-    persistentContainer.acceptShareInvitations(from: [cloudKitShareMetadata], into: shareStore) { _, error in
+    persistentContainer.acceptShareInvitations(from: [cloudKitShareMetadata], into: shareStore) { shareMetaData, error in
+        
       if let error = error {
         print("acceptShareInvitation error :\(error)")
       }

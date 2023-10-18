@@ -109,17 +109,13 @@ struct Household: View {
                             VStack(spacing: 5){
                                 Button(action: {
 //                                    withAnimation {
-//                                        if let share = share {
-//                                          CloudSharingView(share: share, container: stack.ckContainer, recipe: recipe)
-//                                        } else{
-                                            Task {
-                                                await createShare(recipe)
-                                                showShareSheet = true
-//                                                CloudSharingView(share: share!, container: stack.ckContainer, recipe: recipe)
-                                            }
-//                                        }
-//                                        householdState = .addMember
-//                                    }
+                                    Task {
+                                        self.share = try await createShare()
+                                    }
+                                    showShareSheet = true
+//                                }
+//                                       householdState = .addMember
+//                                       }
                                 }) {
                                     Image(systemName: "plus.circle.fill")
                                         .resizable()
@@ -223,13 +219,37 @@ struct Household: View {
 // MARK: -- Returns CKShare participant permission, methods and properties to share
 
 extension Household {
-    private func createShare(_ recipe: Recipe) async {
-        do {
-            let (_, share, _) = try await stack.persistentContainer.share([recipe], to: nil)
-            share[CKShare.SystemFieldKey.title] = recipe.title
-            self.share = share
-        } catch {
-            print("Failed to create share")
+//    SHARES INDIVIDUAL OBJECTS. E.G. RECIPES. NOT ENTIRE ZONE. BUT IT WORKS.
+//    private func createShare(_ recipe: Recipe) async {
+//        do {
+//            let (_, share, _) = try await stack.persistentContainer.share([recipe], to: nil)
+//            share[CKShare.SystemFieldKey.title] = recipe.title
+//            self.share = share
+//        } catch {
+//            print("Failed to create share")
+//        }
+//    }
+    
+    func createShare() async throws -> CKShare {
+        let allZones = try await stack.ckContainer.privateCloudDatabase.allRecordZones()
+        guard let recipeZone = allZones.first(where: { $0.zoneID.zoneName == "com.apple.coredata.cloudkit.zone" }) else {
+            fatalError("no recipe zone exists in cloudkit.")
+        }
+        
+        if recipeZone.capabilities.contains(.zoneWideSharing),
+           let shareList = try? stack.persistentContainer.fetchShares(in: stack.privatePersistentStore),
+           let existingShare = shareList.first{
+            return existingShare
+            
+        } else{
+            _ = try await stack.ckContainer.privateCloudDatabase.modifyRecordZones(
+                saving: [CKRecordZone(zoneName: recipeZone.zoneID.zoneName)],
+                deleting: [] )
+            
+            let share = CKShare(recordZoneID: recipeZone.zoneID)
+            share.publicPermission = .readOnly
+            let result = try await stack.ckContainer.privateCloudDatabase.save(share)
+            return result as! CKShare
         }
     }
     
