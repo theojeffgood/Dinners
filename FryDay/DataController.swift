@@ -115,61 +115,61 @@ extension DataController {
 
 // MARK: -- Share a record from Core Data
 extension DataController {
-    func isShared(object: NSManagedObject) -> Bool {
-        isShared(objectID: object.objectID)
-    }
+//    func isShared(object: NSManagedObject) -> Bool {
+//        isShared(objectID: object.objectID)
+//    }
+//    
+//    func canEdit(object: NSManagedObject) -> Bool {
+//        return persistentContainer.canUpdateRecord(forManagedObjectWith: object.objectID)
+//    }
+//    
+//    func canDelete(object: NSManagedObject) -> Bool {
+//        return persistentContainer.canDeleteRecord(forManagedObjectWith: object.objectID)
+//    }
+//    
+//    func isOwner(object: NSManagedObject) -> Bool {
+//        guard isShared(object: object) else { return false }
+//        guard let share = try? persistentContainer.fetchShares(matching: [object.objectID])[object.objectID] else {
+//            print("Get ckshare error")
+//            return false
+//        }
+//        if let currentUser = share.currentUserParticipant, currentUser == share.owner {
+//            return true
+//        }
+//        return false
+//    }
     
-    func canEdit(object: NSManagedObject) -> Bool {
-        return persistentContainer.canUpdateRecord(forManagedObjectWith: object.objectID)
-    }
+//    func getShare(_ recipe: Recipe) -> CKShare? {
+//        guard isShared(object: recipe) else { return nil }
+//        guard let shareDictionary = try? persistentContainer.fetchShares(matching: [recipe.objectID]),
+//              let share = shareDictionary[recipe.objectID] else {
+//            print("Unable to get CKShare")
+//            return nil
+//        }
+//        share[CKShare.SystemFieldKey.title] = recipe.title
+//        
+//        return share
+//    }
     
-    func canDelete(object: NSManagedObject) -> Bool {
-        return persistentContainer.canDeleteRecord(forManagedObjectWith: object.objectID)
-    }
-    
-    func isOwner(object: NSManagedObject) -> Bool {
-        guard isShared(object: object) else { return false }
-        guard let share = try? persistentContainer.fetchShares(matching: [object.objectID])[object.objectID] else {
-            print("Get ckshare error")
-            return false
-        }
-        if let currentUser = share.currentUserParticipant, currentUser == share.owner {
-            return true
-        }
-        return false
-    }
-    
-    func getShare(_ recipe: Recipe) -> CKShare? {
-        guard isShared(object: recipe) else { return nil }
-        guard let shareDictionary = try? persistentContainer.fetchShares(matching: [recipe.objectID]),
-              let share = shareDictionary[recipe.objectID] else {
-            print("Unable to get CKShare")
-            return nil
-        }
-        share[CKShare.SystemFieldKey.title] = recipe.title
-        
-        return share
-    }
-    
-    private func isShared(objectID: NSManagedObjectID) -> Bool {
-        var isShared = false
-        if let persistentStore = objectID.persistentStore {
-            if persistentStore == sharedPersistentStore {
-                isShared = true
-            } else {
-                let container = persistentContainer
-                do {
-                    let shares = try container.fetchShares(matching: [objectID])
-                    if shares.first != nil {
-                        isShared = true
-                    }
-                } catch {
-                    print("Failed to fetch share for \(objectID): \(error)")
-                }
-            }
-        }
-        return isShared
-    }
+//    private func isShared(objectID: NSManagedObjectID) -> Bool {
+//        var isShared = false
+//        if let persistentStore = objectID.persistentStore {
+//            if persistentStore == sharedPersistentStore {
+//                isShared = true
+//            } else {
+//                let container = persistentContainer
+//                do {
+//                    let shares = try container.fetchShares(matching: [objectID])
+//                    if shares.first != nil {
+//                        isShared = true
+//                    }
+//                } catch {
+//                    print("Failed to fetch share for \(objectID): \(error)")
+//                }
+//            }
+//        }
+//        return isShared
+//    }
 }
 
 

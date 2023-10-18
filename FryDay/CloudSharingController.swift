@@ -11,14 +11,14 @@ import CloudKit
 struct CloudSharingView: UIViewControllerRepresentable {
     let share: CKShare
     let container: CKContainer
-    let recipe: Recipe
     
     func makeCoordinator() -> CloudSharingCoordinator {
-        CloudSharingCoordinator(recipe: recipe)
+        CloudSharingCoordinator()
     }
     
     func makeUIViewController(context: Context) -> UICloudSharingController {
-        share[CKShare.SystemFieldKey.title] = recipe.title
+//        share[CKShare.SystemFieldKey.title] = recipe.title
+        share[CKShare.SystemFieldKey.title] = "My Dinder Recipes"
         let controller = UICloudSharingController(share: share, container: container)
         controller.modalPresentationStyle = .formSheet
         controller.availablePermissions = [.allowReadWrite, .allowPrivate]
@@ -32,14 +32,19 @@ struct CloudSharingView: UIViewControllerRepresentable {
 
 final class CloudSharingCoordinator: NSObject, UICloudSharingControllerDelegate {
     let stack = DataController.shared
-    let recipe: Recipe
-    init(recipe: Recipe) {
-        self.recipe = recipe
-    }
     
     func itemTitle(for csc: UICloudSharingController) -> String? {
-        recipe.title
+        "My Dinder Recipes"
     }
+    
+//    func itemThumbnailData(for csc: UICloudSharingController) -> Data? {
+//        guard let icon = NSDataAsset(name: "thumbnail") else {
+//            return nil
+//        }
+//        
+//        
+//        return icon.data
+//    }
     
     func cloudSharingController(_ csc: UICloudSharingController, failedToSaveShareWithError error: Error) {
         print("Failed to save share: \(error)")
@@ -50,8 +55,8 @@ final class CloudSharingCoordinator: NSObject, UICloudSharingControllerDelegate 
     }
     
     func cloudSharingControllerDidStopSharing(_ csc: UICloudSharingController) {
-        if !stack.isOwner(object: recipe) {
-            stack.delete(recipe)
-        }
+//        if !stack.isOwner(object: recipe) {
+//            stack.delete(recipe)
+//        }
     }
 }

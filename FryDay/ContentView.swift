@@ -109,7 +109,7 @@ struct ContentView: View {
                         showHousehold = false
                     }
                 }
-                Household(recipe: recipes.first!, dismissAction: dismissHousehold)
+                Household(dismissAction: dismissHousehold)
             }
         }
         .ignoresSafeArea()
