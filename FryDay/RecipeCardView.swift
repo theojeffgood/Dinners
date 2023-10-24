@@ -10,9 +10,8 @@ import SwiftUI
 struct RecipeCardView: View{
     var recipe: Recipe
     var isTopRecipe = false
-    var remove: (() -> Void)? = nil
-//    var showRecipeDetails: (() -> Void)? = nil
-    
+    var popRecipeStack: ((Bool, Bool) -> Void)
+        
     @State private var offset = CGSize.zero
     
     var body: some View{
@@ -48,6 +47,7 @@ struct RecipeCardView: View{
                         .cornerRadius(10, corners: [.bottomLeft, .bottomRight])
                         .shadow(radius: 5)
                 }
+//user likes OR dislikes via the BUTTONS. NO SWIPE.
                 .onReceive(NotificationCenter.default.publisher(for: Notification.Name.swipeNotification)) { object in
                     if isTopRecipe,
                        let swipeDirection = object.userInfo as? [String: Bool],
@@ -64,9 +64,13 @@ struct RecipeCardView: View{
                             offset = gesture.translation
                         })
                         .onEnded({ gesture in
-                            if abs(offset.width) > 100{
-                                remove?()
-                            } else {
+                            if offset.width < 100{ //left swipe
+                                popRecipeStack(true, false)
+                                
+                            } else if offset.width > 100{ //right swipe
+                                popRecipeStack(false, false)
+                                
+                            } else{ //cancel swipe
                                 withAnimation {
                                     offset = .zero
                                 }

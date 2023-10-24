@@ -18,7 +18,7 @@ struct CloudSharingView: UIViewControllerRepresentable {
     
     func makeUIViewController(context: Context) -> UICloudSharingController {
 //        share[CKShare.SystemFieldKey.title] = recipe.title
-        share[CKShare.SystemFieldKey.title] = "My Dinder Recipes"
+        share[CKShare.SystemFieldKey.title] = "The Fryday CookBook."
         let controller = UICloudSharingController(share: share, container: container)
         controller.modalPresentationStyle = .formSheet
         controller.availablePermissions = [.allowReadWrite, .allowPrivate]
@@ -34,7 +34,7 @@ final class CloudSharingCoordinator: NSObject, UICloudSharingControllerDelegate 
     let stack = DataController.shared
     
     func itemTitle(for csc: UICloudSharingController) -> String? {
-        "My Dinder Recipes"
+        "The Fryday CookBook."
     }
     
 //    func itemThumbnailData(for csc: UICloudSharingController) -> Data? {

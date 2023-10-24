@@ -11,14 +11,14 @@ struct ContentView: View {
 
     @Environment(\.managedObjectContext) var moc
     @FetchRequest(sortDescriptors: []) var allRecipes: FetchedResults<Recipe>
-    @State private var recipes: [Recipe] = []
+    @FetchRequest(sortDescriptors: []) var users: FetchedResults<User>
     
+    @State private var recipes: [Recipe] = []
+    @State private var recipeOffset: Int = 0
     @State private var likes: [Recipe] = []
     @State private var dislikes: [Recipe] = []
     
     @State private var showHousehold: Bool = false
-    @State private var recipeOffset: Int = 0
-    
     //    @State private var recipes: [Recipe] = [Recipe(recipeId: 1, title: "Chicken Cacciatore", imageUrl: "https://halflemons-media.s3.amazonaws.com/786.jpg")]
     
     var body: some View {
@@ -31,66 +31,32 @@ struct ContentView: View {
                 ZStack {
                     ForEach(recipes, id: \.self) { recipe in
                         let index = recipes.firstIndex(of: recipe)!
-                        RecipeCardView(recipe: recipe, isTopRecipe: (recipe == recipes.last)){
-                            withAnimation {
-                                removeCard(at: index)
-                                addNewCard()
-                            }
+                        RecipeCardView(recipe: recipe,
+                                       isTopRecipe: (recipe == recipes.last)){ liked, _ in
+                            popRecipeStack(liked: liked, delayPop: false)
                         }
-                        .stacked(at: index, in: recipes.count)
+                                       .stacked(at: index, in: recipes.count)
                     }
                 }
                 
+                //ACTION BUTTONS
                 HStack(spacing: 65) {
+                    Button(action: {
+                        popRecipeStack(liked: false)
+                    }) {
+                        Image(systemName: "xmark").actionStyle(accept: false)
+                    }
                     
                     Button(action: {
-                        NotificationCenter.default.post(name: Notification.Name.swipeNotification,
-                                                        object: "Swiped",
-                                                        userInfo: ["swipeRight": false])
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                            withAnimation {
-                                addNewCard()
-                                removeCard()
-                                guard let recipe = recipes.last else { return }
-                                dislikes.append(recipe)
-                            }
-                        }
+                        popRecipeStack(liked: true)
                     }) {
-                        Image(systemName: "xmark")
-                            .frame(width: 90, height: 90)
-                            .background(Color.red)
-                            .foregroundColor(.white)
-                            .cornerRadius(45)
-                            .font(.system(size: 48, weight: .bold))
-                            .shadow(radius: 25)
-                    }
-                    Button(action: {
-                        NotificationCenter.default.post(name: Notification.Name.swipeNotification,
-                                                        object: "Swiped",
-                                                        userInfo: ["swipeRight": true])
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                            withAnimation {
-                                addNewCard()
-                                removeCard()
-                                guard let recipe = recipes.last else { return }
-                                likes.append(recipe)
-                            }
-                        }
-                    }) {
-                        Text("✓")
-                            .frame(width: 90, height: 90)
-                            .background(Color.green)
-                            .foregroundColor(.black)
-                            .cornerRadius(45)
-                            .font(.system(size: 48, weight: .heavy))
-                            .shadow(radius: 25)
+                        Text("✓").actionStyle(accept: true)
                     }
                 }
-                //                    .padding([.top])
                 .padding(.top, 25)
             }
             .padding()
-            .navigationTitle("Dinder")
+            .navigationTitle("Fryday")
             .navigationBarItems(
                 trailing:
                     Button{
@@ -104,19 +70,34 @@ struct ContentView: View {
             )
         }.overlay(alignment: .bottom) {
             if showHousehold{
-                let dismissHousehold = {
+                let dismiss = {
                     withAnimation {
                         showHousehold = false
                     }
                 }
-                Household(dismissAction: dismissHousehold)
+                Household(dismissAction: dismiss)
             }
         }
         .ignoresSafeArea()
         .accentColor(.black)
         .onAppear(){
             loadRecipes()
+            
+            if users.isEmpty{
+                let user = User(context: moc)
+                user.id = UUID()
+                user.name = "Theo"
+                user.userType = 1
+                try? moc.save()
+            } else{
+                users.forEach { user in
+                    print("user is: \(user)")
+                    print("user recipes are: \(user.likedRecipes)")
+                }
+            }
         }
+        
+//---------SHOW JOINING-A-HOUSEHOLD ONBOARDING HERE
 //        .onOpenURL { url in
 //            withAnimation {
 //                showHousehold = true
@@ -146,19 +127,33 @@ extension ContentView{
         recipeOffset += 1
     }
     
-    func loadRecipes(){
-        if allRecipes.isEmpty{
-            Task {
-                try await Webservice(context: moc).load (Recipe.all)
-                try? moc.save()
-                recipes = Array(allRecipes.shuffled()[recipeOffset ... (recipeOffset + 2)])
-                recipeOffset = 2
+    func popRecipeStack(liked: Bool, delayPop: Bool = true){
+//1 - show swipe animation
+        if delayPop{
+            NotificationCenter.default.post(name: Notification.Name.swipeNotification,
+                                            object: "Swiped", userInfo: ["swipeRight": liked])
+        }
+        
+//2 - add + remove recipe
+        DispatchQueue.main.asyncAfter(deadline: .now() + (delayPop ? 0.3 : 0.0)) {
+            withAnimation {
+                removeCard()
+                addNewCard()
             }
-        } else{
-            self.recipes = Array(allRecipes.shuffled()[recipeOffset ... (recipeOffset + 2)])
-            recipeOffset += 2
+            
+//3 - record the like / dislike
+            guard let recipe = recipes.last else { return }
+            liked ? likes.append(recipe) : dislikes.append(recipe)
+            
+//4 - save the like / dislike
+            if let user = users.first{
+                user.addToLikedRecipes(recipe)
+                recipe.addToUser(user)
+                try? moc.save()
+            }
         }
     }
+    
 }
 
 struct ContentView_Previews: PreviewProvider {
@@ -206,7 +201,7 @@ struct Filters: View {
                                          recipes: likes),
                 label: {
                     Text("❤️ Matches")
-                        .frame(width: 115, height: 35)
+                        .frame(width: 125, height: 45)
                         .foregroundColor(.black)
                         .overlay(
                             RoundedRectangle(cornerRadius: 5)
@@ -219,7 +214,7 @@ struct Filters: View {
                                          recipes: likes),
                 label: {
                     Text("👍  Likes")
-                        .frame(width: 115, height: 35)
+                        .frame(width: 125, height: 45)
                         .foregroundColor(.black)
                         .overlay(
                             RoundedRectangle(cornerRadius: 5)
@@ -227,21 +222,48 @@ struct Filters: View {
                         )
                 })
             
-            NavigationLink(
-                destination: RecipesList(recipesType: "Dislikes",
-                                         recipes: dislikes),
-                label: {
-                    Text("👎 Dislikes")
-                        .frame(width: 115, height: 35)
-                        .foregroundColor(.black)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 5)
-                                .stroke(Color.black, lineWidth: 1)
-                        )
-                })
-            
+//            NavigationLink(
+//                destination: RecipesList(recipesType: "Dislikes",
+//                                         recipes: dislikes),
+//                label: {
+//                    Text("👎 Dislikes")
+//                        .frame(width: 115, height: 35)
+//                        .foregroundColor(.black)
+//                        .overlay(
+//                            RoundedRectangle(cornerRadius: 5)
+//                                .stroke(Color.black, lineWidth: 1)
+//                        )
+//                })
+//            
             Spacer()
         }
     }
     
+}
+
+extension View{
+    func actionStyle(accept: Bool) -> some View{
+        
+        //CHECK-MARK
+        if accept{
+            self
+            .frame(width: 90, height: 90)
+            .background(Color.green) // green
+            .foregroundColor(.black) // black text
+            .cornerRadius(45)
+            .font(.system(size: 48, weight: .heavy))
+            .shadow(radius: 25)
+        }
+        
+        //X-MARK
+        else{
+            self
+            .frame(width: 90, height: 90)
+            .background(Color.red) // red
+            .foregroundColor(.white) // white text
+            .cornerRadius(45)
+            .font(.system(size: 48, weight: .bold))
+            .shadow(radius: 25)
+        }
+    }
 }

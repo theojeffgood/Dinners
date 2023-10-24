@@ -23,7 +23,7 @@ import CoreData
 ////    var url: URL = URL(string: "https://www.cnn.com")!
 //}
 
-class Recipe: NSManagedObject, Codable {
+public class Recipe: NSManagedObject, Codable {
     
     private enum CodingKeys: String, CodingKey {
        case recipeId = "recipeId",
@@ -36,7 +36,7 @@ class Recipe: NSManagedObject, Codable {
             recipeStatusId = "recipeStatusId"
     }
     
-    required convenience init(from decoder: Decoder) throws {
+    required convenience public init(from decoder: Decoder) throws {
         guard let context = decoder.userInfo[CodingUserInfoKey.managedObjectContext] as? NSManagedObjectContext else {
               throw DecoderConfigurationError.missingManagedObjectContext
             }
@@ -63,7 +63,7 @@ class Recipe: NSManagedObject, Codable {
 //        ingredients.append(objectsIn: newRecipeIngredients)
     }
     
-    func encode(to encoder: Encoder) throws {
+    public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try! container.encode(recipeId.self, forKey: .recipeId)
         try! container.encode(title.self, forKey: .title)

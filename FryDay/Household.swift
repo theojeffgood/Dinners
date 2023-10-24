@@ -12,17 +12,14 @@ import CloudKit
 struct Household: View {
     
     @Environment(\.managedObjectContext) var moc
-//    @FetchRequest(sortDescriptors: []) var users: FetchedResults<User>
-    @State var householdMembers: [CKShare.Participant] = []
+    private let stack = DataController.shared
+    
+    @FetchRequest(sortDescriptors: []) var users: FetchedResults<User> /*<-- use this?*/
+    @State var householdMembers: [CKShare.Participant] = [] /*<-- or use this?*/
     
     @State private var share: CKShare?
-//    @ObservedObject var recipe: Recipe
-    private let stack = DataController.shared
     @State private var showShareSheet = false
 
-    
-//    @State var users: [User] = []
-//    @State private var emailAddress: String = ""
     @State private var householdState: HouseholdState = .notLoggedIn
     enum HouseholdState {
         case loggedIn
@@ -58,13 +55,6 @@ struct Household: View {
                         .multilineTextAlignment(.center)
                     Button("  Sign in with Apple            ") {
                         withAnimation {
-//                            users.append(User(userType: .member))
-                            
-                            let user = User(context: moc)
-                            user.id = UUID()
-                            user.userType = UserType.member.rawValue
-                            try? moc.save()
-                            
                             householdState = .loggedIn
                         }
                     }
@@ -221,20 +211,14 @@ struct Household: View {
         withAnimation {
             householdState = .inviteSent
         }
-//        users.append(User(userType: .pending))
-        
-        let user = User(context: moc)
-        user.id = UUID()
-        user.userType = UserType.pending.rawValue
-        try? moc.save()
     }
 }
 
-//struct Household_Previews: PreviewProvider {
-//    static var previews: some View {
-//        Household(dismissAction: {})
-//    }
-//}
+struct Household_Previews: PreviewProvider {
+    static var previews: some View {
+        Household(dismissAction: {})
+    }
+}
 
 // MARK: -- Returns CKShare participant permission, methods and properties to share
 
