@@ -6,12 +6,19 @@
 //
 
 import SwiftUI
+import CloudKit
 
 struct ContentView: View {
 
     @Environment(\.managedObjectContext) var moc
-    @FetchRequest(sortDescriptors: []) var allRecipes: FetchedResults<Recipe>
+//    @FetchRequest(sortDescriptors: []) var allRecipes: FetchedResults<Recipe>
+    @FetchRequest(sortDescriptors: [], predicate: NSPredicate(format: "ANY user != nil")) var allRecipes: FetchedResults<Recipe>
     @FetchRequest(sortDescriptors: []) var users: FetchedResults<User>
+    @FetchRequest(sortDescriptors: [], predicate: NSPredicate(format: "id == %@", UserDefaults.standard.string(forKey: "currentUserID") ?? ""))
+    var currentUser: FetchedResults<User>
+//    @ObservedObject var userManager: UserManager
+    
+    private let shareCoordinator = ShareCoordinator()
     
     @State private var recipes: [Recipe] = []
     @State private var recipeOffset: Int = 0
@@ -38,7 +45,7 @@ struct ContentView: View {
                                        .stacked(at: index, in: recipes.count)
                     }
                 }
-                
+                Spacer()
                 //ACTION BUTTONS
                 HStack(spacing: 65) {
                     Button(action: {
@@ -81,50 +88,68 @@ struct ContentView: View {
         .ignoresSafeArea()
         .accentColor(.black)
         .onAppear(){
-            loadRecipes()
+//            Task{
+//                let shareExists = try? await shareCoordinator.shareExists
+//            }
             
-            if users.isEmpty{
-                let user = User(context: moc)
-                user.id = UUID()
-                user.name = "Theo"
-                user.userType = 1
+            if !UserDefaults.standard.bool(forKey: "userWasCreated"),
+               currentUser.isEmpty {
+                print("CREATING NEW USER")
+                let newUser = User(context: moc)
+                
+                // Obtain the current user's iCloud user ID
+                let currentUserID = CKCurrentUserDefaultName
+                
+                newUser.id = currentUserID
+                newUser.name = "Unknown..."
+                newUser.userType = 2
                 try? moc.save()
-            } else{
-                users.forEach { user in
-                    print("user is: \(user)")
-                    print("user recipes are: \(user.likedRecipes)")
-                }
+                UserDefaults.standard.set(true, forKey: "userWasCreated")
+                UserDefaults.standard.set(currentUserID, forKey: "currentUserID")
             }
+
+            loadRecipes()
         }
         
 //---------SHOW JOINING-A-HOUSEHOLD ONBOARDING HERE
 //        .onOpenURL { url in
-//            withAnimation {
-//                showHousehold = true
-//            }
-//            print("url is: \(url)")
+//            print("referring url is: \(url)")
 //        }
     }
 }
 
 extension ContentView{
-    func removeCard(at index: Int? = nil){
-        if let index = index{
-            recipes.remove(at: index)
+    func loadRecipes(){
+        if UserDefaults.standard.bool(forKey: "userIsInAHousehold"){
+//            let householdUsers = userManager.householdUsers
+            let householdUsers = users
+            print("householdUsers count is \(householdUsers.count)")
+            var likedRecipes: [Recipe] = []
+            for user in householdUsers{
+                let newRecipes: [Recipe] = user.likedRecipes?.allObjects as? [Recipe] ?? []
+                likedRecipes.append(contentsOf: newRecipes)
+            }
+            self.recipes = likedRecipes /*--??*/
+            print("recipes count is \(recipes.count)")
+
         } else{
-            let topRecipeIndex = recipes.endIndex
-            recipes.remove(at: topRecipeIndex - 1)
+//            if allRecipes.isEmpty{
+//                Task {
+//                    try await Webservice(context: moc).load (Recipe.all)
+//                    try? moc.save()
+//                    recipes = Array(allRecipes.shuffled()[recipeOffset ... (recipeOffset + 2)])
+//                    recipeOffset = 2
+//                }
+//            }
+
         }
-        if recipes.isEmpty{
-            loadRecipes()
-        }
-    }
-    
-    func addNewCard(){
-        guard allRecipes.indices.contains(recipeOffset) else { return }
-        let newRecipe = allRecipes[recipeOffset]
-        recipes.insert(newRecipe, at: 0)
-        recipeOffset += 1
+                   
+        if allRecipes.isEmpty{ return }
+        self.recipes = Array(allRecipes.shuffled()[recipeOffset ... (recipeOffset + 2)])
+//        self.recipes = Array(allRecipes)
+        recipeOffset += 2
+        print("allRecipes count is: \(allRecipes.count)")
+//        }
     }
     
     func popRecipeStack(liked: Bool, delayPop: Bool = true){
@@ -146,18 +171,36 @@ extension ContentView{
             liked ? likes.append(recipe) : dislikes.append(recipe)
             
 //4 - save the like / dislike
-            if let user = users.first{
-                user.addToLikedRecipes(recipe)
-                recipe.addToUser(user)
+            if let currentUser = users.first{
+                
+                liked ? currentUser.likes(recipe) : currentUser.dislikes(recipe)
+                liked ? recipe.addToUser(currentUser) : recipe.addToUser(currentUser) //generate Recipe files. update addToUser method call.
+                
                 try? moc.save()
             }
         }
     }
+
+    func removeCard(){
+        let topRecipeIndex = recipes.endIndex
+        recipes.remove(at: topRecipeIndex - 1)
+        
+        if recipes.isEmpty{
+            loadRecipes()
+        }
+    }
     
+    func addNewCard(){
+        guard allRecipes.indices.contains(recipeOffset) else { return }
+        let newRecipe = allRecipes[recipeOffset]
+        recipes.insert(newRecipe, at: 0)
+        recipeOffset += 1
+    }
 }
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
+//        ContentView(userManager: UserManager(managedObjectContext: DataController.shared.context))
         ContentView()
     }
 }
@@ -213,7 +256,7 @@ struct Filters: View {
                 destination: RecipesList(recipesType: "Likes",
                                          recipes: likes),
                 label: {
-                    Text("👍  Likes")
+                    Text("👍 Likes")
                         .frame(width: 125, height: 45)
                         .foregroundColor(.black)
                         .overlay(

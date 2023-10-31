@@ -13,6 +13,7 @@ struct Household: View {
     
     @Environment(\.managedObjectContext) var moc
     private let stack = DataController.shared
+    private let shareCoordinator = ShareCoordinator()
     
     @FetchRequest(sortDescriptors: []) var users: FetchedResults<User> /*<-- use this?*/
     @State var householdMembers: [CKShare.Participant] = [] /*<-- or use this?*/
@@ -113,7 +114,7 @@ struct Household: View {
                                 Button(action: {
 //                                    withAnimation {
                                     Task {
-                                        self.share = try await createShare()
+                                        self.share = try await shareCoordinator.createShare()
                                     }
                                         showShareSheet = true
 //------------------OPEN QUESTION: USE STATE-BASED ANIMATIONS OR SHOW SHARE SHEET-------------------
@@ -197,7 +198,8 @@ struct Household: View {
         })
         .onAppear(){
             Task{
-                self.householdMembers = await getParticipants()
+                self.householdMembers = await shareCoordinator.getParticipants()
+//                self.householdMembers = await getParticipants()
             }
             
 //            self.share = stack.getShare(recipe)
@@ -234,46 +236,7 @@ extension Household {
 //        }
 //    }
     
-    func createShare() async throws -> CKShare {
-        let allZones = try await stack.ckContainer.privateCloudDatabase.allRecordZones()
-        guard let recipeZone = allZones.first(where: { $0.zoneID.zoneName == "com.apple.coredata.cloudkit.zone" }) else {
-            fatalError("no recipe zone exists in cloudkit.")
-        }
-        
-//        let lookIntoThis = CKRecordNameZoneWideShare use this to re-do the check for existing share. also use a static zone to make creation of share easier
-        
-        if recipeZone.capabilities.contains(.zoneWideSharing),
-           let shareList = try? stack.persistentContainer.fetchShares(in: stack.privatePersistentStore),
-           let existingShare = shareList.first,
-              existingShare.recordID.recordName == CKRecordNameZoneWideShare{
-            return existingShare
-            
-        } else{
-            _ = try await stack.ckContainer.privateCloudDatabase.modifyRecordZones(
-                saving: [CKRecordZone(zoneName: recipeZone.zoneID.zoneName)],
-                deleting: [] )
-            
-            let share = CKShare(recordZoneID: recipeZone.zoneID)
-            share.publicPermission = .readOnly
-            let result = try await stack.ckContainer.privateCloudDatabase.save(share)
-            return result as! CKShare
-        }
-    }
     
-    func getParticipants() async -> [CKShare.Participant]{
-        let allZones = try? await stack.ckContainer.privateCloudDatabase.allRecordZones()
-        guard let recipeZone = allZones?.first(where: { $0.zoneID.zoneName == "com.apple.coredata.cloudkit.zone" }) else {
-            fatalError("no recipe zone exists in cloudkit.")
-        }
-        
-        if recipeZone.capabilities.contains(.zoneWideSharing),
-           let shareList = try? stack.persistentContainer.fetchShares(in: stack.privatePersistentStore),
-           let existingShare = shareList.first{
-            let participants = existingShare.participants
-            return participants
-        }
-        return []
-    }
     
     private func string(for permission: CKShare.ParticipantPermission) -> String {
         switch permission {
