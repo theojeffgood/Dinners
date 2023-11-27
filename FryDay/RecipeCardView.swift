@@ -21,16 +21,21 @@ struct RecipeCardView: View{
             label: {
                 
                 VStack(spacing: 0) {
-                    AsyncImage(url: URL(string: recipe.imageUrl!)) { image in
-                        image
-                            .resizable()
-                            .scaledToFill()
-                            .frame(width: 350, height: 350)
-                            .clipped()
-                            .opacity(2.0 - Double(abs(offset.width / 50) ))
-                            .background(colorForOffset(offset))
-                    } placeholder: {
-                        ProgressView()
+                    
+                    //Image Sizing: www.hackingwithswift.com/books/ios-swiftui/resizing-images-to-fit-the-screen-using-geometryreader
+                    GeometryReader { geo in
+                        AsyncImage(url: URL(string: recipe.imageUrl!)) { image in
+                            image
+                                .resizable()
+                                .scaledToFill()
+//                                .frame(width: 350, height: 250)
+                                .frame(width: geo.size.width)
+                                .clipped()
+                                .opacity(2.0 - Double(abs(offset.width / 50) ))
+                                .background(colorForOffset(offset))
+                        } placeholder: {
+                            ProgressView()
+                        }
                     }
                     .cornerRadius(10, corners: [.topLeft, .topRight])
                     .shadow(radius: 5)

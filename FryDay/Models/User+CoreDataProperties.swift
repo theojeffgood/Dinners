@@ -19,6 +19,7 @@ extension User {
     @NSManaged public var id: String?
     @NSManaged public var name: String?
     @NSManaged public var userType: Int32
+    @NSManaged public var isShared: Bool
     @NSManaged public var likedRecipes: NSSet?
     @NSManaged public var dislikedRecipes: NSSet?
 

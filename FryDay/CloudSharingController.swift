@@ -89,7 +89,7 @@ class ShareCoordinator: NSObject{
             fatalError("no recipe zone exists in cloudkit.")
         }
         
-//        let lookIntoThis = CKRecordNameZoneWideShare use this to re-do the check for existing share. also use a static zone to make creation of share easier
+//        let lookIntoThis = CKRecordNameZoneWideShare use this for the share check
         
         if recipeZone.capabilities.contains(.zoneWideSharing),
            let shareList = try? stack.persistentContainer.fetchShares(in: stack.privatePersistentStore),

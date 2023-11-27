@@ -15,11 +15,13 @@ struct Household: View {
     private let stack = DataController.shared
     private let shareCoordinator = ShareCoordinator()
     
-    @FetchRequest(sortDescriptors: []) var users: FetchedResults<User> /*<-- use this?*/
     @State var householdMembers: [CKShare.Participant] = [] /*<-- or use this?*/
     
     @State private var share: CKShare?
     @State private var showShareSheet = false
+    
+    var recipes: [Recipe]
+    var users: [User]
 
     @State private var householdState: HouseholdState = .notLoggedIn
     enum HouseholdState {
@@ -117,6 +119,14 @@ struct Household: View {
                                         self.share = try await shareCoordinator.createShare()
                                     }
                                         showShareSheet = true
+                                    
+//                                    TRIGGER THIS after INVITE IS SENT?
+                                    if !UserDefaults.standard.bool(forKey: "userIsInAHousehold"){
+                                        recipes.forEach { $0.isShared = true }
+                                        users     .forEach { $0.isShared = true }
+                                        try? moc.save()
+                                    }
+                                    
 //------------------OPEN QUESTION: USE STATE-BASED ANIMATIONS OR SHOW SHARE SHEET-------------------
 //                                       householdState = .addMember
 //                                       }
@@ -216,11 +226,11 @@ struct Household: View {
     }
 }
 
-struct Household_Previews: PreviewProvider {
-    static var previews: some View {
-        Household(dismissAction: {})
-    }
-}
+//struct Household_Previews: PreviewProvider {
+//    static var previews: some View {
+//        Household(dismissAction: {})
+//    }
+//}
 
 // MARK: -- Returns CKShare participant permission, methods and properties to share
 

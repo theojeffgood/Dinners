@@ -7,6 +7,7 @@
 
 import CoreData
 import CloudKit
+import SwiftUI
 
 final class DataController: ObservableObject {
     static let shared = DataController()
@@ -90,7 +91,20 @@ final class DataController: ObservableObject {
     
     private var _privatePersistentStore: NSPersistentStore?
     private var _sharedPersistentStore: NSPersistentStore?
-    private init() {}
+    
+//    SAVE CHANGES WHEN APP GOES TO BACKGROUND: www.donnywals.com/using-core-data-with-swiftui-2-0-and-xcode-12/
+    private init() {
+        let center = NotificationCenter.default
+        let notification = UIApplication.willResignActiveNotification
+
+        center.addObserver(forName: notification, object: nil, queue: nil) { [weak self] _ in
+            guard let self = self else { return }
+
+            if self.context.hasChanges {
+                try? self.context.save()
+            }
+        }
+    }
 }
 
 // MARK: Save or delete from Core Data
@@ -113,8 +127,8 @@ extension DataController {
     }
 }
 
-// MARK: -- Share a record from Core Data
-extension DataController {
+//// MARK: -- Share a record from Core Data
+//extension DataController {
 //    func isShared(object: NSManagedObject) -> Bool {
 //        isShared(objectID: object.objectID)
 //    }
@@ -170,7 +184,7 @@ extension DataController {
 //        }
 //        return isShared
 //    }
-}
+//}
 
 
 //class DataController: ObservableObject {
@@ -196,16 +210,5 @@ extension DataController {
 //        }
 //        #endif
 //        
-////        SAVE CHANGES WHEN APP GOES TO BACKGROUND: https://www.donnywals.com/using-core-data-with-swiftui-2-0-and-xcode-12/
-////        let center = NotificationCenter.default
-////        let notification = UIApplication.willResignActiveNotification
-////
-////        center.addObserver(forName: notification, object: nil, queue: nil) { [weak self] _ in
-////            guard let self = self else { return }
-////
-////            if self.container.viewContext.hasChanges {
-////                try? self.container.viewContext.save()
-////            }
-////        }
 //    }
 //}
