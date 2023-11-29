@@ -8,21 +8,18 @@
 import SwiftUI
 
 struct RecipesList: View {
-    var recipesType: String = "Recipes"
+    var recipesType: String
     var recipes: [Recipe]
     
     var body: some View {
         ScrollView{
-            LazyVGrid(columns: [
-                GridItem(.flexible()),
-                GridItem(.flexible())
-            ]) {
+            LazyVGrid(columns: [GridItem(.flexible(), spacing: 0),
+                                GridItem(.flexible())]) {
                 ForEach(recipes, id: \.self) { recipe in
                     RecipeCell(recipe: recipe)
                 }
             }
         }
-        .padding([.leading, .trailing], 5.0)
         .navigationTitle(recipesType)
     }
 }
@@ -35,18 +32,18 @@ struct RecipeCell: View {
             destination: RecipeDetailsView(recipe: recipe, recipeTitle: recipe.title!),
             label: {
                 
-                VStack(alignment: .center, spacing: 0){
-                    AsyncImage(url: URL(string: recipe.imageUrl!)) { image in
-                        image
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .frame(maxWidth: .infinity, maxHeight: 200)
-                    } placeholder: {
-                        ProgressView()
+                VStack(alignment: .center){
+                    GeometryReader { geo in
+                        AsyncImage(url: URL(string: recipe.imageUrl!)) { image in
+                            image
+                                .resizable()
+//                                .clipped()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(width: geo.size.width, height: 200)
+                        } placeholder: {
+                            ProgressView()
+                        }
                     }
-                    .cornerRadius(10, corners: [.topLeft, .topRight])
-                    .frame(maxWidth: .infinity)
-                    .shadow(radius: 10)
                     
                     Text(recipe.title!)
                         .multilineTextAlignment(.leading)
@@ -55,27 +52,40 @@ struct RecipeCell: View {
                                maxHeight: 100,
                                alignment: .leading)
                         .background(.white)
-                        .font(.system(size: 20, weight: .regular))
-                        .cornerRadius(10, corners: [.bottomLeft, .bottomRight])
-                        .shadow(radius: 20)
-                }.padding([.bottom, .top])
-                    .padding([.leading, .trailing], 6.0)
+                        .font(.system(size: 18, weight: .regular))
+                }
+                .frame(height: 290)
+                .cornerRadius(10, corners: .allCorners)
+                .padding([.leading, .trailing, .bottom], 10)
+                .background(
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        .fill(Color.clear)
+                    )
+                .shadow(radius: 20)
             })
     }
 }
 
+import CoreData
+
 struct RecipesList_Previews: PreviewProvider {
-//    @Environment(\.managedObjectContext) var moc
+    static let entity = NSManagedObjectModel.mergedModel(from: nil)?.entitiesByName["Recipe"]
     
     static var previews: some View {
-//        let recipe = Recipe(context: moc)
-        RecipesList(recipesType: "Matches", recipes: [])
+        let recipeOne = Recipe(entity: entity!, insertInto: nil)
+        recipeOne.title = "Chicken Parm"
+        recipeOne.imageUrl = "https://halflemons-media.s3.amazonaws.com/786.jpg"
         
-//        RecipesList(recipesType: "Matches", recipes: [Recipe(recipeId: 1, title: "Chicken Soup"),
-//            Recipe(recipeId: 2, title: "Korean Style Burgers"),
-//            Recipe(recipeId: 3, title: "Restaurant Salmon"),
-//            Recipe(recipeId: 4, title: "Huevos Rotos"),
-//            Recipe(recipeId: 5, title: "Oven Roasted Asparagus"),
-//        ])
+        let recipeTwo = Recipe(entity: entity!, insertInto: nil)
+        recipeTwo.title = "Split Pea Soup"
+        recipeTwo.imageUrl = "https://halflemons-media.s3.amazonaws.com/785.jpg"
+        
+        let recipeThree = Recipe(entity: entity!, insertInto: nil)
+        recipeThree.title = "BBQ Ribs"
+        recipeThree.imageUrl = "https://halflemons-media.s3.amazonaws.com/784.jpg"
+        
+        return RecipesList(recipesType: "Matches", recipes: [recipeOne,
+                                                             recipeTwo,
+                                                             recipeThree])
     }
 }

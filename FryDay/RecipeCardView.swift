@@ -37,9 +37,6 @@ struct RecipeCardView: View{
                             ProgressView()
                         }
                     }
-                    .cornerRadius(10, corners: [.topLeft, .topRight])
-                    .shadow(radius: 5)
-//                    .frame(width: 350, height: 350) // maybe setting frame here will solve sizing issues?
                     
                     Text(recipe.title!)
                         .multilineTextAlignment(.leading)
@@ -49,10 +46,10 @@ struct RecipeCardView: View{
                                alignment: .leading)
                         .background(.white)
                         .font(.title2)
-                        .cornerRadius(10, corners: [.bottomLeft, .bottomRight])
-                        .shadow(radius: 5)
                 }
-//user likes OR dislikes via the BUTTONS. NO SWIPE.
+                .cornerRadius(10, corners: .allCorners)
+                .shadow(radius: 5)
+//user likes & dislikes via the BUTTONS. he does NOT swipe.
                 .onReceive(NotificationCenter.default.publisher(for: Notification.Name.swipeNotification)) { object in
                     if isTopRecipe,
                        let swipeDirection = object.userInfo as? [String: Bool],
@@ -70,10 +67,10 @@ struct RecipeCardView: View{
                         })
                         .onEnded({ gesture in
                             if offset.width < 100{ //left swipe
-                                popRecipeStack(true, false)
+                                popRecipeStack(false, false)
                                 
                             } else if offset.width > 100{ //right swipe
-                                popRecipeStack(false, false)
+                                popRecipeStack(true, false)
                                 
                             } else{ //cancel swipe
                                 withAnimation {

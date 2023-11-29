@@ -113,12 +113,12 @@
 		E4985E5F2AE6FD8900495720 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				E4F7ECA22989DF6000996CB3 /* Recipe.swift */,
 				E4EA57A82AF2F04700F5E130 /* Recipe+CoreDataClass.swift */,
 				E4EA57A92AF2F04700F5E130 /* Recipe+CoreDataProperties.swift */,
 				E49E840F299D88BC003E4E77 /* User.swift */,
 				E4985E5B2AE6F69800495720 /* User+CoreDataClass.swift */,
 				E4985E5C2AE6F69800495720 /* User+CoreDataProperties.swift */,
-				E4F7ECA22989DF6000996CB3 /* Recipe.swift */,
 				E49E8411299E88DB003E4E77 /* MealSwipe.xcdatamodeld */,
 			);
 			path = Models;
