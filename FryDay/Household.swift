@@ -228,7 +228,9 @@ struct Household: View {
 
 //struct Household_Previews: PreviewProvider {
 //    static var previews: some View {
-//        Household(dismissAction: {})
+//        Household(recipes: [],
+//                  users: [],
+//                  dismissAction: {})
 //    }
 //}
 

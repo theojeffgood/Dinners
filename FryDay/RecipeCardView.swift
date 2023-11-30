@@ -107,15 +107,22 @@ extension Notification.Name {
     static let swipeNotification = Notification.Name("swipeNotification")
 }
 
-//struct RecipeCardView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        RecipeCardView(recipe: )
-//        RecipeCardView(recipe: Recipe(recipeId: 5,
-//                                      title: "Roasted Asparagus",
-//                                     imageUrl: "https://halflemons-media.s3.amazonaws.com/786.jpg"))
-//        .previewLayout(.sizeThatFits)
-//    }
-//}
+import CoreData
+
+struct RecipeCardView_Previews: PreviewProvider {
+    static let entity = NSManagedObjectModel.mergedModel(from: nil)?.entitiesByName["Recipe"]
+    
+    static var previews: some View {
+        let recipeOne = Recipe(entity: entity!, insertInto: nil)
+        recipeOne.title = "Chicken Parm"
+        recipeOne.imageUrl = "https://halflemons-media.s3.amazonaws.com/786.jpg"
+        
+        return RecipeCardView(recipe: recipeOne,
+                              isTopRecipe: false,
+                              popRecipeStack: { _,_ in }).previewLayout(.sizeThatFits)
+    }
+        
+}
 
 struct FlatLinkStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {

@@ -27,36 +27,36 @@ extension User {
   }
 }
 
-class UserManager: NSObject, ObservableObject {
-    
-    @Published var currentUser: User?
-    @Published var householdUsers: [User] = []
-    private let usersController: NSFetchedResultsController<User>
-    
-    init(managedObjectContext: NSManagedObjectContext) {
-        usersController = NSFetchedResultsController(fetchRequest: User.dueSoonFetchRequest,
-                                                     managedObjectContext: managedObjectContext,
-                                                     sectionNameKeyPath: nil, cacheName: nil)
-        
-        super.init()
-        
-        usersController.delegate = self
-        
-        do {
-            try usersController.performFetch()
-            householdUsers = usersController.fetchedObjects ?? []
-        } catch {
-            print("failed to fetch items!")
-        }
-    }
-}
-
-extension UserManager: NSFetchedResultsControllerDelegate {
-    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-        guard let users = controller.fetchedObjects as? [User]
-        else { return }
-        
-        householdUsers = users
-    }
-}
-
+//class UserManager: NSObject, ObservableObject {
+//    
+//    @Published var currentUser: User?
+//    @Published var householdUsers: [User] = []
+//    private let usersController: NSFetchedResultsController<User>
+//    
+//    init(managedObjectContext: NSManagedObjectContext) {
+//        usersController = NSFetchedResultsController(fetchRequest: User.dueSoonFetchRequest,
+//                                                     managedObjectContext: managedObjectContext,
+//                                                     sectionNameKeyPath: nil, cacheName: nil)
+//        
+//        super.init()
+//        
+//        usersController.delegate = self
+//        
+//        do {
+//            try usersController.performFetch()
+//            householdUsers = usersController.fetchedObjects ?? []
+//        } catch {
+//            print("failed to fetch items!")
+//        }
+//    }
+//}
+//
+//extension UserManager: NSFetchedResultsControllerDelegate {
+//    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+//        guard let users = controller.fetchedObjects as? [User]
+//        else { return }
+//        
+//        householdUsers = users
+//    }
+//}
+//

@@ -13,7 +13,6 @@ struct ContentView: View {
 //    @ObservedObject var userManager: UserManager
 
     @Environment(\.managedObjectContext) var moc
-//    @FetchRequest(sortDescriptors: [], predicate: NSPredicate(format: "ANY user != nil")) var allRecipes: FetchedResults<Recipe>
     @FetchRequest(sortDescriptors: [NSSortDescriptor(key: "isLiked", ascending: false)],
                   predicate:        NSPredicate(format: "isShared == 1"))
     var allRecipes: FetchedResults<Recipe>
@@ -43,15 +42,13 @@ struct ContentView: View {
     }
     
     @State private var showHousehold: Bool = false
-    //    @State private var recipes: [Recipe] = [Recipe(recipeId: 1, title: "Chicken Cacciatore", imageUrl: "https://halflemons-media.s3.amazonaws.com/786.jpg")]
+    @State private var showFilters: Bool = false
     
     var body: some View {
         NavigationView {
             VStack {
-                Filters(matches: matches,
+                LikesAndMatches(matches: matches,
                         likes: likes)
-//                Filters(likes: $likes.wrappedValue,
-//                        dislikes: $dislikes.wrappedValue)
                 .padding(.bottom)
                 Spacer()
                 ZStack {
@@ -70,13 +67,13 @@ struct ContentView: View {
                     Button(action: {
                         popRecipeStack(liked: false)
                     }) {
-                        Image(systemName: "xmark").actionStyle(accept: false)
+                        Image(systemName: "xmark").rejectStyle()
                     }
                     
                     Button(action: {
                         popRecipeStack(liked: true)
                     }) {
-                        Text("✓").actionStyle(accept: true)
+                        Text("✓").acceptStyle()
                     }
                 }
                 .padding(.top, 25)
@@ -85,14 +82,24 @@ struct ContentView: View {
             .navigationTitle("Fryday")
             .navigationBarItems(
                 trailing:
-                    Button{
-                        withAnimation {
-                            showHousehold = true
+                    HStack(content: {
+                        Button{
+                            withAnimation {
+                                showFilters = true
+                            }
+                        } label: {
+                            Image(systemName: "slider.horizontal.3")
+                                .tint(.black)
                         }
-                    } label: {
-                        Image(systemName: "person.badge.plus")
-                            .tint(.black)
-                    }
+                        Button{
+                            withAnimation {
+                                showHousehold = true
+                            }
+                        } label: {
+                            Image(systemName: "person.badge.plus")
+                                .tint(.black)
+                        }
+                    })
             )
         }.overlay(alignment: .bottom) {
             if showHousehold{
@@ -104,6 +111,16 @@ struct ContentView: View {
                 Household(recipes: Array(allRecipes), users: Array(users), dismissAction: dismiss)
             }
         }
+        .sheet(isPresented: $showFilters, content: {
+//            if showFilters{
+                let dismiss = {
+                    withAnimation {
+                        showFilters = false
+                    }
+                }
+                Filters(dismissAction: dismiss)
+//            }
+        })
         .ignoresSafeArea()
         .accentColor(.black)
         .onAppear(){
@@ -145,7 +162,7 @@ extension ContentView{
 
             recipeOffset += 2
 //            unseenRecipes.forEach({ print("### Recipe: \($0.title!) is \($0.isLiked ? "liked" : "not liked")") })
-        }
+//        }
     }
     
     func popRecipeStack(liked: Bool, delayPop: Bool = true){
@@ -269,7 +286,7 @@ struct RoundedCorner: Shape {
 
 //MARK: -- Extractions
 
-struct Filters: View {
+struct LikesAndMatches: View {
     var matches: [Recipe] = []
     var likes: [Recipe] = []
     
@@ -300,20 +317,6 @@ struct Filters: View {
                                 .stroke(Color.black, lineWidth: 1)
                         )
                 })
-            
-//            NavigationLink(
-//                destination: RecipesList(recipesType: "Dislikes",
-//                                         recipes: dislikes),
-//                label: {
-//                    Text("👎 Dislikes")
-//                        .frame(width: 115, height: 35)
-//                        .foregroundColor(.black)
-//                        .overlay(
-//                            RoundedRectangle(cornerRadius: 5)
-//                                .stroke(Color.black, lineWidth: 1)
-//                        )
-//                })
-//            
             Spacer()
         }
     }
@@ -321,28 +324,25 @@ struct Filters: View {
 }
 
 extension View{
-    func actionStyle(accept: Bool) -> some View{
-        
-        switch accept {
-        //CHECK-MARK
-        case true:
-            self
-            .frame(width: 90, height: 90)
-            .background(Color.green) // green
-            .foregroundColor(.black) // black text
-            .cornerRadius(45)
-            .font(.system(size: 48, weight: .heavy))
-            .shadow(radius: 25)
-            
+    func rejectStyle() -> some View{
         //X-MARK
-        case false:
-            self
+        self
             .frame(width: 90, height: 90)
             .background(Color.red) // red
             .foregroundColor(.white) // white text
             .cornerRadius(45)
             .font(.system(size: 48, weight: .bold))
             .shadow(radius: 25)
-        }
+    }
+    
+    func acceptStyle() -> some View{
+        //CHECK-MARK
+        self
+            .frame(width: 90, height: 90)
+            .background(Color.green) // green
+            .foregroundColor(.black) // black text
+            .cornerRadius(45)
+            .font(.system(size: 48, weight: .heavy))
+            .shadow(radius: 25)
     }
 }
