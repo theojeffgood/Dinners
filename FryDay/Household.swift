@@ -123,7 +123,7 @@ struct Household: View {
 //                                    TRIGGER THIS after INVITE IS SENT?
                                     if !UserDefaults.standard.bool(forKey: "userIsInAHousehold"){
                                         recipes.forEach { $0.isShared = true }
-                                        users     .forEach { $0.isShared = true }
+                                        users  .forEach { $0.isShared = true }
                                         try? moc.save()
                                     }
                                     

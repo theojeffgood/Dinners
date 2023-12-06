@@ -112,14 +112,12 @@ struct ContentView: View {
             }
         }
         .sheet(isPresented: $showFilters, content: {
-//            if showFilters{
-                let dismiss = {
-                    withAnimation {
-                        showFilters = false
-                    }
+            let dismiss = {
+                withAnimation {
+                    showFilters = false
                 }
-                Filters(dismissAction: dismiss)
-//            }
+            }
+            Filters(dismissAction: dismiss)
         })
         .ignoresSafeArea()
         .accentColor(.black)
@@ -218,11 +216,10 @@ extension ContentView{
     }
     
     func checkIfMatch(){
-        if let recipe = recipes.last{
-            if users.count > 1,
-               recipe.likesCount == users.count {
-                UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-            }
+        if let recipe = recipes.last,
+           users.count > 1,
+           recipe.likesCount == users.count {
+            UIImpactFeedbackGenerator(style: .medium).impactOccurred()
         }
     }
 

@@ -6,8 +6,13 @@
 //
 
 import SwiftUI
+import StoreKit
 
 struct Filters: View {
+    
+    @EnvironmentObject private var purchaseManager: PurchaseManager
+    @State var products: [Product] = []
+    
     var dismissAction: () -> Void
     
     var body: some View {
@@ -15,12 +20,18 @@ struct Filters: View {
                 List{
                     Section{
                         let diets = ["Vegetarian", "Vegan", "Gluten Free"]
-                        ForEach(diets, id: \.self){ filter in
+                        ForEach(products.filter({ diets.contains($0.displayName) }), id: \.self){ filter in
                             HStack{
-                                Text(filter)
+                                Text(filter.displayName)
                                 Spacer()
                                 Button {
-                                    print("penis")
+                                    _ = Task<Void, Never> {
+                                        do {
+                                            try await purchaseManager.purchase(filter)
+                                        } catch {
+                                            print(error)
+                                        }
+                                    }
                                 } label: {
                                     Text("$0.99")
                                         .padding(8.5)
@@ -36,13 +47,19 @@ struct Filters: View {
                             .headerProminence(.increased)
                     }
                     Section{
-                        let keyIngredients = ["Chicken", "Ground Beef", "Pasta", "Tofu / Tempeh", "Legumes", "Fish", "Sausage"]
-                        ForEach(keyIngredients, id: \.self){ filter in
+                        let keyIngredients = ["Chicken", "Ground Beef", "Pasta", "Tofu & Tempeh", "Legumes", "Fish", "Sausage"]
+                        ForEach(products.filter({ keyIngredients.contains($0.displayName) }), id: \.self){ filter in
                             HStack{
-                                Text(filter)
+                                Text(filter.displayName)
                                 Spacer()
                                 Button {
-                                    print("penis")
+                                    _ = Task<Void, Never> {
+                                        do {
+                                            try await purchaseManager.purchase(filter)
+                                        } catch {
+                                            print(error)
+                                        }
+                                    }
                                 } label: {
                                     Text("$0.99")
                                         .padding(8.5)
@@ -59,12 +76,18 @@ struct Filters: View {
                     }
                     Section{
                         let cuisines = ["Asian","French", "Italian", "Mediterranean", "Mexican", "Middle Eastern"]
-                        ForEach(cuisines, id: \.self){ filter in
+                        ForEach(products.filter({ cuisines.contains($0.displayName) }), id: \.self){ filter in
                             HStack{
-                                Text(filter)
+                                Text(filter.displayName)
                                 Spacer()
                                 Button {
-                                    print("penis")
+                                    _ = Task<Void, Never> {
+                                        do {
+                                            try await purchaseManager.purchase(filter)
+                                        } catch {
+                                            print(error)
+                                        }
+                                    }
                                 } label: {
                                     Text("$0.99")
                                         .padding(8.5)
@@ -81,12 +104,18 @@ struct Filters: View {
                     }
                     Section{
                         let mealTypes = ["Dinner", "Breakfast", "One Pot", "<30 min"]
-                        ForEach(mealTypes, id: \.self){ filter in
+                        ForEach(products.filter({ mealTypes.contains($0.displayName) }), id: \.self){ filter in
                             HStack{
-                                Text(filter)
+                                Text(filter.displayName)
                                 Spacer()
                                 Button {
-                                    print("penis")
+                                    _ = Task<Void, Never> {
+                                        do {
+                                            try await purchaseManager.purchase(filter)
+                                        } catch {
+                                            print(error)
+                                        }
+                                    }
                                 } label: {
                                     Text("$0.99")
                                         .padding(8.5)
@@ -115,8 +144,17 @@ struct Filters: View {
                     }
                 }
                 }.listStyle(.grouped)
-                    .navigationTitle("Filters")
-                    .navigationBarTitleDisplayMode(.large)
+                .navigationTitle("Filters")
+                .navigationBarTitleDisplayMode(.large)
+        }.task {
+            _ = Task<Void, Never> {
+                do {
+                    try await purchaseManager.loadProducts()
+                    self.products = purchaseManager.products
+                } catch {
+                    print(error)
+                }
+            }
         }
     }
 }
@@ -124,3 +162,26 @@ struct Filters: View {
 #Preview {
     Filters(dismissAction: {})
 }
+
+//let filterTypes: [String:String] = [
+//    "Vegetarian": "Diets",
+//    "Vegan": "Diets",
+//    "Gluten Free": "Diets",
+//    "Chicken": "Key Ingredients",
+//    "Ground Beef": "Key Ingredients",
+//    "Pasta": "Key Ingredients",
+//    "Tofu & Tempeh": "Key Ingredients",
+//    "Legumes": "Key Ingredients",
+//    "Fish": "Key Ingredients",
+//    "Sausage": "Key Ingredients",
+//    "Asian": "Cuisines",
+//    "French": "Cuisines",
+//    "Italian": "Cuisines",
+//    "Mediterranean": "Cuisines",
+//    "Mexican": "Cuisines",
+//    "Middle Eastern": "Cuisines",
+//    "Dinner": "Meal Types",
+//    "Breakfast": "Meal Types",
+//    "One Pot": "Meal Types",
+//    "<30 min": "Meal Types",
+//]

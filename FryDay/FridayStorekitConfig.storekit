@@ -1,0 +1,367 @@
+{
+  "identifier" : "6AE66A34",
+  "nonRenewingSubscriptions" : [
+
+  ],
+  "products" : [
+    {
+      "displayPrice" : "0.99",
+      "familyShareable" : false,
+      "internalID" : "24573E6A",
+      "localizations" : [
+        {
+          "description" : "Gluten Free Recipes",
+          "displayName" : "Gluten Free",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "filters.diets.glutenFree",
+      "referenceName" : "Gluten Free",
+      "type" : "NonConsumable"
+    },
+    {
+      "displayPrice" : "0.99",
+      "familyShareable" : false,
+      "internalID" : "B7099DA6",
+      "localizations" : [
+        {
+          "description" : "Vegetarian Recipes",
+          "displayName" : "Vegetarian",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "filters.diets.vegetarian",
+      "referenceName" : "Vegetarian",
+      "type" : "NonConsumable"
+    },
+    {
+      "displayPrice" : "0.99",
+      "familyShareable" : false,
+      "internalID" : "FEDB2D41",
+      "localizations" : [
+        {
+          "description" : "Vegan Recipes",
+          "displayName" : "Vegan",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "filters.diets.vegan",
+      "referenceName" : "Vegan",
+      "type" : "NonConsumable"
+    },
+    {
+      "displayPrice" : "0.99",
+      "familyShareable" : false,
+      "internalID" : "519B79E2",
+      "localizations" : [
+        {
+          "description" : "Chicken Recipes",
+          "displayName" : "Chicken",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "filters.keyIngredients.chicken",
+      "referenceName" : "Chicken",
+      "type" : "NonConsumable"
+    },
+    {
+      "displayPrice" : "0.99",
+      "familyShareable" : false,
+      "internalID" : "00402E97",
+      "localizations" : [
+        {
+          "description" : "Ground Beef Recipes",
+          "displayName" : "Ground Beef",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "filters.keyIngredients.groundBeef",
+      "referenceName" : "Ground Beef",
+      "type" : "NonConsumable"
+    },
+    {
+      "displayPrice" : "0.99",
+      "familyShareable" : false,
+      "internalID" : "9A2E9B29",
+      "localizations" : [
+        {
+          "description" : "Fish Recipes",
+          "displayName" : "Fish",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "filters.keyIngredients.fish",
+      "referenceName" : "Fish",
+      "type" : "NonConsumable"
+    },
+    {
+      "displayPrice" : "0.99",
+      "familyShareable" : false,
+      "internalID" : "9E5453A4",
+      "localizations" : [
+        {
+          "description" : "Sausage Recipes",
+          "displayName" : "Sausage",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "filters.keyIngredients.sausage",
+      "referenceName" : "Sausage",
+      "type" : "NonConsumable"
+    },
+    {
+      "displayPrice" : "0.99",
+      "familyShareable" : false,
+      "internalID" : "021D5EDF",
+      "localizations" : [
+        {
+          "description" : "Tofu & Tempeh Recipes",
+          "displayName" : "Tofu & Tempeh",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "filters.keyIngredients.tofuTempeh",
+      "referenceName" : "Tofu & Tempeh",
+      "type" : "NonConsumable"
+    },
+    {
+      "displayPrice" : "0.99",
+      "familyShareable" : false,
+      "internalID" : "4DFEA232",
+      "localizations" : [
+        {
+          "description" : "Pasta Recipes",
+          "displayName" : "Pasta",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "filters.keyIngredients.pasta",
+      "referenceName" : "Pasta",
+      "type" : "NonConsumable"
+    },
+    {
+      "displayPrice" : "0.99",
+      "familyShareable" : false,
+      "internalID" : "4973F4B1",
+      "localizations" : [
+        {
+          "description" : "Legumes Recipes",
+          "displayName" : "Legumes",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "filters.keyIngredients.legumes",
+      "referenceName" : "Legumes",
+      "type" : "NonConsumable"
+    },
+    {
+      "displayPrice" : "0.99",
+      "familyShareable" : false,
+      "internalID" : "31423CFF",
+      "localizations" : [
+        {
+          "description" : "Asian Recipes",
+          "displayName" : "Asian",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "filters.cuisines.asian",
+      "referenceName" : "Asian",
+      "type" : "NonConsumable"
+    },
+    {
+      "displayPrice" : "0.99",
+      "familyShareable" : false,
+      "internalID" : "E0F2203F",
+      "localizations" : [
+        {
+          "description" : "French Recipes",
+          "displayName" : "French",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "filters.cuisines.french",
+      "referenceName" : "French",
+      "type" : "NonConsumable"
+    },
+    {
+      "displayPrice" : "0.99",
+      "familyShareable" : false,
+      "internalID" : "85EC3CB9",
+      "localizations" : [
+        {
+          "description" : "Italian Recipes",
+          "displayName" : "Italian",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "filters.cuisines.italian",
+      "referenceName" : "Italian",
+      "type" : "NonConsumable"
+    },
+    {
+      "displayPrice" : "0.99",
+      "familyShareable" : false,
+      "internalID" : "DB2B5D41",
+      "localizations" : [
+        {
+          "description" : "Mexican Recipes",
+          "displayName" : "Mexican",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "filters.cuisines.mexican",
+      "referenceName" : "Mexican",
+      "type" : "NonConsumable"
+    },
+    {
+      "displayPrice" : "0.99",
+      "familyShareable" : false,
+      "internalID" : "3666F17D",
+      "localizations" : [
+        {
+          "description" : "Middle Eastern Recipes",
+          "displayName" : "Middle Eastern",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "filters.cuisines.middleEastern",
+      "referenceName" : "Middle Eastern",
+      "type" : "NonConsumable"
+    },
+    {
+      "displayPrice" : "0.99",
+      "familyShareable" : false,
+      "internalID" : "3310D6C8",
+      "localizations" : [
+        {
+          "description" : "Mediterranean Recipes",
+          "displayName" : "Mediterranean",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "filters.cuisines.mediterranean",
+      "referenceName" : "Mediterranean",
+      "type" : "NonConsumable"
+    },
+    {
+      "displayPrice" : "0.99",
+      "familyShareable" : false,
+      "internalID" : "E83A06E9",
+      "localizations" : [
+        {
+          "description" : "Dinner Recipes",
+          "displayName" : "Dinner",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "filters.mealTypes.dinner",
+      "referenceName" : "Dinner",
+      "type" : "NonConsumable"
+    },
+    {
+      "displayPrice" : "0.99",
+      "familyShareable" : false,
+      "internalID" : "00A3C013",
+      "localizations" : [
+        {
+          "description" : "Breakfast Recipes",
+          "displayName" : "Breakfast",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "filters.mealTypes.breakfast",
+      "referenceName" : "Breakfast",
+      "type" : "NonConsumable"
+    },
+    {
+      "displayPrice" : "0.99",
+      "familyShareable" : false,
+      "internalID" : "FB56D696",
+      "localizations" : [
+        {
+          "description" : "One Pot Recipes",
+          "displayName" : "One Pot",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "filters.mealTypes.onePot",
+      "referenceName" : "One Pot",
+      "type" : "NonConsumable"
+    },
+    {
+      "displayPrice" : "0.99",
+      "familyShareable" : false,
+      "internalID" : "5DFDB522",
+      "localizations" : [
+        {
+          "description" : "< 30 min Recipes",
+          "displayName" : "< 30 min",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "filters.mealTypes.underThirtyMin",
+      "referenceName" : "<30 min",
+      "type" : "NonConsumable"
+    }
+  ],
+  "settings" : {
+    "_failTransactionsEnabled" : false,
+    "_locale" : "en_US",
+    "_storefront" : "USA",
+    "_storeKitErrors" : [
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Load Products"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Purchase"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Verification"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "App Store Sync"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Subscription Status"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "App Transaction"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Manage Subscriptions Sheet"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Refund Request Sheet"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Offer Code Redeem Sheet"
+      }
+    ]
+  },
+  "subscriptionGroups" : [
+
+  ],
+  "version" : {
+    "major" : 3,
+    "minor" : 0
+  }
+}

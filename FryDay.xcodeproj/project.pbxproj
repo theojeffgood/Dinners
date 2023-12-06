@@ -16,6 +16,7 @@
 		E439227229772E8300CC9E53 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E439227129772E8300CC9E53 /* Assets.xcassets */; };
 		E439227629772E8300CC9E53 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E439227529772E8300CC9E53 /* Preview Assets.xcassets */; };
 		E465A711298307D30058B564 /* RecipeCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E465A710298307D30058B564 /* RecipeCardView.swift */; };
+		E4875D802B192CFA00A192CE /* PurchaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4875D7F2B192CFA00A192CE /* PurchaseManager.swift */; };
 		E48CE0AC2B18F47700C296C1 /* Filters.swift in Sources */ = {isa = PBXBuildFile; fileRef = E48CE0AB2B18F47700C296C1 /* Filters.swift */; };
 		E4985E5D2AE6F69800495720 /* User+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4985E5B2AE6F69800495720 /* User+CoreDataClass.swift */; };
 		E4985E5E2AE6F69800495720 /* User+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4985E5C2AE6F69800495720 /* User+CoreDataProperties.swift */; };
@@ -41,6 +42,8 @@
 		E439227329772E8300CC9E53 /* FryDay.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FryDay.entitlements; sourceTree = "<group>"; };
 		E439227529772E8300CC9E53 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		E465A710298307D30058B564 /* RecipeCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeCardView.swift; sourceTree = "<group>"; };
+		E4875D7F2B192CFA00A192CE /* PurchaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PurchaseManager.swift; sourceTree = "<group>"; };
+		E4875D842B1FB6EC00A192CE /* FridayStorekitConfig.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = FridayStorekitConfig.storekit; sourceTree = "<group>"; };
 		E48CE0AB2B18F47700C296C1 /* Filters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Filters.swift; sourceTree = "<group>"; };
 		E4985E5B2AE6F69800495720 /* User+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "User+CoreDataClass.swift"; sourceTree = "<group>"; };
 		E4985E5C2AE6F69800495720 /* User+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "User+CoreDataProperties.swift"; sourceTree = "<group>"; };
@@ -95,6 +98,8 @@
 				E4CB2C812979C28700A829AE /* RecipeDetailsView.swift */,
 				E41D5076297DE959003CD008 /* Household.swift */,
 				E48CE0AB2B18F47700C296C1 /* Filters.swift */,
+				E4875D7F2B192CFA00A192CE /* PurchaseManager.swift */,
+				E4875D842B1FB6EC00A192CE /* FridayStorekitConfig.storekit */,
 				E4985E5F2AE6FD8900495720 /* Models */,
 				E43634FB2AD6EFCB007F238F /* ShareHelper.swift */,
 				E439227129772E8300CC9E53 /* Assets.xcassets */,
@@ -214,6 +219,7 @@
 				E4985E5E2AE6F69800495720 /* User+CoreDataProperties.swift in Sources */,
 				E49E8410299D88BC003E4E77 /* User.swift in Sources */,
 				E41D5075297DE372003CD008 /* WebService.swift in Sources */,
+				E4875D802B192CFA00A192CE /* PurchaseManager.swift in Sources */,
 				E4CB2C80297893CC00A829AE /* RecipesList.swift in Sources */,
 				E43634FA2AD5E9BF007F238F /* CloudSharingController.swift in Sources */,
 				E48CE0AC2B18F47700C296C1 /* Filters.swift in Sources */,

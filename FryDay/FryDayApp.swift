@@ -15,7 +15,13 @@ struct FryDayApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate // necessary to fire scene delegate. accept share invitates.
 //    @StateObject var userManager: UserManager
     
+    @StateObject
+        private var purchaseManager: PurchaseManager
+    
     init() {
+        let purchaseManager = PurchaseManager()
+        self._purchaseManager = StateObject(wrappedValue: purchaseManager)
+        
         if UserDefaults.standard.string(forKey: "currentUserID") == nil {
             let userId: String = "\(UUID())"
             UserDefaults.standard.set(userId, forKey: "currentUserID")
@@ -30,8 +36,12 @@ struct FryDayApp: App {
         WindowGroup {
             ContentView()
                 .environment(\.managedObjectContext, DataController.shared.context)
+                .environmentObject(purchaseManager)
+                                .task {
+                                    await purchaseManager.updatePurchasedProducts()
+                                }
                 .onOpenURL { url in
-                    print("url is: \(url)")
+                    print("### this fires when user opens app via link. the link url is: \(url)")
                 }
         }
     }
@@ -56,55 +66,38 @@ final class SceneDelegate: NSObject, UIWindowSceneDelegate {
         let shareStore = DataController.shared.sharedPersistentStore
         let persistentContainer = DataController.shared.persistentContainer
         
-//        DataController.shared.ckContainer.accept(cloudKitShareMetadata) { share, error in
-//            print("SHARE: \(share)")
-//        }
-        
+//        DataController.shared.ckContainer.accept(cloudKitShareMetadata) { share, error in }
         persistentContainer.acceptShareInvitations(from: [cloudKitShareMetadata], into: shareStore) { shareMetaData, error in
             if let error = error {
                 print("acceptShareInvitation error :\(error)")
                 return
             }
             
-            let zoneShare = cloudKitShareMetadata.share
+            let incomingShareRequest = cloudKitShareMetadata.share
+            if cloudKitShareMetadata.participantStatus == .accepted,
+//               print("USER JOINED A HOUSEHOLD. NEW STATUS is: \(currentUser.acceptanceStatus)")
+                !UserDefaults.standard.bool(forKey: "userIsInAHousehold"){
                 
-                if let currentUser = zoneShare.currentUserParticipant{
+                let context = DataController.shared.context
+                context.performAndWait {
+                    let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: "User")
+                    guard let users = try? context.fetch(fetchRequest) as? [User] else { return }
                     
-//                    if currentUser.acceptanceStatus == .accepted{
-                    if cloudKitShareMetadata.participantStatus == .accepted{
-                        print("USER IS NOW A PARTICIPANT OF THE SHARE. ACCEPTANCE STATUS: \(currentUser.acceptanceStatus)")
-                        
-                        if !UserDefaults.standard.bool(forKey: "userIsInAHousehold"){
-                            
-//                            let userId = currentUser.userIdentity.userRecordID?.recordName
-                            let userId = UserDefaults.standard.string(forKey: "currentUserID")!
-                            
-                            let context = DataController.shared.context
-                            context.performAndWait {
-                                
-                                let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: "User")
-                                if let users = try? context.fetch(fetchRequest) as? [User]{
-                                    
-                                    let userAlreadyExists = users.contains(where: { $0.id == userId && $0.isShared == true })
-                                    if !userAlreadyExists{
-                                        
-                                       let newUser = User(context: DataController.shared.context)
-                                        newUser.id = userId
-                                        newUser.name = currentUser.userIdentity.nameComponents?.givenName
-                                        newUser.userType = 1
-                                        newUser.isShared = true
-                                        
-                                        DataController.shared.context.assign(newUser, to: DataController.shared.sharedPersistentStore)
-                                        try! DataController.shared.context.save()
-                                        print("CREATING NEW USER WITH PARTICIPANT ID: \(userId)")
-                                        
-                                    } else{
-                                        print("USER ALREADY EXISTS")
-                                    }
-                                }
-                            }
-                            UserDefaults.standard.set(true, forKey: "userIsInAHousehold")
-                    }
+//                    let userId = currentUser.userIdentity.userRecordID?.recordName
+                    let userId = UserDefaults.standard.string(forKey: "currentUserID")!
+                    let userAlreadyExists = users.contains(where: { $0.id == userId && $0.isShared == true })
+                    guard !userAlreadyExists,
+                          let currentUser = incomingShareRequest.currentUserParticipant else { return }
+                    
+                    let newUser = User(context: DataController.shared.context)
+                    newUser.id = userId
+                    newUser.name = currentUser.userIdentity.nameComponents?.givenName
+                    newUser.userType = 1
+                    newUser.isShared = true
+                    
+                    DataController.shared.context.assign(newUser, to: DataController.shared.sharedPersistentStore)
+                    try! DataController.shared.context.save()
+                    UserDefaults.standard.set(true, forKey: "userIsInAHousehold")
                 }
             }
         }

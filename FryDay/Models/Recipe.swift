@@ -31,6 +31,7 @@ public class Recipe: NSManagedObject, Codable {
             imageUrl = "imageUrl",
             source = "source",
             ingredients = "ingredients",
+//            categories = "categories",
             websiteUrl = "websiteUrl",
             cooktime = "cooktime",
             recipeStatusId = "recipeStatusId"
@@ -58,9 +59,10 @@ public class Recipe: NSManagedObject, Codable {
         let recipeIngredientsArray = newRecipeIngredientsList.map{ Int($0)! }
         ingredients = recipeIngredientsArray
         
-//        let realm = try! Realm()
-//        let newRecipeIngredients = realm.objects(Food.self).filter("foodId in %@", recipeIngredientsArray)
-//        ingredients.append(objectsIn: newRecipeIngredients)
+//        let categoriesList = try! container.decode(String.self, forKey: .categories)
+//        let newRecipeCategoriesList = (categoriesList.split(separator: ";"))
+//        let recipeCategoriesArray = newRecipeCategoriesList.map{ Int($0)! }
+//        categories = recipeCategoriesArray
     }
     
     public func encode(to encoder: Encoder) throws {
@@ -73,6 +75,7 @@ public class Recipe: NSManagedObject, Codable {
         try! container.encodeIfPresent(cooktime.self, forKey: .cooktime)
         try! container.encode(recipeStatusId.self, forKey: .recipeStatusId)
         try! container.encode(ingredients.self, forKey: .ingredients)
+//        try! container.encode(categories.self, forKey: .categories)
       }
 }
 
