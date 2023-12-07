@@ -295,8 +295,8 @@
       "internalID" : "5DFDB522",
       "localizations" : [
         {
-          "description" : "< 30 min Recipes",
-          "displayName" : "< 30 min",
+          "description" : "<30 min Recipes",
+          "displayName" : "<30 min",
           "locale" : "en_US"
         }
       ],

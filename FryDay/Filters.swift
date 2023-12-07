@@ -11,8 +11,9 @@ import StoreKit
 struct Filters: View {
     
     @EnvironmentObject private var purchaseManager: PurchaseManager
-    @State var products: [Product] = []
-    
+    @State private var products: [Product] = []
+    @State private var filterWasApplied = false
+    var filterApplied: () -> Void
     var dismissAction: () -> Void
     
     var body: some View {
@@ -28,6 +29,7 @@ struct Filters: View {
                                     _ = Task<Void, Never> {
                                         do {
                                             try await purchaseManager.purchase(filter)
+                                            self.filterWasApplied = true
                                         } catch {
                                             print(error)
                                         }
@@ -56,6 +58,7 @@ struct Filters: View {
                                     _ = Task<Void, Never> {
                                         do {
                                             try await purchaseManager.purchase(filter)
+                                            self.filterWasApplied = true
                                         } catch {
                                             print(error)
                                         }
@@ -84,6 +87,7 @@ struct Filters: View {
                                     _ = Task<Void, Never> {
                                         do {
                                             try await purchaseManager.purchase(filter)
+                                            self.filterWasApplied = true
                                         } catch {
                                             print(error)
                                         }
@@ -112,6 +116,7 @@ struct Filters: View {
                                     _ = Task<Void, Never> {
                                         do {
                                             try await purchaseManager.purchase(filter)
+                                            self.filterWasApplied = true
                                         } catch {
                                             print(error)
                                         }
@@ -146,6 +151,12 @@ struct Filters: View {
                 }.listStyle(.grouped)
                 .navigationTitle("Filters")
                 .navigationBarTitleDisplayMode(.large)
+                .onDisappear(perform: {
+                    if filterWasApplied{
+//                        let appliedFilter = hook into the purchaseManager's storeKit purchase observer
+                        filterApplied()
+                    }
+                })
         }.task {
             _ = Task<Void, Never> {
                 do {
@@ -160,7 +171,7 @@ struct Filters: View {
 }
 
 #Preview {
-    Filters(dismissAction: {})
+    Filters(filterApplied: {}, dismissAction: {})
 }
 
 //let filterTypes: [String:String] = [

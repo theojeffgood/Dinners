@@ -16,20 +16,20 @@ struct ContentView: View {
     @FetchRequest(sortDescriptors: [NSSortDescriptor(key: "isLiked", ascending: false)],
                   predicate:        NSPredicate(format: "isShared == 1"))
     var allRecipes: FetchedResults<Recipe>
-    
     @FetchRequest(sortDescriptors: [], predicate:
                     NSCompoundPredicate(type: NSCompoundPredicate.LogicalType.and, subpredicates: [
                         NSPredicate(format: "id = %@", UserDefaults.standard.string(forKey: "currentUserID")!),
                         NSPredicate(format: "isShared = 1")]))
     var currentUser: FetchedResults<User>
-    
     @FetchRequest(sortDescriptors: [], predicate: NSPredicate(format: "isShared == 1"))
     var users: FetchedResults<User>
-        
-    private let shareCoordinator = ShareCoordinator()
     
     @State private var recipes: [Recipe] = []
     @State private var recipeOffset: Int = 0
+    @State private var showHousehold: Bool = false
+    @State private var showFilters: Bool = false
+    
+    private let shareCoordinator = ShareCoordinator()
     private var matches: [Recipe]{
         let matches = allRecipes.filter({ $0.likesCount == users.count })
         return matches
@@ -40,9 +40,6 @@ struct ContentView: View {
         }
         return []
     }
-    
-    @State private var showHousehold: Bool = false
-    @State private var showFilters: Bool = false
     
     var body: some View {
         NavigationView {
@@ -117,7 +114,8 @@ struct ContentView: View {
                     showFilters = false
                 }
             }
-            Filters(dismissAction: dismiss)
+            let applyFilter = { print("Filter was applied") }
+            Filters(filterApplied: applyFilter, dismissAction: dismiss)
         })
         .ignoresSafeArea()
         .accentColor(.black)
@@ -134,18 +132,17 @@ struct ContentView: View {
 
 extension ContentView{
     func loadRecipes(){
-//        if UserDefaults.standard.bool(forKey: "userIsInAHousehold"){
         if !UserDefaults.standard.bool(forKey: "appHasLaunchedBefore"),
            allRecipes.isEmpty{
-            Task {
+            Task{
                 try await Webservice(context: moc).load (Recipe.all)
                 try? moc.save()
                 
-//                createNewUser()
-//                UserDefaults.standard.set(true, forKey: "appHasLaunchedBefore")
-                
                 recipes = Array(allRecipes.shuffled()[recipeOffset ... (recipeOffset + 2)])
                 recipeOffset = 2
+                
+//                createNewUser()
+//                UserDefaults.standard.set(true, forKey: "appHasLaunchedBefore")
             }
         } else{
             guard let currentUser = currentUser.first else { return }
@@ -159,8 +156,7 @@ extension ContentView{
             recipes = Array(unseenRecipes[recipeOffset ... (recipeOffset + 2)])
 
             recipeOffset += 2
-//            unseenRecipes.forEach({ print("### Recipe: \($0.title!) is \($0.isLiked ? "liked" : "not liked")") })
-//        }
+        }
     }
     
     func popRecipeStack(liked: Bool, delayPop: Bool = true){
@@ -317,7 +313,6 @@ struct LikesAndMatches: View {
             Spacer()
         }
     }
-    
 }
 
 extension View{
