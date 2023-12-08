@@ -13,15 +13,17 @@ struct Filters: View {
     @EnvironmentObject private var purchaseManager: PurchaseManager
     @State private var products: [Product] = []
     @State private var filterWasApplied = false
-    var filterApplied: () -> Void
+    @Binding var appliedFilters: [Category]
+//    var filterApplied: (Category?) -> Void
     var dismissAction: () -> Void
     
     var body: some View {
         NavigationStack{
                 List{
                     Section{
-                        let diets = ["Vegetarian", "Vegan", "Gluten Free"]
-                        ForEach(products.filter({ diets.contains($0.displayName) }), id: \.self){ filter in
+//                        let diets = ["Vegetarian", "Vegan", "Gluten Free"]
+                        let diets = [Category(title: "Vegetarian", id: 1), Category(title: "Vegan", id: 2), Category(title: "Gluten Free", id: 3)]
+                        ForEach(products.filter({ diets.map({ $0.title }).contains($0.displayName) }), id: \.self){ filter in
                             HStack{
                                 Text(filter.displayName)
                                 Spacer()
@@ -49,8 +51,9 @@ struct Filters: View {
                             .headerProminence(.increased)
                     }
                     Section{
-                        let keyIngredients = ["Chicken", "Ground Beef", "Pasta", "Tofu & Tempeh", "Legumes", "Fish", "Sausage"]
-                        ForEach(products.filter({ keyIngredients.contains($0.displayName) }), id: \.self){ filter in
+//                        let keyIngredients = ["Chicken", "Ground Beef", "Pasta", "Tofu & Tempeh", "Legumes", "Fish", "Sausage"]
+                        let keyIngredients = [Category(title: "Chicken", id: 4), Category(title: "Ground Beef", id: 5), Category(title: "Pasta", id: 6), Category(title: "Tofu & Tempeh", id: 7), Category(title: "Legumes", id: 8), Category(title: "Fish", id: 9), Category(title: "Sausage", id: 10)]
+                        ForEach(products.filter({ keyIngredients.map({ $0.title }).contains($0.displayName) }), id: \.self){ filter in
                             HStack{
                                 Text(filter.displayName)
                                 Spacer()
@@ -78,8 +81,9 @@ struct Filters: View {
                             .headerProminence(.increased)
                     }
                     Section{
-                        let cuisines = ["Asian","French", "Italian", "Mediterranean", "Mexican", "Middle Eastern"]
-                        ForEach(products.filter({ cuisines.contains($0.displayName) }), id: \.self){ filter in
+//                        let cuisines = ["Asian", "French", "Italian", "Mediterranean", "Mexican", "Middle Eastern"]
+                        let cuisines = [Category(title: "Asian", id: 11), Category(title: "French", id: 12), Category(title: "Italian", id: 13), Category(title: "Mediterranean", id: 14), Category(title: "Mexican", id: 15), Category(title: "Middle Eastern", id: 16)]
+                        ForEach(products.filter({ cuisines.map({ $0.title }).contains($0.displayName) }), id: \.self){ filter in
                             HStack{
                                 Text(filter.displayName)
                                 Spacer()
@@ -107,8 +111,9 @@ struct Filters: View {
                             .headerProminence(.increased)
                     }
                     Section{
-                        let mealTypes = ["Dinner", "Breakfast", "One Pot", "<30 min"]
-                        ForEach(products.filter({ mealTypes.contains($0.displayName) }), id: \.self){ filter in
+//                        let mealTypes = ["Dinner", "Breakfast", "One Pot", "<30 min"]
+                        let mealTypes = [Category(title: "Dinner", id: 17), Category(title: "Breakfast", id: 18), Category(title: "One Pot", id: 19), Category(title: "<30 min", id: 20)]
+                        ForEach(products.filter({ mealTypes.map({ $0.title }).contains($0.displayName) }), id: \.self){ filter in
                             HStack{
                                 Text(filter.displayName)
                                 Spacer()
@@ -153,8 +158,13 @@ struct Filters: View {
                 .navigationBarTitleDisplayMode(.large)
                 .onDisappear(perform: {
                     if filterWasApplied{
-//                        let appliedFilter = hook into the purchaseManager's storeKit purchase observer
-                        filterApplied()
+                        let filters = self.products.filter({ purchaseManager.purchasedProductIDs.contains($0.id) })
+                        var appliedFilters: [Category] = []
+                        for i in 0...filters.count - 1{
+                            let filter = filters[i]
+                            appliedFilters.append(Category(title: filter.displayName, id: i))
+                        }
+                        self.appliedFilters = appliedFilters
                     }
                 })
         }.task {
@@ -171,7 +181,7 @@ struct Filters: View {
 }
 
 #Preview {
-    Filters(filterApplied: {}, dismissAction: {})
+    Filters(appliedFilters: .constant([]), dismissAction: {})
 }
 
 //let filterTypes: [String:String] = [
@@ -196,3 +206,8 @@ struct Filters: View {
 //    "One Pot": "Meal Types",
 //    "<30 min": "Meal Types",
 //]
+
+struct Category: Identifiable {
+    var title: String
+    var id: Int
+}

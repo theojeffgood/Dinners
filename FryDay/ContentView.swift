@@ -28,6 +28,7 @@ struct ContentView: View {
     @State private var recipeOffset: Int = 0
     @State private var showHousehold: Bool = false
     @State private var showFilters: Bool = false
+    @State private var appliedFilters: [Category] = []
     
     private let shareCoordinator = ShareCoordinator()
     private var matches: [Recipe]{
@@ -44,8 +45,24 @@ struct ContentView: View {
     var body: some View {
         NavigationView {
             VStack {
-                LikesAndMatches(matches: matches,
-                        likes: likes)
+                HStack{
+                    LikesAndMatches(matches: matches,
+                            likes: likes)
+                    if !$appliedFilters.isEmpty{
+                        ForEach(appliedFilters){ filter in
+                            Text(filter.title)
+//                        Text("Filter")
+                                .frame(height: 45)
+                                .padding([.leading, .trailing])
+                                .foregroundColor(.black)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 5)
+                                        .stroke(Color.black, lineWidth: 1)
+                                )
+                        }
+                    }
+                }
+                
                 .padding(.bottom)
                 Spacer()
                 ZStack {
@@ -105,7 +122,9 @@ struct ContentView: View {
                         showHousehold = false
                     }
                 }
-                Household(recipes: Array(allRecipes), users: Array(users), dismissAction: dismiss)
+                Household(recipes: Array(allRecipes), 
+                          users: Array(users),
+                          dismissAction: dismiss)
             }
         }
         .sheet(isPresented: $showFilters, content: {
@@ -114,8 +133,8 @@ struct ContentView: View {
                     showFilters = false
                 }
             }
-            let applyFilter = { print("Filter was applied") }
-            Filters(filterApplied: applyFilter, dismissAction: dismiss)
+//            let applyFilter = { (filter: Category?) in if let filter{ _appliedFilters = [filter] }}
+            Filters(appliedFilters: $appliedFilters, dismissAction: dismiss)
         })
         .ignoresSafeArea()
         .accentColor(.black)
@@ -156,7 +175,7 @@ extension ContentView{
             recipes = Array(unseenRecipes[recipeOffset ... (recipeOffset + 2)])
 
             recipeOffset += 2
-        }
+//        }
     }
     
     func popRecipeStack(liked: Bool, delayPop: Bool = true){
@@ -241,6 +260,7 @@ extension ContentView{
         user.id = userId
         user.name = "Not yet set"
         user.userType = 1
+        user.isShared = false
         try? moc.save()
     }
 }

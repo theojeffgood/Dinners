@@ -44,12 +44,10 @@ class PurchaseManager: NSObject, ObservableObject {
            return !self.purchasedProductIDs.isEmpty
         }
     
-//    private let entitlementManager: EntitlementManager
     private var productsLoaded = false
     private var updates: Task<Void, Never>? = nil
 
     override init() {
-//        self.entitlementManager = entitlementManager
         super.init()
         self.updates = observeTransactionUpdates()
         SKPaymentQueue.default().add(self)
@@ -62,7 +60,7 @@ class PurchaseManager: NSObject, ObservableObject {
     func loadProducts() async throws {
         guard !self.productsLoaded else { return }
         self.products = try await Product.products(for: productIds)
-        self.products.forEach({ print("product display name: \($0.displayName)") })
+//        self.products.forEach({ print("product display name: \($0.displayName)") })
         self.productsLoaded = true
     }
 
@@ -102,8 +100,6 @@ class PurchaseManager: NSObject, ObservableObject {
                 self.purchasedProductIDs.remove(transaction.productID)
             }
         }
-
-//        self.entitlementManager.hasPro = !self.purchasedProductIDs.isEmpty
     }
 
     private func observeTransactionUpdates() -> Task<Void, Never> {
