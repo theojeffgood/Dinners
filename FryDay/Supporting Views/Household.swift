@@ -121,7 +121,7 @@ struct Household: View {
                                         showShareSheet = true
                                     
 //                                    TRIGGER THIS after INVITE IS SENT?
-                                    if !UserDefaults.standard.bool(forKey: "userIsInAHousehold"){
+                                    if !UserDefaults.standard.bool(forKey: "inAHousehold"){
                                         recipes.forEach { $0.isShared = true }
                                         users  .forEach { $0.isShared = true }
                                         try? moc.save()

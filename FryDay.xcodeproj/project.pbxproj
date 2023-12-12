@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E40BCEE32B27F6E300E43CDB /* View Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E40BCEE22B27F6E300E43CDB /* View Extensions.swift */; };
 		E41D5075297DE372003CD008 /* WebService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E41D5074297DE372003CD008 /* WebService.swift */; };
 		E41D5077297DE959003CD008 /* Household.swift in Sources */ = {isa = PBXBuildFile; fileRef = E41D5076297DE959003CD008 /* Household.swift */; };
 		E43634FA2AD5E9BF007F238F /* CloudSharingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E43634F92AD5E9BF007F238F /* CloudSharingController.swift */; };
@@ -31,6 +32,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		E40BCEE22B27F6E300E43CDB /* View Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View Extensions.swift"; sourceTree = "<group>"; };
 		E41D5074297DE372003CD008 /* WebService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebService.swift; sourceTree = "<group>"; };
 		E41D5076297DE959003CD008 /* Household.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Household.swift; sourceTree = "<group>"; };
 		E43634F92AD5E9BF007F238F /* CloudSharingController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudSharingController.swift; sourceTree = "<group>"; };
@@ -69,6 +71,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		E40BCEE42B27F7AB00E43CDB /* Supporting Views */ = {
+			isa = PBXGroup;
+			children = (
+				E40BCEE22B27F6E300E43CDB /* View Extensions.swift */,
+				E43634F92AD5E9BF007F238F /* CloudSharingController.swift */,
+				E41D5076297DE959003CD008 /* Household.swift */,
+				E48CE0AB2B18F47700C296C1 /* Filters.swift */,
+			);
+			path = "Supporting Views";
+			sourceTree = "<group>";
+		};
 		E439226129772E8200CC9E53 = {
 			isa = PBXGroup;
 			children = (
@@ -92,12 +105,10 @@
 				E49E8414299EB02C003E4E77 /* DataController.swift */,
 				E41D5074297DE372003CD008 /* WebService.swift */,
 				E439226F29772E8200CC9E53 /* ContentView.swift */,
+				E40BCEE42B27F7AB00E43CDB /* Supporting Views */,
 				E465A710298307D30058B564 /* RecipeCardView.swift */,
 				E4CB2C7F297893CC00A829AE /* RecipesList.swift */,
-				E43634F92AD5E9BF007F238F /* CloudSharingController.swift */,
 				E4CB2C812979C28700A829AE /* RecipeDetailsView.swift */,
-				E41D5076297DE959003CD008 /* Household.swift */,
-				E48CE0AB2B18F47700C296C1 /* Filters.swift */,
 				E4875D7F2B192CFA00A192CE /* PurchaseManager.swift */,
 				E4875D842B1FB6EC00A192CE /* FridayStorekitConfig.storekit */,
 				E4985E5F2AE6FD8900495720 /* Models */,
@@ -221,6 +232,7 @@
 				E41D5075297DE372003CD008 /* WebService.swift in Sources */,
 				E4875D802B192CFA00A192CE /* PurchaseManager.swift in Sources */,
 				E4CB2C80297893CC00A829AE /* RecipesList.swift in Sources */,
+				E40BCEE32B27F6E300E43CDB /* View Extensions.swift in Sources */,
 				E43634FA2AD5E9BF007F238F /* CloudSharingController.swift in Sources */,
 				E48CE0AC2B18F47700C296C1 /* Filters.swift in Sources */,
 				E4F7ECA32989DF6000996CB3 /* Recipe.swift in Sources */,

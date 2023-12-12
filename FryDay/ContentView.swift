@@ -14,21 +14,35 @@ struct ContentView: View {
 
     @Environment(\.managedObjectContext) var moc
     @FetchRequest(sortDescriptors: [NSSortDescriptor(key: "isLiked", ascending: false)],
-                  predicate:        NSPredicate(format: "isShared == 1"))
+                  predicate: NSPredicate(format: "isShared = %@", UserDefaults.standard.bool(forKey: "inAHousehold") ? "1" : "0"))
+//                  predicate:        NSPredicate(format: "isShared == 1"))
     var allRecipes: FetchedResults<Recipe>
     @FetchRequest(sortDescriptors: [], predicate:
                     NSCompoundPredicate(type: NSCompoundPredicate.LogicalType.and, subpredicates: [
-                        NSPredicate(format: "id = %@", UserDefaults.standard.string(forKey: "currentUserID")!),
-                        NSPredicate(format: "isShared = 1")]))
+                        NSPredicate(format: "id = %@", UserDefaults.standard.string(forKey: "userID")!),
+                        NSPredicate(format: "isShared = %@", UserDefaults.standard.bool(forKey: "inAHousehold") ? "1" : "0") ]))
+//                        NSPredicate(format: "isShared = 1")]))
     var currentUser: FetchedResults<User>
     @FetchRequest(sortDescriptors: [], predicate: NSPredicate(format: "isShared == 1"))
     var users: FetchedResults<User>
     
     @State private var recipes: [Recipe] = []
-    @State private var recipeOffset: Int = 0
+    @State private var recipeOffset: Int = 3
     @State private var showHousehold: Bool = false
     @State private var showFilters: Bool = false
-    @State private var appliedFilters: [Category] = []
+    @State private var appliedFilters: [Category] = []{
+        didSet{
+//            var filteredRecipes: [Recipe] = []
+//            appliedFilters.forEach { filter in
+//                let recipes = recipes.filter({ $0.isCategory(filter.id) })
+//                filteredRecipes.append(contentsOf: recipes)
+//                recipes.forEach { recipe in
+//                    print("### recipe filtered: \(recipe.title)")
+//                }
+//            }
+//            recipes = filteredRecipes
+        }
+    }
     
     private let shareCoordinator = ShareCoordinator()
     private var matches: [Recipe]{
@@ -151,17 +165,16 @@ struct ContentView: View {
 
 extension ContentView{
     func loadRecipes(){
-        if !UserDefaults.standard.bool(forKey: "appHasLaunchedBefore"),
+        if !UserDefaults.standard.bool(forKey: "appOpenedBefore"),
            allRecipes.isEmpty{
             Task{
-                try await Webservice(context: moc).load (Recipe.all)
-                try? moc.save()
-                
-                recipes = Array(allRecipes.shuffled()[recipeOffset ... (recipeOffset + 2)])
-                recipeOffset = 2
-                
-//                createNewUser()
-//                UserDefaults.standard.set(true, forKey: "appHasLaunchedBefore")
+                if let downloadedRecipes = try? await Webservice(context: moc).load (Recipe.all){
+                    try! moc.save()
+                    recipes = Array(downloadedRecipes.prefix(recipeOffset))
+                    
+                    createNewUser()
+                    UserDefaults.standard.set(true, forKey: "appOpenedBefore")
+                }
             }
         } else{
             guard let currentUser = currentUser.first else { return }
@@ -171,11 +184,10 @@ extension ContentView{
                 let userDislikesRecipe = currentUser.dislikedRecipes?.contains(recipe) ?? false
                 return !userLikesRecipe && !userDislikesRecipe
             }
-            if !unseenRecipes.indices.contains(recipeOffset + 2){ return }
-            recipes = Array(unseenRecipes[recipeOffset ... (recipeOffset + 2)])
-
-            recipeOffset += 2
-//        }
+            recipes = Array(unseenRecipes.prefix(recipeOffset))
+            print("### allRecipes.count is \(allRecipes.count)")
+//            recipeOffset += 2
+        }
     }
     
     func popRecipeStack(liked: Bool, delayPop: Bool = true){
@@ -200,8 +212,8 @@ extension ContentView{
     
     func handleUserPreference(recipeLiked liked: Bool){
         if let currentUser = currentUser.first,
-           let recipe = recipes.last,
-           let userAlreadyLikesRecipe = currentUser.likedRecipes?.contains(recipe){
+           let recipe = recipes.last{
+            guard let userAlreadyLikesRecipe = currentUser.likedRecipes?.contains(recipe) else { return }
             
             switch liked {
             case true:
@@ -256,44 +268,18 @@ extension ContentView{
     
     func createNewUser(){
         let user = User(context: moc)
-        let userId: String = UserDefaults.standard.string(forKey: "currentUserID")!
+        let userId: String = UserDefaults.standard.string(forKey: "userID")!
         user.id = userId
         user.name = "Not yet set"
         user.userType = 1
         user.isShared = false
-        try? moc.save()
+        try! moc.save()
     }
 }
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
-    }
-}
-
-
-//MARK: -- Extensions
-
-
-extension View {
-    func cornerRadius(_ radius: CGFloat, corners: UIRectCorner) -> some View {
-        clipShape( RoundedCorner(radius: radius, corners: corners) )
-    }
-    
-    func stacked(at position: Int, in total: Int) -> some View {
-        let offset = Double(total - position)
-        return self.offset(x: 0, y: offset * 9)
-    }
-}
-
-struct RoundedCorner: Shape {
-    
-    var radius: CGFloat = .infinity
-    var corners: UIRectCorner = .allCorners
-    
-    func path(in rect: CGRect) -> Path {
-        let path = UIBezierPath(roundedRect: rect, byRoundingCorners: corners, cornerRadii: CGSize(width: radius, height: radius))
-        return Path(path.cgPath)
     }
 }
 
@@ -332,29 +318,5 @@ struct LikesAndMatches: View {
                 })
             Spacer()
         }
-    }
-}
-
-extension View{
-    func rejectStyle() -> some View{
-        //X-MARK
-        self
-            .frame(width: 90, height: 90)
-            .background(Color.red) // red
-            .foregroundColor(.white) // white text
-            .cornerRadius(45)
-            .font(.system(size: 48, weight: .bold))
-            .shadow(radius: 25)
-    }
-    
-    func acceptStyle() -> some View{
-        //CHECK-MARK
-        self
-            .frame(width: 90, height: 90)
-            .background(Color.green) // green
-            .foregroundColor(.black) // black text
-            .cornerRadius(45)
-            .font(.system(size: 48, weight: .heavy))
-            .shadow(radius: 25)
     }
 }

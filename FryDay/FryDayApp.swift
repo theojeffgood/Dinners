@@ -22,9 +22,9 @@ struct FryDayApp: App {
         let purchaseManager = PurchaseManager()
         self._purchaseManager = StateObject(wrappedValue: purchaseManager)
         
-        if UserDefaults.standard.string(forKey: "currentUserID") == nil {
+        if UserDefaults.standard.string(forKey: "userID") == nil {
             let userId: String = "\(UUID())"
-            UserDefaults.standard.set(userId, forKey: "currentUserID")
+            UserDefaults.standard.set(userId, forKey: "userID")
         }
         
 //        let storage = UserManager(managedObjectContext: DataController.shared.context)
@@ -61,7 +61,7 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
 final class SceneDelegate: NSObject, UIWindowSceneDelegate {
     func windowScene(_ windowScene: UIWindowScene, 
                      userDidAcceptCloudKitShareWith cloudKitShareMetadata: CKShare.Metadata) {
-        UserDefaults.standard.set(false, forKey: "userIsInAHousehold") //TESTING only. REMOVE in PROD.
+        UserDefaults.standard.set(false, forKey: "inAHousehold") //TESTING only. REMOVE in PROD.
         
         let shareStore = DataController.shared.sharedPersistentStore
         let persistentContainer = DataController.shared.persistentContainer
@@ -76,7 +76,7 @@ final class SceneDelegate: NSObject, UIWindowSceneDelegate {
             let incomingShareRequest = cloudKitShareMetadata.share
             if cloudKitShareMetadata.participantStatus == .accepted,
 //               print("USER JOINED A HOUSEHOLD. NEW STATUS is: \(currentUser.acceptanceStatus)")
-                !UserDefaults.standard.bool(forKey: "userIsInAHousehold"){
+                !UserDefaults.standard.bool(forKey: "inAHousehold"){
                 
                 let context = DataController.shared.context
                 context.performAndWait {
@@ -84,7 +84,7 @@ final class SceneDelegate: NSObject, UIWindowSceneDelegate {
                     guard let users = try? context.fetch(fetchRequest) as? [User] else { return }
                     
 //                    let userId = currentUser.userIdentity.userRecordID?.recordName
-                    let userId = UserDefaults.standard.string(forKey: "currentUserID")!
+                    let userId = UserDefaults.standard.string(forKey: "userID")!
                     let userAlreadyExists = users.contains(where: { $0.id == userId && $0.isShared == true })
                     guard !userAlreadyExists,
                           let currentUser = incomingShareRequest.currentUserParticipant else { return }
@@ -97,7 +97,7 @@ final class SceneDelegate: NSObject, UIWindowSceneDelegate {
                     
                     DataController.shared.context.assign(newUser, to: DataController.shared.sharedPersistentStore)
                     try! DataController.shared.context.save()
-                    UserDefaults.standard.set(true, forKey: "userIsInAHousehold")
+                    UserDefaults.standard.set(true, forKey: "inAHousehold")
                 }
             }
         }
