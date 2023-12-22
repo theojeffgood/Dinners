@@ -14,20 +14,18 @@ struct ContentView: View {
 
     @Environment(\.managedObjectContext) var moc
     @FetchRequest(sortDescriptors: [NSSortDescriptor(key: "isLiked", ascending: false)],
-                  predicate: NSPredicate(format: "isShared = %@", UserDefaults.standard.bool(forKey: "inAHousehold") ? "1" : "0"))
-//                  predicate:        NSPredicate(format: "isShared == 1"))
+                  predicate: NSPredicate(format: "isShared == 0"))
     var allRecipes: FetchedResults<Recipe>
     @FetchRequest(sortDescriptors: [], predicate:
                     NSCompoundPredicate(type: NSCompoundPredicate.LogicalType.and, subpredicates: [
                         NSPredicate(format: "id = %@", UserDefaults.standard.string(forKey: "userID")!),
-                        NSPredicate(format: "isShared = %@", UserDefaults.standard.bool(forKey: "inAHousehold") ? "1" : "0") ]))
-//                        NSPredicate(format: "isShared = 1")]))
+                        NSPredicate(format: "isShared == 0") ]))
+
     var currentUser: FetchedResults<User>
-    @FetchRequest(sortDescriptors: [], predicate: NSPredicate(format: "isShared == 1"))
+    @FetchRequest(sortDescriptors: [], predicate: NSPredicate(format: "isShared == 0"))
     var users: FetchedResults<User>
     
-    @State private var recipes: [Recipe] = []
-    @State private var recipeOffset: Int = 3
+    @State private var recipeOffset: Int = 1
     @State private var showHousehold: Bool = false
     @State private var showFilters: Bool = false
     @State private var appliedFilters: [Category] = []{
@@ -46,8 +44,11 @@ struct ContentView: View {
     
     private let shareCoordinator = ShareCoordinator()
     private var matches: [Recipe]{
-        let matches = allRecipes.filter({ $0.likesCount == users.count })
-        return matches
+        if users.count > 1{
+            let matches = allRecipes.filter({ $0.likesCount == users.count })
+            return matches
+        }
+        return []
     }
     private var likes: [Recipe]{
         if let likes = currentUser.first?.likedRecipes?.allObjects as? [Recipe]{
@@ -65,7 +66,6 @@ struct ContentView: View {
                     if !$appliedFilters.isEmpty{
                         ForEach(appliedFilters){ filter in
                             Text(filter.title)
-//                        Text("Filter")
                                 .frame(height: 45)
                                 .padding([.leading, .trailing])
                                 .foregroundColor(.black)
@@ -75,18 +75,15 @@ struct ContentView: View {
                                 )
                         }
                     }
-                }
+                }.padding(.bottom)
                 
-                .padding(.bottom)
                 Spacer()
                 ZStack {
-                    ForEach(recipes, id: \.self) { recipe in
-                        let index = recipes.firstIndex(of: recipe)!
+                    ForEach(allRecipes[min(allRecipes.endIndex, recipeOffset - 1) ..< min(allRecipes.endIndex, recipeOffset)], id: \.self) { recipe in
                         RecipeCardView(recipe: recipe,
-                                       isTopRecipe: (recipe == recipes.last)){ liked, _ in
+                                       isTopRecipe: (true)){ liked, _ in
                             popRecipeStack(liked: liked, delayPop: false)
                         }
-                                       .stacked(at: index, in: recipes.count)
                     }
                 }
                 Spacer()
@@ -95,18 +92,20 @@ struct ContentView: View {
                     Button(action: {
                         popRecipeStack(liked: false)
                     }) {
-                        Image(systemName: "xmark").rejectStyle()
+                        Image(systemName: "xmark")
+                            .rejectStyle()
                     }
                     
                     Button(action: {
                         popRecipeStack(liked: true)
                     }) {
-                        Text("✓").acceptStyle()
+                        Text("✓")
+                            .acceptStyle()
                     }
                 }
-                .padding(.top, 25)
+                .padding(.top, 10)
             }
-            .padding()
+            .padding(5)
             .navigationTitle("Fryday")
             .navigationBarItems(
                 trailing:
@@ -147,7 +146,6 @@ struct ContentView: View {
                     showFilters = false
                 }
             }
-//            let applyFilter = { (filter: Category?) in if let filter{ _appliedFilters = [filter] }}
             Filters(appliedFilters: $appliedFilters, dismissAction: dismiss)
         })
         .ignoresSafeArea()
@@ -165,29 +163,21 @@ struct ContentView: View {
 
 extension ContentView{
     func loadRecipes(){
-        if !UserDefaults.standard.bool(forKey: "appOpenedBefore"),
-           allRecipes.isEmpty{
-            Task{
-                if let downloadedRecipes = try? await Webservice(context: moc).load (Recipe.all){
-                    try! moc.save()
-                    recipes = Array(downloadedRecipes.prefix(recipeOffset))
-                    
-                    createNewUser()
-                    UserDefaults.standard.set(true, forKey: "appOpenedBefore")
-                }
-            }
-        } else{
-            guard let currentUser = currentUser.first else { return }
+        Task{
+            try? await Webservice(context: moc).load (Recipe.all)
+            try! moc.save()
             
-            let unseenRecipes = allRecipes.filter { recipe in
-                let userLikesRecipe = currentUser.likedRecipes?.contains(recipe) ?? false
-                let userDislikesRecipe = currentUser.dislikedRecipes?.contains(recipe) ?? false
-                return !userLikesRecipe && !userDislikesRecipe
+            if !UserDefaults.standard.bool(forKey: "appOpenedBefore"){
+                createNewUser()
+                UserDefaults.standard.set(true, forKey: "appOpenedBefore")
             }
-            recipes = Array(unseenRecipes.prefix(recipeOffset))
-            print("### allRecipes.count is \(allRecipes.count)")
-//            recipeOffset += 2
         }
+//            let unseenRecipes = allRecipes.filter { recipe in
+//                let userLikesRecipe = currentUser.likedRecipes?.contains(recipe) ?? false
+//                let userDislikesRecipe = currentUser.dislikedRecipes?.contains(recipe) ?? false
+//                return !userLikesRecipe && !userDislikesRecipe
+//            }
+//            recipes = Array(unseenRecipes.prefix(recipeOffset))
     }
     
     func popRecipeStack(liked: Bool, delayPop: Bool = true){
@@ -204,15 +194,15 @@ extension ContentView{
 //3 - add + remove recipe
         DispatchQueue.main.asyncAfter(deadline: .now() + (delayPop ? 0.3 : 0.0)) {
             withAnimation {
-                removeCard()
-                addNewCard()
+                recipeOffset += 1
             }
         }
     }
     
     func handleUserPreference(recipeLiked liked: Bool){
         if let currentUser = currentUser.first,
-           let recipe = recipes.last{
+           allRecipes.indices.contains(recipeOffset - 1){
+            let recipe = allRecipes[recipeOffset - 1]
             guard let userAlreadyLikesRecipe = currentUser.likedRecipes?.contains(recipe) else { return }
             
             switch liked {
@@ -243,27 +233,11 @@ extension ContentView{
     }
     
     func checkIfMatch(){
-        if let recipe = recipes.last,
-           users.count > 1,
-           recipe.likesCount == users.count {
-            UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-        }
-    }
-
-    func removeCard(){
-        let topRecipeIndex = recipes.endIndex
-        recipes.remove(at: topRecipeIndex - 1)
-        
-        if recipes.isEmpty{
-            loadRecipes()
-        }
-    }
-    
-    func addNewCard(){
-        guard allRecipes.indices.contains(recipeOffset) else { return }
-        let newRecipe = allRecipes[recipeOffset]
-        recipes.insert(newRecipe, at: 0)
-        recipeOffset += 1
+//        if let recipe = recipes.last,
+//           users.count > 1,
+//           recipe.likesCount == users.count {
+//            UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+//        }
     }
     
     func createNewUser(){

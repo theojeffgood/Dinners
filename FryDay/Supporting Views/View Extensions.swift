@@ -12,10 +12,10 @@ extension View {
         clipShape( RoundedCorner(radius: radius, corners: corners) )
     }
     
-    func stacked(at position: Int, in total: Int) -> some View {
-        let offset = Double(total - position)
-        return self.offset(x: 0, y: offset * 9)
-    }
+//    func stacked(at position: Int, in total: Int) -> some View {
+//        let offset = Double(total - position)
+//        return self.offset(x: 0, y: offset * 9)
+//    }
 }
 
 struct RoundedCorner: Shape {

@@ -12,15 +12,19 @@ struct RecipesList: View {
     var recipes: [Recipe]
     
     var body: some View {
-        ScrollView{
-            LazyVGrid(columns: [GridItem(.flexible(), spacing: 0),
-                                GridItem(.flexible())]) {
-                ForEach(recipes, id: \.self) { recipe in
-                    RecipeCell(recipe: recipe)
+        if !recipes.isEmpty{
+            ScrollView{
+                LazyVGrid(columns: [GridItem(.flexible(), spacing: 0),
+                                    GridItem(.flexible())]) {
+                    ForEach(recipes, id: \.self) { recipe in
+                        RecipeCell(recipe: recipe)
+                    }
                 }
-            }
+            }.navigationTitle(recipesType)
+        } else{
+            Text("Add users to your household")
+                .navigationTitle(recipesType)
         }
-        .navigationTitle(recipesType)
     }
 }
 

@@ -39,10 +39,10 @@ struct RecipeCardView: View{
                     }
                     
                     Text(recipe.title!)
-                        .multilineTextAlignment(.leading)
+//                        .multilineTextAlignment(.leading)
                         .padding(.leading)
                         .frame(maxWidth: .infinity,
-                               maxHeight: 100,
+                               maxHeight: 50,
                                alignment: .leading)
                         .background(.white)
                         .font(.title2)
