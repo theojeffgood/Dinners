@@ -22,8 +22,27 @@ struct RecipesList: View {
                 }
             }.navigationTitle(recipesType)
         } else{
-            Text("Add users to your household")
-                .navigationTitle(recipesType)
+            VStack(spacing: 45, content: {
+                Image(systemName: "person.badge.plus")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 100, height: 100)
+                    .foregroundColor(.gray)
+                
+                Text("Your household is empty. \n Add people to see matches.")
+                    .multilineTextAlignment(.center)
+                    .font(.title3)
+                
+                Button("Add to your Household"){
+                    print("asdf")
+                }
+                .font(.title)
+                .padding()
+                .foregroundColor(.black)
+                .background(.orange)
+                .cornerRadius(25, corners: .allCorners)
+            })
+            .navigationTitle(recipesType)
         }
     }
 }
@@ -88,8 +107,9 @@ struct RecipesList_Previews: PreviewProvider {
         recipeThree.title = "BBQ Ribs"
         recipeThree.imageUrl = "https://halflemons-media.s3.amazonaws.com/784.jpg"
         
-        return RecipesList(recipesType: "Matches", recipes: [recipeOne,
-                                                             recipeTwo,
-                                                             recipeThree])
+        return RecipesList(recipesType: "Matches", recipes: [])
+//        return RecipesList(recipesType: "Matches", recipes: [recipeOne,
+//                                                             recipeTwo,
+//                                                             recipeThree])
     }
 }
