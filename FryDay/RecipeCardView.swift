@@ -20,7 +20,7 @@ struct RecipeCardView: View{
                                        recipeTitle: recipe.title!),
             label: {
                 
-                VStack(spacing: 0) {
+                ZStack(alignment: Alignment(horizontal: .center, vertical: .bottom), content: {
                     
                     //Image Sizing: www.hackingwithswift.com/books/ios-swiftui/resizing-images-to-fit-the-screen-using-geometryreader
                     GeometryReader { geo in
@@ -40,13 +40,14 @@ struct RecipeCardView: View{
                     
                     Text(recipe.title!)
 //                        .multilineTextAlignment(.leading)
+                        .foregroundColor(.white)
                         .padding(.leading)
                         .frame(maxWidth: .infinity,
-                               maxHeight: 50,
+                               maxHeight: 75,
                                alignment: .leading)
-                        .background(.white)
-                        .font(.title2)
-                }
+                        .background(.black.opacity(0.5))
+                        .font(.title3)
+                })
                 .cornerRadius(10, corners: .allCorners)
                 .shadow(radius: 5)
 //user likes & dislikes via the BUTTONS. he does NOT swipe.

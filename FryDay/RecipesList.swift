@@ -27,7 +27,7 @@ struct RecipesList: View {
                     .resizable()
                     .scaledToFit()
                     .frame(width: 100, height: 100)
-                    .foregroundColor(.gray)
+                    .foregroundColor(.gray.opacity(0.6))
                 
                 Text("Your household is empty. \n Add people to see matches.")
                     .multilineTextAlignment(.center)

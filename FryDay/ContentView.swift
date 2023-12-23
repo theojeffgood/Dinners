@@ -75,7 +75,7 @@ struct ContentView: View {
                                 )
                         }
                     }
-                }.padding(.bottom)
+                }.padding(.bottom, 5)
                 
                 Spacer()
                 ZStack {
@@ -103,7 +103,7 @@ struct ContentView: View {
                             .acceptStyle()
                     }
                 }
-                .padding(.top, 10)
+                .padding(.top, 5)
             }
             .padding(5)
             .navigationTitle("Fryday")
@@ -139,14 +139,14 @@ struct ContentView: View {
                           users: Array(users),
                           dismissAction: dismiss)
             }
-        }
-        .sheet(isPresented: $showFilters, content: {
+        }.sheet(isPresented: $showFilters, content: {
             let dismiss = {
                 withAnimation {
                     showFilters = false
                 }
             }
-            Filters(appliedFilters: $appliedFilters, dismissAction: dismiss)
+            Filters(appliedFilters: $appliedFilters,
+                    dismissAction: dismiss)
         })
         .ignoresSafeArea()
         .accentColor(.black)
@@ -200,36 +200,32 @@ extension ContentView{
     }
     
     func handleUserPreference(recipeLiked liked: Bool){
-        if let currentUser = currentUser.first,
-           allRecipes.indices.contains(recipeOffset - 1){
-            let recipe = allRecipes[recipeOffset - 1]
-            guard let userAlreadyLikesRecipe = currentUser.likedRecipes?.contains(recipe) else { return }
-            
-            switch liked {
-            case true:
-                if !userAlreadyLikesRecipe{
-                    recipe.likesCount += 1
-                    
-                    recipe.removeFromUserDislikes(currentUser)
-                    currentUser.removeFromDislikedRecipes(recipe)
-                }
-                
-                currentUser.likes(recipe)
-                recipe.addToUser(currentUser)
-            case false:
-                if userAlreadyLikesRecipe{
-                    recipe.likesCount -= 1
-                    
-                    recipe.removeFromUser(currentUser)
-                    currentUser.removeFromLikedRecipes(recipe)
-                }
-                
-                currentUser.dislikes(recipe)
-                recipe.addToUserDislikes(currentUser)
+        guard let currentUser = currentUser.first,
+              allRecipes.indices.contains(recipeOffset - 1) else { return }
+        let recipe = allRecipes[recipeOffset - 1]
+        guard let userAlreadyLikesRecipe = currentUser.likedRecipes?.contains(recipe) else { return }
+        
+        switch liked {
+        case true:
+            if !userAlreadyLikesRecipe{
+                recipe.likesCount += 1
+                recipe.removeFromUserDislikes(currentUser)
+                currentUser.removeFromDislikedRecipes(recipe)
             }
+            currentUser.likes(recipe)
+            recipe.addToUser(currentUser)
             
-            try! moc.save() //change all try? to try! to find bugs
+        case false:
+            if userAlreadyLikesRecipe{
+                recipe.likesCount -= 1
+                recipe.removeFromUser(currentUser)
+                currentUser.removeFromLikedRecipes(recipe)
+            }
+            currentUser.dislikes(recipe)
+            recipe.addToUserDislikes(currentUser)
         }
+        
+        try! moc.save()
     }
     
     func checkIfMatch(){
