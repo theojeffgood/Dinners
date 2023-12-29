@@ -67,7 +67,7 @@ struct RecipeCardView: View{
                             offset = gesture.translation
                         })
                         .onEnded({ gesture in
-                            if offset.width < 100{ //left swipe
+                            if offset.width < -100{ //left swipe
                                 popRecipeStack(false, false)
                                 
                             } else if offset.width > 100{ //right swipe

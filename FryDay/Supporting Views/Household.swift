@@ -118,18 +118,14 @@ struct Household: View {
                                     Task {
                                         self.share = try await shareCoordinator.createShare()
                                     }
-                                        showShareSheet = true
+                                    showShareSheet = true
                                     
-//                                    TRIGGER THIS after INVITE IS SENT?
                                     if !UserDefaults.standard.bool(forKey: "inAHousehold"){
                                         recipes.forEach { $0.isShared = true }
                                         users  .forEach { $0.isShared = true }
-                                        try? moc.save()
+                                        try! moc.save()
+                                        UserDefaults.standard.set(true, forKey: "inAHousehold")
                                     }
-                                    
-//------------------OPEN QUESTION: USE STATE-BASED ANIMATIONS OR SHOW SHARE SHEET-------------------
-//                                       householdState = .addMember
-//                                       }
                                 }) {
                                     Image(systemName: "plus.circle.fill")
                                         .resizable()

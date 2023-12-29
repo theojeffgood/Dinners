@@ -13,16 +13,23 @@ struct ContentView: View {
 //    @ObservedObject var userManager: UserManager
 
     @Environment(\.managedObjectContext) var moc
-    @FetchRequest(sortDescriptors: [NSSortDescriptor(key: "isLiked", ascending: false)],
-                  predicate: NSPredicate(format: "isShared == 0"))
+    
+    @FetchRequest(sortDescriptors: [NSSortDescriptor(key: "isLiked", ascending: false),
+                                    NSSortDescriptor(key: "recipeId", ascending: true)],
+//                  predicate: NSPredicate(format: "userDislikes.@count == 0"))
+                  predicate: NSPredicate(format: "isShared == %d",
+                                         UserDefaults.standard.bool(forKey: "inAHousehold")))
     var allRecipes: FetchedResults<Recipe>
     @FetchRequest(sortDescriptors: [], predicate:
                     NSCompoundPredicate(type: NSCompoundPredicate.LogicalType.and, subpredicates: [
-                        NSPredicate(format: "id = %@", UserDefaults.standard.string(forKey: "userID")!),
-                        NSPredicate(format: "isShared == 0") ]))
-
+                        NSPredicate(format: "id = %@",
+                                    UserDefaults.standard.string(forKey: "userID")!),
+                        NSPredicate(format: "isShared == %d",
+                                    UserDefaults.standard.bool(forKey: "inAHousehold")) ]))
     var currentUser: FetchedResults<User>
-    @FetchRequest(sortDescriptors: [], predicate: NSPredicate(format: "isShared == 0"))
+    
+    @FetchRequest(sortDescriptors: [], predicate: NSPredicate(format: "isShared == %d",
+                                                              UserDefaults.standard.bool(forKey: "inAHousehold")))
     var users: FetchedResults<User>
     
     @State private var recipeOffset: Int = 1
@@ -163,11 +170,12 @@ struct ContentView: View {
 
 extension ContentView{
     func loadRecipes(){
+        if !UserDefaults.standard.bool(forKey: "appOpenedBefore"){
         Task{
             try? await Webservice(context: moc).load (Recipe.all)
             try! moc.save()
             
-            if !UserDefaults.standard.bool(forKey: "appOpenedBefore"){
+//            if !UserDefaults.standard.bool(forKey: "appOpenedBefore"){
                 createNewUser()
                 UserDefaults.standard.set(true, forKey: "appOpenedBefore")
             }
