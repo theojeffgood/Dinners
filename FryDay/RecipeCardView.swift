@@ -9,8 +9,8 @@ import SwiftUI
 
 struct RecipeCardView: View{
     var recipe: Recipe
-    var isTopRecipe = false
-    var popRecipeStack: ((Bool, Bool) -> Void)
+//    var isTopRecipe = false
+    var popRecipeStack: ((Bool) -> Void)
         
     @State private var offset = CGSize.zero
     
@@ -40,6 +40,7 @@ struct RecipeCardView: View{
                     
                     Text(recipe.title!)
 //                        .multilineTextAlignment(.leading)
+                        .opacity(2.0 - Double(abs(offset.width / 50) ))
                         .foregroundColor(.white)
                         .padding(.leading)
                         .frame(maxWidth: .infinity,
@@ -52,15 +53,16 @@ struct RecipeCardView: View{
                 .shadow(radius: 5)
 //user likes & dislikes via the BUTTONS. he does NOT swipe.
                 .onReceive(NotificationCenter.default.publisher(for: Notification.Name.swipeNotification)) { object in
-                    if isTopRecipe,
-                       let swipeDirection = object.userInfo as? [String: Bool],
-                       let swipeRight = swipeDirection["swipeRight"]{
-                        setOffset(swipedRight: swipeRight)
-                    }
+                    guard let swipeDirection = object.userInfo as? [String: Bool],
+                          let swipeRight = swipeDirection["swipeRight"] else { return }
+                    setOffset(swipedRight: swipeRight)
+                }
+                .onReceive(NotificationCenter.default.publisher(for: Notification.Name.resetOffset)) { _ in
+                    offset = .zero
                 }
                 .rotationEffect(.degrees(Double(offset.width / 30)))
                 .offset(x: offset.width * 0.8, y: offset.height * 0.4)
-                .opacity(3 - Double(abs(offset.width / 50) ))
+                .opacity(2 - Double(abs(offset.width / 50) ))
                 .gesture(
                     DragGesture()
                         .onChanged({ gesture in
@@ -68,10 +70,10 @@ struct RecipeCardView: View{
                         })
                         .onEnded({ gesture in
                             if offset.width < -100{ //left swipe
-                                popRecipeStack(false, false)
+                                popRecipeStack(false)
                                 
                             } else if offset.width > 100{ //right swipe
-                                popRecipeStack(true, false)
+                                popRecipeStack(true)
                                 
                             } else{ //cancel swipe
                                 withAnimation {
@@ -84,7 +86,7 @@ struct RecipeCardView: View{
     }
     
     func setOffset(swipedRight: Bool){
-        let swipeLength = swipedRight ? 125 : -125
+        let swipeLength = swipedRight ? 200 : -200
         withAnimation {
             offset = CGSize(width: swipeLength, height: 0)
         }
@@ -106,6 +108,7 @@ struct RecipeCardView: View{
 
 extension Notification.Name {
     static let swipeNotification = Notification.Name("swipeNotification")
+    static let resetOffset       = Notification.Name("resetOffset")
 }
 
 import CoreData
@@ -119,8 +122,8 @@ struct RecipeCardView_Previews: PreviewProvider {
         recipeOne.imageUrl = "https://halflemons-media.s3.amazonaws.com/786.jpg"
         
         return RecipeCardView(recipe: recipeOne,
-                              isTopRecipe: false,
-                              popRecipeStack: { _,_ in }).previewLayout(.sizeThatFits)
+//                              isTopRecipe: false,
+                              popRecipeStack: { _ in }).previewLayout(.sizeThatFits)
     }
         
 }

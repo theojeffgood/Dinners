@@ -13,7 +13,7 @@ import CoreData
 struct FryDayApp: App {
     
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate // necessary to fire scene delegate. accept share invitates.
-//    @StateObject var userManager: UserManager
+    @StateObject var recipeManager: RecipeManager
     
     @StateObject
         private var purchaseManager: PurchaseManager
@@ -27,14 +27,14 @@ struct FryDayApp: App {
             UserDefaults.standard.set(userId, forKey: "userID")
         }
         
-//        let storage = UserManager(managedObjectContext: DataController.shared.context)
-//        self._userManager = StateObject(wrappedValue: storage)
+        let storage = RecipeManager(managedObjectContext: DataController.shared.context)
+        self._recipeManager = StateObject(wrappedValue: storage)
     }
     
     var body: some Scene {
         
         WindowGroup {
-            ContentView()
+            ContentView(recipeManager: recipeManager)
                 .environment(\.managedObjectContext, DataController.shared.context)
                 .environmentObject(purchaseManager)
                                 .task {
@@ -61,7 +61,7 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
 final class SceneDelegate: NSObject, UIWindowSceneDelegate {
     func windowScene(_ windowScene: UIWindowScene, 
                      userDidAcceptCloudKitShareWith cloudKitShareMetadata: CKShare.Metadata) {
-        UserDefaults.standard.set(false, forKey: "inAHousehold") //TESTING only. REMOVE in PROD.
+//        UserDefaults.standard.set(false, forKey: "inAHousehold") //TESTING only. REMOVE in PROD.
         
         let shareStore = DataController.shared.sharedPersistentStore
         let persistentContainer = DataController.shared.persistentContainer
@@ -75,7 +75,6 @@ final class SceneDelegate: NSObject, UIWindowSceneDelegate {
             
             let incomingShareRequest = cloudKitShareMetadata.share
             if cloudKitShareMetadata.participantStatus == .accepted,
-//               print("USER JOINED A HOUSEHOLD. NEW STATUS is: \(currentUser.acceptanceStatus)")
                 !UserDefaults.standard.bool(forKey: "inAHousehold"){
                 
                 let context = DataController.shared.context

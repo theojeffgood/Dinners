@@ -10,16 +10,9 @@ import CloudKit
 
 struct ContentView: View {
     
-//    @ObservedObject var userManager: UserManager
-
     @Environment(\.managedObjectContext) var moc
+    @ObservedObject var recipeManager: RecipeManager
     
-    @FetchRequest(sortDescriptors: [NSSortDescriptor(key: "isLiked", ascending: false),
-                                    NSSortDescriptor(key: "recipeId", ascending: true)],
-//                  predicate: NSPredicate(format: "userDislikes.@count == 0"))
-                  predicate: NSPredicate(format: "isShared == %d",
-                                         UserDefaults.standard.bool(forKey: "inAHousehold")))
-    var allRecipes: FetchedResults<Recipe>
     @FetchRequest(sortDescriptors: [], predicate:
                     NSCompoundPredicate(type: NSCompoundPredicate.LogicalType.and, subpredicates: [
                         NSPredicate(format: "id = %@",
@@ -32,7 +25,7 @@ struct ContentView: View {
                                                               UserDefaults.standard.bool(forKey: "inAHousehold")))
     var users: FetchedResults<User>
     
-    @State private var recipeOffset: Int = 1
+//    @State private var recipeOffset: Int = 1
     @State private var showHousehold: Bool = false
     @State private var showFilters: Bool = false
     @State private var appliedFilters: [Category] = []{
@@ -52,7 +45,7 @@ struct ContentView: View {
     private let shareCoordinator = ShareCoordinator()
     private var matches: [Recipe]{
         if users.count > 1{
-            let matches = allRecipes.filter({ $0.likesCount == users.count })
+            let matches = recipeManager.allRecipes.filter({ $0.likesCount == users.count })
             return matches
         }
         return []
@@ -85,12 +78,9 @@ struct ContentView: View {
                 }.padding(.bottom, 5)
                 
                 Spacer()
-                ZStack {
-                    ForEach(allRecipes[min(allRecipes.endIndex, recipeOffset - 1) ..< min(allRecipes.endIndex, recipeOffset)], id: \.self) { recipe in
-                        RecipeCardView(recipe: recipe,
-                                       isTopRecipe: (true)){ liked, _ in
-                            popRecipeStack(liked: liked, delayPop: false)
-                        }
+                if let recipe = recipeManager.recipe{
+                    RecipeCardView(recipe: recipe){ liked in
+                        popRecipeStack(liked: liked, delayPop: false)
                     }
                 }
                 Spacer()
@@ -142,7 +132,7 @@ struct ContentView: View {
                         showHousehold = false
                     }
                 }
-                Household(recipes: Array(allRecipes), 
+                Household(recipes: recipeManager.allRecipes,
                           users: Array(users),
                           dismissAction: dismiss)
             }
@@ -157,9 +147,13 @@ struct ContentView: View {
         })
         .ignoresSafeArea()
         .accentColor(.black)
-        .onAppear(){
-            loadRecipes()
-        }
+        .onAppear(){ loadRecipes() }
+        .onChange(of: recipeManager.recipe, perform: { _ in
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                NotificationCenter.default.post(name: Notification.Name.resetOffset,
+                                                object: nil, userInfo: nil )
+            }
+        })
         
 //---------SHOW JOINING-A-HOUSEHOLD ONBOARDING HERE
 //        .onOpenURL { url in
@@ -171,47 +165,34 @@ struct ContentView: View {
 extension ContentView{
     func loadRecipes(){
         if !UserDefaults.standard.bool(forKey: "appOpenedBefore"){
-        Task{
-            try? await Webservice(context: moc).load (Recipe.all)
-            try! moc.save()
-            
-//            if !UserDefaults.standard.bool(forKey: "appOpenedBefore"){
+            Task{
+                try? await Webservice(context: moc).load (Recipe.all)
+                try! moc.save()
+                
                 createNewUser()
                 UserDefaults.standard.set(true, forKey: "appOpenedBefore")
             }
         }
-//            let unseenRecipes = allRecipes.filter { recipe in
-//                let userLikesRecipe = currentUser.likedRecipes?.contains(recipe) ?? false
-//                let userDislikesRecipe = currentUser.dislikedRecipes?.contains(recipe) ?? false
-//                return !userLikesRecipe && !userDislikesRecipe
-//            }
-//            recipes = Array(unseenRecipes.prefix(recipeOffset))
     }
     
     func popRecipeStack(liked: Bool, delayPop: Bool = true){
 //1 - save the like/dislike
-        handleUserPreference(recipeLiked: liked)
-        checkIfMatch()
+        DispatchQueue.main.asyncAfter(deadline: .now() + (delayPop ? 0.15 : 0.0)) {
+            handleUserPreference(recipeLiked: liked)
+        }
+//        checkIfMatch()
         
 //2 - show swipe animation
         if delayPop{
             NotificationCenter.default.post(name: Notification.Name.swipeNotification,
                                             object: "Swiped", userInfo: ["swipeRight": liked])
         }
-        
-//3 - add + remove recipe
-        DispatchQueue.main.asyncAfter(deadline: .now() + (delayPop ? 0.3 : 0.0)) {
-            withAnimation {
-                recipeOffset += 1
-            }
-        }
     }
     
     func handleUserPreference(recipeLiked liked: Bool){
         guard let currentUser = currentUser.first,
-              allRecipes.indices.contains(recipeOffset - 1) else { return }
-        let recipe = allRecipes[recipeOffset - 1]
-        guard let userAlreadyLikesRecipe = currentUser.likedRecipes?.contains(recipe) else { return }
+              let recipe = recipeManager.recipe,
+              let userAlreadyLikesRecipe = currentUser.likedRecipes?.contains(recipe) else { return }
         
         switch liked {
         case true:
@@ -236,13 +217,13 @@ extension ContentView{
         try! moc.save()
     }
     
-    func checkIfMatch(){
+//    func checkIfMatch(){
 //        if let recipe = recipes.last,
 //           users.count > 1,
 //           recipe.likesCount == users.count {
 //            UIImpactFeedbackGenerator(style: .medium).impactOccurred()
 //        }
-    }
+//    }
     
     func createNewUser(){
         let user = User(context: moc)
@@ -255,11 +236,11 @@ extension ContentView{
     }
 }
 
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
-    }
-}
+//struct ContentView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        ContentView()
+//    }
+//}
 
 //MARK: -- Extractions
 

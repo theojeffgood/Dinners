@@ -17,9 +17,15 @@ public class User: NSManagedObject {
 
 // a convenient extension to set up the fetch request
 extension User {
-  static var dueSoonFetchRequest: NSFetchRequest<User> {
+  static var currentUserFetchRequest: NSFetchRequest<User> {
+      
     let request: NSFetchRequest<User> = User.fetchRequest()
-//    request.predicate = NSPredicate(format: "dueDate < %@", Date.nextWeek() as CVarArg)
+    request.predicate = NSCompoundPredicate(type: NSCompoundPredicate.LogicalType.and, subpredicates: [
+        NSPredicate(format: "id = %@",
+                    UserDefaults.standard.string(forKey: "userID")!),
+        NSPredicate(format: "isShared == %d",
+                    UserDefaults.standard.bool(forKey: "inAHousehold")) ])
+      request.fetchLimit = 1
 //    request.sortDescriptors = [NSSortDescriptor(key: "dueDate", ascending: true)]
       request.sortDescriptors = []
 
