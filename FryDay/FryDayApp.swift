@@ -13,10 +13,10 @@ import CoreData
 struct FryDayApp: App {
     
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate // necessary to fire scene delegate. accept share invitates.
-    @StateObject var recipeManager: RecipeManager
+//    @Environment(\.scenePhase) var scenePhase //track changes of scene phase e.g. app goes to background
     
-    @StateObject
-        private var purchaseManager: PurchaseManager
+    @StateObject var recipeManager: RecipeManager
+    @StateObject private var purchaseManager: PurchaseManager
     
     init() {
         let purchaseManager = PurchaseManager()
@@ -44,6 +44,10 @@ struct FryDayApp: App {
                     print("### this fires when user opens app via link. the link url is: \(url)")
                 }
         }
+//        .onChange(of: scenePhase) { newValue in
+//            try? DataController.shared.context.save()
+//            print("### CHANGE OF APP SCENE PHASE")
+//        } //save context when app goes to background
     }
 }
 
@@ -69,36 +73,42 @@ final class SceneDelegate: NSObject, UIWindowSceneDelegate {
 //        DataController.shared.ckContainer.accept(cloudKitShareMetadata) { share, error in }
         persistentContainer.acceptShareInvitations(from: [cloudKitShareMetadata], into: shareStore) { shareMetaData, error in
             if let error = error {
-                print("acceptShareInvitation error :\(error)")
-                return
+//                print("acceptShareInvitation error :\(error)")
+                fatalError("FAILED TO CREATE HOUSEHOLD USER Point #00")
+//                return
             }
             
-            let incomingShareRequest = cloudKitShareMetadata.share
-            if cloudKitShareMetadata.participantStatus == .accepted,
-                !UserDefaults.standard.bool(forKey: "inAHousehold"){
-                
-                let context = DataController.shared.context
-                context.performAndWait {
-                    let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: "User")
-                    guard let users = try? context.fetch(fetchRequest) as? [User] else { return }
-                    
-//                    let userId = currentUser.userIdentity.userRecordID?.recordName
-                    let userId = UserDefaults.standard.string(forKey: "userID")!
-                    let userAlreadyExists = users.contains(where: { $0.id == userId && $0.isShared == true })
-                    guard !userAlreadyExists,
-                          let currentUser = incomingShareRequest.currentUserParticipant else { return }
-                    
-                    let newUser = User(context: DataController.shared.context)
-                    newUser.id = userId
-                    newUser.name = currentUser.userIdentity.nameComponents?.givenName
-                    newUser.userType = 1
-                    newUser.isShared = true
-                    
-                    DataController.shared.context.assign(newUser, to: DataController.shared.sharedPersistentStore)
-                    try! DataController.shared.context.save()
+////            CKAcceptSharesOperation() -- is this needed to accept share invites?
+//            
+//            let incomingShareRequest = cloudKitShareMetadata.share
+////            if cloudKitShareMetadata.participantStatus == .accepted,
+//                if !UserDefaults.standard.bool(forKey: "inAHousehold"){
+//                
+//                let context = DataController.shared.context
+//                context.performAndWait {
+//                    let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: String(describing: User.self))
+//                    guard let users = try? context.fetch(fetchRequest) as? [User] else { fatalError("FAILED TO CREATE HOUSEHOLD USER Point #0") }
+//                    
+////                    let userId = currentUser.userIdentity.userRecordID?.recordName
+//                    let userId = UserDefaults.standard.string(forKey: "userID")!
+////                    let userAlreadyExists = users.contains(where: { $0.id == userId && $0.isShared == true })
+//                    let userAlreadyExists = users.contains(where: { $0.id == userId })
+//                    guard !userAlreadyExists,
+//                          let currentUser = incomingShareRequest.currentUserParticipant else { fatalError("FAILED TO CREATE HOUSEHOLD USER Point #1") }
+//                    
+//                    let newUser = User(context: DataController.shared.context)
+//                    newUser.id = userId
+//                    newUser.name = currentUser.userIdentity.nameComponents?.givenName
+//                    newUser.userType = 1
+////                    newUser.isShared = true
+//                    
+//                    DataController.shared.context.assign(newUser, to: DataController.shared.sharedPersistentStore)
+//                    try! DataController.shared.context.save()
                     UserDefaults.standard.set(true, forKey: "inAHousehold")
-                }
-            }
+//                }
+//            } else{
+//                fatalError("FAILED TO CREATE HOUSEHOLD USER Point #2")
+//            }
         }
     }
 }

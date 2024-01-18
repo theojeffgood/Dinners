@@ -5,23 +5,16 @@
         <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="imageUrl" attributeType="String" defaultValueString="www.halflemons.com"/>
         <attribute name="ingredients" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromData" customClassName="[Int]"/>
-        <attribute name="isLiked" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
-        <attribute name="isShared" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
-        <attribute name="likesCount" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="recipeId" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="recipeStatusId" attributeType="Integer 16" defaultValueString="1" usesScalarValueType="YES"/>
         <attribute name="source" attributeType="String" defaultValueString="Half Lemons"/>
         <attribute name="title" attributeType="String" defaultValueString="Title"/>
         <attribute name="websiteUrl" attributeType="String" defaultValueString="www.halflemons.com"/>
-        <relationship name="user" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="User" inverseName="likedRecipes" inverseEntity="User"/>
-        <relationship name="userDislikes" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="User" inverseName="dislikedRecipes" inverseEntity="User"/>
     </entity>
-    <entity name="User" representedClassName=".User" syncable="YES">
-        <attribute name="id" optional="YES" attributeType="String"/>
-        <attribute name="isShared" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
-        <attribute name="name" optional="YES" attributeType="String"/>
-        <attribute name="userType" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
-        <relationship name="dislikedRecipes" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Recipe" inverseName="userDislikes" inverseEntity="Recipe"/>
-        <relationship name="likedRecipes" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Recipe" inverseName="user" inverseEntity="Recipe"/>
+    <entity name="Vote" representedClassName=".Vote" syncable="YES">
+        <attribute name="date" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="isLiked" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="ownerId" optional="YES" attributeType="String"/>
+        <attribute name="recipeId" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
     </entity>
 </model>

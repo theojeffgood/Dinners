@@ -2,12 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>ITSAppUsesNonExemptEncryption</key>
-	<false/>
-	<key>CKSharingSupported</key>
-	<true/>
-	<key>UIUserInterfaceStyle</key>
-	<string>Light</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -22,6 +16,10 @@
 		</dict>
 		<dict/>
 	</array>
+	<key>CKSharingSupported</key>
+	<true/>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>remote-notification</string>

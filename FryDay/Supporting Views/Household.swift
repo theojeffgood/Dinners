@@ -21,7 +21,6 @@ struct Household: View {
     @State private var showShareSheet = false
     
     var recipes: [Recipe]
-    var users: [User]
 
     @State private var householdState: HouseholdState = .notLoggedIn
     enum HouseholdState {
@@ -115,16 +114,21 @@ struct Household: View {
                             VStack(spacing: 5){
                                 Button(action: {
 //                                    withAnimation {
-                                    Task {
-                                        self.share = try await shareCoordinator.createShare()
-                                    }
-                                    showShareSheet = true
                                     
-                                    if !UserDefaults.standard.bool(forKey: "inAHousehold"){
-                                        recipes.forEach { $0.isShared = true }
-                                        users  .forEach { $0.isShared = true }
-                                        try! moc.save()
+                                    if !UserDefaults.standard.bool(forKey: "inAHousehold") ||
+                                        UserDefaults.standard.bool(forKey: "isHouseholdOwner"){
+                                        
+                                        Task {
+                                            self.share = try await shareCoordinator.createShare()
+                                        }
+                                        showShareSheet = true
+                                        
+//                                        recipes.forEach { $0.isShared = true }
+//                                        users  .forEach { $0.isShared = true }
+//                                        try! moc.save()
+                                        
                                         UserDefaults.standard.set(true, forKey: "inAHousehold")
+                                        UserDefaults.standard.set(true, forKey: "isHouseholdOwner")
                                     }
                                 }) {
                                     Image(systemName: "plus.circle.fill")

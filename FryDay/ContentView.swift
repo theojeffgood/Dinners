@@ -13,48 +13,41 @@ struct ContentView: View {
     @Environment(\.managedObjectContext) var moc
     @ObservedObject var recipeManager: RecipeManager
     
-    @FetchRequest(sortDescriptors: [], predicate:
-                    NSCompoundPredicate(type: NSCompoundPredicate.LogicalType.and, subpredicates: [
-                        NSPredicate(format: "id = %@",
-                                    UserDefaults.standard.string(forKey: "userID")!),
-                        NSPredicate(format: "isShared == %d",
-                                    UserDefaults.standard.bool(forKey: "inAHousehold")) ]))
-    var currentUser: FetchedResults<User>
     
-    @FetchRequest(sortDescriptors: [], predicate: NSPredicate(format: "isShared == %d",
-                                                              UserDefaults.standard.bool(forKey: "inAHousehold")))
-    var users: FetchedResults<User>
+    @FetchRequest(fetchRequest: Vote.allVotes) var allVotes
     
 //    @State private var recipeOffset: Int = 1
     @State private var showHousehold: Bool = false
     @State private var showFilters: Bool = false
-    @State private var appliedFilters: [Category] = []{
-        didSet{
-//            var filteredRecipes: [Recipe] = []
-//            appliedFilters.forEach { filter in
-//                let recipes = recipes.filter({ $0.isCategory(filter.id) })
-//                filteredRecipes.append(contentsOf: recipes)
-//                recipes.forEach { recipe in
-//                    print("### recipe filtered: \(recipe.title)")
-//                }
-//            }
-//            recipes = filteredRecipes
-        }
-    }
+    @State private var appliedFilters: [Category] = []
     
     private let shareCoordinator = ShareCoordinator()
     private var matches: [Recipe]{
-        if users.count > 1{
-            let matches = recipeManager.allRecipes.filter({ $0.likesCount == users.count })
-            return matches
+        
+        var recipesAndVotes: [Int64: Int] = [:] //** [RecipeIDs : VoteCount] **//
+        var matches: [Int64] = []
+        
+        let likes = allVotes.filter({ $0.isLiked })
+        for like in likes{
+            let recipe = like.recipeId
+            if let voteCount = recipesAndVotes[recipe]{
+                let newVoteCount = voteCount + 1
+                recipesAndVotes[recipe] = newVoteCount
+                
+                matches.append(recipe)
+            } else{
+                recipesAndVotes[recipe] = 1
+            }
         }
-        return []
+        
+        let uniqueRecipes = Set(matches)
+        let recipes = recipeManager.getRecipesById(ids: Array(uniqueRecipes), fromContext: moc)
+        return recipes ?? []
     }
     private var likes: [Recipe]{
-        if let likes = currentUser.first?.likedRecipes?.allObjects as? [Recipe]{
-            return likes
-        }
-        return []
+        let votedRecipeIds = allVotes.filter({ $0.isLiked && $0.isCurrentUser }).map({ $0.recipeId })
+        let recipes = recipeManager.getRecipesById(ids: votedRecipeIds, fromContext: moc)
+        return recipes ?? []
     }
     
     var body: some View {
@@ -133,7 +126,6 @@ struct ContentView: View {
                     }
                 }
                 Household(recipes: recipeManager.allRecipes,
-                          users: Array(users),
                           dismissAction: dismiss)
             }
         }.sheet(isPresented: $showFilters, content: {
@@ -168,10 +160,9 @@ extension ContentView{
             Task{
                 try? await Webservice(context: moc).load (Recipe.all)
                 try! moc.save()
-                
-                createNewUser()
-                UserDefaults.standard.set(true, forKey: "appOpenedBefore")
             }
+//            createNewUser()
+            UserDefaults.standard.set(true, forKey: "appOpenedBefore")
         }
     }
     
@@ -190,50 +181,77 @@ extension ContentView{
     }
     
     func handleUserPreference(recipeLiked liked: Bool){
-        guard let currentUser = currentUser.first,
-              let recipe = recipeManager.recipe,
-              let userAlreadyLikesRecipe = currentUser.likedRecipes?.contains(recipe) else { return }
+//        guard let currentUser = currentUser.first,
+              guard let recipe = recipeManager.recipe else { return }
+//              let userAlreadyLikesRecipe = currentUser.likedRecipes?.contains(recipe) else { return }
         
-        switch liked {
-        case true:
-            if !userAlreadyLikesRecipe{
-                recipe.likesCount += 1
-                recipe.removeFromUserDislikes(currentUser)
-                currentUser.removeFromDislikedRecipes(recipe)
+//        switch liked {
+//        case true:
+//            if !userAlreadyLikesRecipe{
+//                recipe.likesCount += 1
+//                recipe.removeFromUserDislikes(currentUser)
+//                currentUser.removeFromDislikedRecipes(recipe)
+//            }
+//            currentUser.likes(recipe)
+//            recipe.addToUser(currentUser)
+//            
+//        case false:
+//            if userAlreadyLikesRecipe{
+//                recipe.likesCount -= 1
+//                recipe.removeFromUser(currentUser)
+//                currentUser.removeFromLikedRecipes(recipe)
+//            }
+//            currentUser.dislikes(recipe)
+//            recipe.addToUserDislikes(currentUser)
+//        }
+        let userId: String = UserDefaults.standard.string(forKey: "userID")!
+        
+        let vote = Vote(context: moc)
+        vote.isLiked = liked
+        vote.date = Date.now
+        vote.ownerId = userId
+        vote.recipeId = recipe.recipeId
+        
+        if UserDefaults.standard.bool(forKey: "inAHousehold"),
+           !UserDefaults.standard.bool(forKey: "isHouseholdOwner"){
+            if let existingShare = try? DataController.shared.persistentContainer.fetchShares(in: DataController.shared.sharedPersistentStore).first{
+                
+                DataController.shared.persistentContainer.share([vote], to: existingShare) { sharedObjectIds, ckShare, container, error in
+                    if let sharedObjectIds{
+                        print("### sharedObjectIds is: \(sharedObjectIds)")
+                    }
+                    if let ckShare{
+                        print("### ckShare is: \(ckShare)")
+                    }
+                }
             }
-            currentUser.likes(recipe)
-            recipe.addToUser(currentUser)
             
-        case false:
-            if userAlreadyLikesRecipe{
-                recipe.likesCount -= 1
-                recipe.removeFromUser(currentUser)
-                currentUser.removeFromLikedRecipes(recipe)
-            }
-            currentUser.dislikes(recipe)
-            recipe.addToUserDislikes(currentUser)
+//            DataController.shared.ckContainer.sharedCloudDatabase.fetch(withRecordID: <#T##CKRecord.ID#>, completionHandler: <#T##(CKRecord?, Error?) -> Void#>)
+            
+//            moc.assign(vote, to: DataController.shared.sharedPersistentStore)
         }
         
         try! moc.save()
+        recipeManager.nextRecipe()
     }
     
 //    func checkIfMatch(){
-//        if let recipe = recipes.last,
+//        if let recipe = recipeManager.recipe,
 //           users.count > 1,
 //           recipe.likesCount == users.count {
 //            UIImpactFeedbackGenerator(style: .medium).impactOccurred()
 //        }
 //    }
     
-    func createNewUser(){
-        let user = User(context: moc)
-        let userId: String = UserDefaults.standard.string(forKey: "userID")!
-        user.id = userId
-        user.name = "Not yet set"
-        user.userType = 1
-        user.isShared = false
-        try! moc.save()
-    }
+//    func createNewUser(){
+//        let user = User(context: moc)
+//        let userId: String = UserDefaults.standard.string(forKey: "userID")!
+//        user.id = userId
+//        user.name = "Not yet set"
+//        user.userType = 1
+////        user.isShared = false
+//        try! moc.save()
+//    }
 }
 
 //struct ContentView_Previews: PreviewProvider {

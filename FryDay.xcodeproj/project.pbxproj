@@ -16,19 +16,20 @@
 		E439227029772E8200CC9E53 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E439226F29772E8200CC9E53 /* ContentView.swift */; };
 		E439227229772E8300CC9E53 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E439227129772E8300CC9E53 /* Assets.xcassets */; };
 		E439227629772E8300CC9E53 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E439227529772E8300CC9E53 /* Preview Assets.xcassets */; };
+		E4512F6D2B5587E3003F9B44 /* Vote + CoreData.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4512F6C2B5587E3003F9B44 /* Vote + CoreData.swift */; };
 		E465A711298307D30058B564 /* RecipeCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E465A710298307D30058B564 /* RecipeCardView.swift */; };
 		E4875D802B192CFA00A192CE /* PurchaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4875D7F2B192CFA00A192CE /* PurchaseManager.swift */; };
 		E48CE0AC2B18F47700C296C1 /* Filters.swift in Sources */ = {isa = PBXBuildFile; fileRef = E48CE0AB2B18F47700C296C1 /* Filters.swift */; };
-		E4985E5D2AE6F69800495720 /* User+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4985E5B2AE6F69800495720 /* User+CoreDataClass.swift */; };
-		E4985E5E2AE6F69800495720 /* User+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4985E5C2AE6F69800495720 /* User+CoreDataProperties.swift */; };
-		E49E8410299D88BC003E4E77 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = E49E840F299D88BC003E4E77 /* User.swift */; };
+		E4985E5D2AE6F69800495720 /* User DELETE.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4985E5B2AE6F69800495720 /* User DELETE.swift */; };
+		E4985E5E2AE6F69800495720 /* User + CoreData.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4985E5C2AE6F69800495720 /* User + CoreData.swift */; };
+		E49E8410299D88BC003E4E77 /* User OLD.swift in Sources */ = {isa = PBXBuildFile; fileRef = E49E840F299D88BC003E4E77 /* User OLD.swift */; };
 		E49E8413299E88DB003E4E77 /* MealSwipe.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = E49E8411299E88DB003E4E77 /* MealSwipe.xcdatamodeld */; };
 		E49E8415299EB02C003E4E77 /* DataController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E49E8414299EB02C003E4E77 /* DataController.swift */; };
 		E4CB2C80297893CC00A829AE /* RecipesList.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4CB2C7F297893CC00A829AE /* RecipesList.swift */; };
 		E4CB2C822979C28700A829AE /* RecipeDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4CB2C812979C28700A829AE /* RecipeDetailsView.swift */; };
-		E4EA57AA2AF2F04700F5E130 /* Recipe+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4EA57A82AF2F04700F5E130 /* Recipe+CoreDataClass.swift */; };
-		E4EA57AB2AF2F04700F5E130 /* Recipe+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4EA57A92AF2F04700F5E130 /* Recipe+CoreDataProperties.swift */; };
-		E4F7ECA32989DF6000996CB3 /* Recipe.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4F7ECA22989DF6000996CB3 /* Recipe.swift */; };
+		E4EA57AA2AF2F04700F5E130 /* RecipeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4EA57A82AF2F04700F5E130 /* RecipeManager.swift */; };
+		E4EA57AB2AF2F04700F5E130 /* Recipe + CoreData.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4EA57A92AF2F04700F5E130 /* Recipe + CoreData.swift */; };
+		E4F7ECA32989DF6000996CB3 /* Recipe OLD.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4F7ECA22989DF6000996CB3 /* Recipe OLD.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -43,20 +44,21 @@
 		E439227129772E8300CC9E53 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E439227329772E8300CC9E53 /* FryDay.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FryDay.entitlements; sourceTree = "<group>"; };
 		E439227529772E8300CC9E53 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		E4512F6C2B5587E3003F9B44 /* Vote + CoreData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Vote + CoreData.swift"; sourceTree = "<group>"; };
 		E465A710298307D30058B564 /* RecipeCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeCardView.swift; sourceTree = "<group>"; };
 		E4875D7F2B192CFA00A192CE /* PurchaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PurchaseManager.swift; sourceTree = "<group>"; };
 		E4875D842B1FB6EC00A192CE /* FridayStorekitConfig.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = FridayStorekitConfig.storekit; sourceTree = "<group>"; };
 		E48CE0AB2B18F47700C296C1 /* Filters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Filters.swift; sourceTree = "<group>"; };
-		E4985E5B2AE6F69800495720 /* User+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "User+CoreDataClass.swift"; sourceTree = "<group>"; };
-		E4985E5C2AE6F69800495720 /* User+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "User+CoreDataProperties.swift"; sourceTree = "<group>"; };
-		E49E840F299D88BC003E4E77 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		E4985E5B2AE6F69800495720 /* User DELETE.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "User DELETE.swift"; sourceTree = "<group>"; };
+		E4985E5C2AE6F69800495720 /* User + CoreData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "User + CoreData.swift"; sourceTree = "<group>"; };
+		E49E840F299D88BC003E4E77 /* User OLD.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "User OLD.swift"; sourceTree = "<group>"; };
 		E49E8412299E88DB003E4E77 /* MealSwipe.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MealSwipe.xcdatamodel; sourceTree = "<group>"; };
 		E49E8414299EB02C003E4E77 /* DataController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataController.swift; sourceTree = "<group>"; };
 		E4CB2C7F297893CC00A829AE /* RecipesList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipesList.swift; sourceTree = "<group>"; };
 		E4CB2C812979C28700A829AE /* RecipeDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeDetailsView.swift; sourceTree = "<group>"; };
-		E4EA57A82AF2F04700F5E130 /* Recipe+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Recipe+CoreDataClass.swift"; sourceTree = "<group>"; };
-		E4EA57A92AF2F04700F5E130 /* Recipe+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Recipe+CoreDataProperties.swift"; sourceTree = "<group>"; };
-		E4F7ECA22989DF6000996CB3 /* Recipe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Recipe.swift; sourceTree = "<group>"; };
+		E4EA57A82AF2F04700F5E130 /* RecipeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeManager.swift; sourceTree = "<group>"; };
+		E4EA57A92AF2F04700F5E130 /* Recipe + CoreData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Recipe + CoreData.swift"; sourceTree = "<group>"; };
+		E4F7ECA22989DF6000996CB3 /* Recipe OLD.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Recipe OLD.swift"; sourceTree = "<group>"; };
 		E4F7ECAD2995B89000996CB3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -132,12 +134,13 @@
 		E4985E5F2AE6FD8900495720 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				E4F7ECA22989DF6000996CB3 /* Recipe.swift */,
-				E4EA57A82AF2F04700F5E130 /* Recipe+CoreDataClass.swift */,
-				E4EA57A92AF2F04700F5E130 /* Recipe+CoreDataProperties.swift */,
-				E49E840F299D88BC003E4E77 /* User.swift */,
-				E4985E5B2AE6F69800495720 /* User+CoreDataClass.swift */,
-				E4985E5C2AE6F69800495720 /* User+CoreDataProperties.swift */,
+				E4EA57A82AF2F04700F5E130 /* RecipeManager.swift */,
+				E4EA57A92AF2F04700F5E130 /* Recipe + CoreData.swift */,
+				E4F7ECA22989DF6000996CB3 /* Recipe OLD.swift */,
+				E4985E5C2AE6F69800495720 /* User + CoreData.swift */,
+				E4985E5B2AE6F69800495720 /* User DELETE.swift */,
+				E49E840F299D88BC003E4E77 /* User OLD.swift */,
+				E4512F6C2B5587E3003F9B44 /* Vote + CoreData.swift */,
 				E49E8411299E88DB003E4E77 /* MealSwipe.xcdatamodeld */,
 			);
 			path = Models;
@@ -218,24 +221,25 @@
 			buildActionMask = 2147483647;
 			files = (
 				E465A711298307D30058B564 /* RecipeCardView.swift in Sources */,
-				E4EA57AA2AF2F04700F5E130 /* Recipe+CoreDataClass.swift in Sources */,
+				E4EA57AA2AF2F04700F5E130 /* RecipeManager.swift in Sources */,
 				E4CB2C822979C28700A829AE /* RecipeDetailsView.swift in Sources */,
 				E439227029772E8200CC9E53 /* ContentView.swift in Sources */,
 				E439226E29772E8200CC9E53 /* FryDayApp.swift in Sources */,
-				E4EA57AB2AF2F04700F5E130 /* Recipe+CoreDataProperties.swift in Sources */,
+				E4EA57AB2AF2F04700F5E130 /* Recipe + CoreData.swift in Sources */,
 				E41D5077297DE959003CD008 /* Household.swift in Sources */,
 				E49E8415299EB02C003E4E77 /* DataController.swift in Sources */,
-				E4985E5D2AE6F69800495720 /* User+CoreDataClass.swift in Sources */,
+				E4985E5D2AE6F69800495720 /* User DELETE.swift in Sources */,
 				E49E8413299E88DB003E4E77 /* MealSwipe.xcdatamodeld in Sources */,
-				E4985E5E2AE6F69800495720 /* User+CoreDataProperties.swift in Sources */,
-				E49E8410299D88BC003E4E77 /* User.swift in Sources */,
+				E4985E5E2AE6F69800495720 /* User + CoreData.swift in Sources */,
+				E49E8410299D88BC003E4E77 /* User OLD.swift in Sources */,
 				E41D5075297DE372003CD008 /* WebService.swift in Sources */,
 				E4875D802B192CFA00A192CE /* PurchaseManager.swift in Sources */,
 				E4CB2C80297893CC00A829AE /* RecipesList.swift in Sources */,
+				E4512F6D2B5587E3003F9B44 /* Vote + CoreData.swift in Sources */,
 				E40BCEE32B27F6E300E43CDB /* View Extensions.swift in Sources */,
 				E43634FA2AD5E9BF007F238F /* CloudSharingController.swift in Sources */,
 				E48CE0AC2B18F47700C296C1 /* Filters.swift in Sources */,
-				E4F7ECA32989DF6000996CB3 /* Recipe.swift in Sources */,
+				E4F7ECA32989DF6000996CB3 /* Recipe OLD.swift in Sources */,
 				E43634FC2AD6EFCB007F238F /* ShareHelper.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -359,14 +363,15 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = FryDay/FryDay.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_ASSET_PATHS = "\"FryDay/Preview Content\"";
 				DEVELOPMENT_TEAM = 78U3X38B3F;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = FryDay/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = Friday;
+				INFOPLIST_KEY_CFBundleDisplayName = "Meal Swype";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.food-and-drink";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -377,12 +382,13 @@
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 12.6;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.hellogoodman.friday;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hellogoodman.friday2;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
@@ -399,14 +405,15 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = FryDay/FryDay.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_ASSET_PATHS = "\"FryDay/Preview Content\"";
 				DEVELOPMENT_TEAM = 78U3X38B3F;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = FryDay/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = Friday;
+				INFOPLIST_KEY_CFBundleDisplayName = "Meal Swype";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.food-and-drink";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -417,12 +424,13 @@
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 12.6;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.hellogoodman.friday;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hellogoodman.friday2;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";

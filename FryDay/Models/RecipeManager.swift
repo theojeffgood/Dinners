@@ -1,0 +1,142 @@
+//
+//  Recipe+CoreDataClass.swift
+//  FryDay
+//
+//  Created by Theo Goodman on 11/1/23.
+//
+//
+
+import CoreData
+
+class RecipeManager: NSObject, ObservableObject {
+    
+    @Published var recipe: Recipe?
+    var allRecipes: [Recipe]
+    private var recipeIndex: Int
+    
+//    var currentUser: User?
+    
+    var allVotes: [Vote]{
+        didSet{
+            currentUserLikes = allVotes.filter({ $0.isLiked && $0.isCurrentUser }).map({ $0.recipeId })
+            householdLikes = allVotes.filter({ $0.isLiked && !$0.isCurrentUser }).map({ $0.recipeId })
+            dislikes = allVotes.filter({ !$0.isLiked }).map({ $0.recipeId })
+        }
+    }
+    var currentUserLikes: [Int64]
+    var householdLikes: [Int64]
+    var dislikes: [Int64]
+    
+    private let recipesController: NSFetchedResultsController<Recipe>
+//    private let usersController: NSFetchedResultsController<User>
+    private let votesController: NSFetchedResultsController<Vote>
+    
+    init(managedObjectContext: NSManagedObjectContext) {
+        recipesController = NSFetchedResultsController(fetchRequest: Recipe.allRecipesFetchRequest,
+                                                       managedObjectContext: managedObjectContext,
+                                                       sectionNameKeyPath: nil, cacheName: nil)
+        
+//        usersController = NSFetchedResultsController(fetchRequest: User.currentUserFetchRequest,
+//                                                     managedObjectContext: managedObjectContext,
+//                                                     sectionNameKeyPath: nil, cacheName: nil)
+        
+        votesController = NSFetchedResultsController(fetchRequest: Vote.allVotes,
+                                                     managedObjectContext: managedObjectContext,
+                                                     sectionNameKeyPath: nil, cacheName: nil)
+        
+        allRecipes = []
+        recipeIndex = 0
+        
+        allVotes = []
+        householdLikes = []
+        currentUserLikes = []
+        dislikes = []
+        super.init()
+        
+        recipesController.delegate = self
+//        usersController.delegate = self
+        votesController.delegate = self
+        
+        setValues()
+    }
+    
+    func setValues(){
+        do {
+            try votesController.performFetch() // this must come before recipes. for filtering to work.
+            try recipesController.performFetch()
+//            try usersController.performFetch()
+            
+            allVotes = votesController.fetchedObjects ?? []
+//            currentUser = usersController.fetchedObjects?.first
+            let recipes = recipesController.fetchedObjects ?? []
+            
+            allRecipes = filterRecipes(recipes)
+            recipe = allRecipes.first
+//            recipe = allRecipes[recipeIndex]
+            
+        } catch {
+            print("failed to fetch items!")
+        }
+    }
+}
+
+extension RecipeManager: NSFetchedResultsControllerDelegate {
+    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+        
+        if case let recipes = controller.fetchedObjects as? [Recipe],
+           recipes?.isEmpty == false{
+            print("###NEW RECIPES")
+            
+            allRecipes = filterRecipes(recipes!)
+//            recipe = unseenRecipes.first
+            if allRecipes.indices.contains(recipeIndex),
+               recipe == nil{
+                recipe = allRecipes[recipeIndex]
+            }
+        }
+        
+//        if case let users = controller.fetchedObjects as? [User],
+//           users?.isEmpty == false{
+//            
+//            currentUser = users!.first!
+//        }
+        
+        if case let votes = controller.fetchedObjects as? [Vote],
+           votes?.isEmpty == false{
+            print("###NEW VOTES")
+
+            allVotes = votes!
+            let recipes = allRecipes
+            allRecipes = filterRecipes(recipes)
+            
+            if allRecipes.indices.contains(recipeIndex),
+               recipe == nil{
+                recipe = allRecipes[recipeIndex]
+            }
+        }
+    }
+}
+
+extension RecipeManager{
+    
+    func filterRecipes(_ recipes: [Recipe]) -> [Recipe]{
+        print("###NEW FILTERS: ")
+        var removeAnyDislikes = recipes.filter({ !dislikes.contains($0.recipeId) })
+        var removeOldLikes = removeAnyDislikes.filter({ !currentUserLikes.contains($0.recipeId) })
+        
+        removeOldLikes.sort(by: { householdLikes.contains($0.recipeId) && !householdLikes.contains($1.recipeId) })
+        return removeOldLikes
+    }
+    
+    func nextRecipe(){
+        recipeIndex += 1
+        recipe = allRecipes[recipeIndex]
+    }
+    
+    func getRecipesById(ids: [Int64], fromContext context: NSManagedObjectContext) -> [Recipe]?{
+        let likesPredicate = NSPredicate(format: "recipeId IN %@", ids)
+        let request = Recipe.fetchRequest(predicate: likesPredicate)
+        let recipes = try? context.fetch(request)
+        return recipes
+    }
+}
