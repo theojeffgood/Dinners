@@ -14,8 +14,6 @@ class RecipeManager: NSObject, ObservableObject {
     var allRecipes: [Recipe]
     private var recipeIndex: Int
     
-//    var currentUser: User?
-    
     var allVotes: [Vote]{
         didSet{
             currentUserLikes = allVotes.filter({ $0.isLiked && $0.isCurrentUser }).map({ $0.recipeId })
@@ -28,7 +26,6 @@ class RecipeManager: NSObject, ObservableObject {
     var dislikes: [Int64]
     
     private let recipesController: NSFetchedResultsController<Recipe>
-//    private let usersController: NSFetchedResultsController<User>
     private let votesController: NSFetchedResultsController<Vote>
     
     init(managedObjectContext: NSManagedObjectContext) {
@@ -36,13 +33,9 @@ class RecipeManager: NSObject, ObservableObject {
                                                        managedObjectContext: managedObjectContext,
                                                        sectionNameKeyPath: nil, cacheName: nil)
         
-//        usersController = NSFetchedResultsController(fetchRequest: User.currentUserFetchRequest,
-//                                                     managedObjectContext: managedObjectContext,
-//                                                     sectionNameKeyPath: nil, cacheName: nil)
-        
-        votesController = NSFetchedResultsController(fetchRequest: Vote.allVotes,
-                                                     managedObjectContext: managedObjectContext,
-                                                     sectionNameKeyPath: nil, cacheName: nil)
+        votesController   = NSFetchedResultsController(fetchRequest: Vote.allVotes,
+                                                       managedObjectContext: managedObjectContext,
+                                                       sectionNameKeyPath: nil, cacheName: nil)
         
         allRecipes = []
         recipeIndex = 0
@@ -54,7 +47,6 @@ class RecipeManager: NSObject, ObservableObject {
         super.init()
         
         recipesController.delegate = self
-//        usersController.delegate = self
         votesController.delegate = self
         
         setValues()
@@ -64,15 +56,12 @@ class RecipeManager: NSObject, ObservableObject {
         do {
             try votesController.performFetch() // this must come before recipes. for filtering to work.
             try recipesController.performFetch()
-//            try usersController.performFetch()
             
             allVotes = votesController.fetchedObjects ?? []
-//            currentUser = usersController.fetchedObjects?.first
             let recipes = recipesController.fetchedObjects ?? []
             
             allRecipes = filterRecipes(recipes)
             recipe = allRecipes.first
-//            recipe = allRecipes[recipeIndex]
             
         } catch {
             print("failed to fetch items!")
@@ -88,18 +77,11 @@ extension RecipeManager: NSFetchedResultsControllerDelegate {
             print("###NEW RECIPES")
             
             allRecipes = filterRecipes(recipes!)
-//            recipe = unseenRecipes.first
             if allRecipes.indices.contains(recipeIndex),
                recipe == nil{
                 recipe = allRecipes[recipeIndex]
             }
         }
-        
-//        if case let users = controller.fetchedObjects as? [User],
-//           users?.isEmpty == false{
-//            
-//            currentUser = users!.first!
-//        }
         
         if case let votes = controller.fetchedObjects as? [Vote],
            votes?.isEmpty == false{
@@ -121,7 +103,7 @@ extension RecipeManager{
     
     func filterRecipes(_ recipes: [Recipe]) -> [Recipe]{
         print("###NEW FILTERS: ")
-        var removeAnyDislikes = recipes.filter({ !dislikes.contains($0.recipeId) })
+        let removeAnyDislikes = recipes.filter({ !dislikes.contains($0.recipeId) })
         var removeOldLikes = removeAnyDislikes.filter({ !currentUserLikes.contains($0.recipeId) })
         
         removeOldLikes.sort(by: { householdLikes.contains($0.recipeId) && !householdLikes.contains($1.recipeId) })
@@ -131,6 +113,28 @@ extension RecipeManager{
     func nextRecipe(){
         recipeIndex += 1
         recipe = allRecipes[recipeIndex]
+    }
+    
+    func getMatches(inContext context: NSManagedObjectContext) -> [Recipe]{
+        var recipesAndVotes: [Int64: Int] = [:] //** [RecipeIDs : VoteCount] **//
+        var matches: [Int64] = []
+        
+        let likes = allVotes.filter({ $0.isLiked })
+        for like in likes{
+            let recipe = like.recipeId
+            if let voteCount = recipesAndVotes[recipe]{
+                let newVoteCount = voteCount + 1
+                recipesAndVotes[recipe] = newVoteCount
+                
+                matches.append(recipe)
+            } else{
+                recipesAndVotes[recipe] = 1
+            }
+        }
+        
+        let uniqueRecipes = Set(matches)
+        let recipes = getRecipesById(ids: Array(uniqueRecipes), fromContext: context)
+        return recipes ?? []
     }
     
     func getRecipesById(ids: [Int64], fromContext context: NSManagedObjectContext) -> [Recipe]?{
