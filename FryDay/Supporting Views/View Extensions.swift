@@ -52,3 +52,39 @@ extension View{
             .shadow(radius: 25)
     }
 }
+
+struct LikesAndMatches: View {
+    var matches: [Recipe] = []
+    var likes: [Recipe] = []
+    
+    var body: some View{
+        HStack() {
+            NavigationLink(
+                destination: RecipesList(recipesType: "Matches",
+                                         recipes: matches),
+                label: {
+                    Text("❤️ Matches")
+                        .frame(width: 125, height: 45)
+                        .foregroundColor(.black)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 5)
+                                .stroke(Color.black, lineWidth: 1)
+                        )
+                })
+            
+            NavigationLink(
+                destination: RecipesList(recipesType: "Likes",
+                                         recipes: likes),
+                label: {
+                    Text("👍 Likes")
+                        .frame(width: 125, height: 45)
+                        .foregroundColor(.black)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 5)
+                                .stroke(Color.black, lineWidth: 1)
+                        )
+                })
+            Spacer()
+        }
+    }
+}

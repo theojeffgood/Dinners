@@ -164,27 +164,6 @@ extension DataController {
 //        
 //        return share
 //    }
-    
-//    private func isShared(objectID: NSManagedObjectID) -> Bool {
-//        var isShared = false
-//        if let persistentStore = objectID.persistentStore {
-//            if persistentStore == sharedPersistentStore {
-//                isShared = true
-//            } else {
-//                let container = persistentContainer
-//                do {
-//                    let shares = try container.fetchShares(matching: [objectID])
-//                    if shares.first != nil {
-//                        isShared = true
-//                    }
-//                } catch {
-//                    print("Failed to fetch share for \(objectID): \(error)")
-//                }
-//            }
-//        }
-//        return isShared
-//    }
-//}
 
 
 //class DataController: ObservableObject {

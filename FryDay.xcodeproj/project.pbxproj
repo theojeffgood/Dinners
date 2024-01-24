@@ -25,6 +25,7 @@
 		E49E8410299D88BC003E4E77 /* User OLD.swift in Sources */ = {isa = PBXBuildFile; fileRef = E49E840F299D88BC003E4E77 /* User OLD.swift */; };
 		E49E8413299E88DB003E4E77 /* MealSwipe.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = E49E8411299E88DB003E4E77 /* MealSwipe.xcdatamodeld */; };
 		E49E8415299EB02C003E4E77 /* DataController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E49E8414299EB02C003E4E77 /* DataController.swift */; };
+		E4A2D0842B616CA2006DA764 /* ShareController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4A2D0832B616CA2006DA764 /* ShareController.swift */; };
 		E4CB2C80297893CC00A829AE /* RecipesList.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4CB2C7F297893CC00A829AE /* RecipesList.swift */; };
 		E4CB2C822979C28700A829AE /* RecipeDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4CB2C812979C28700A829AE /* RecipeDetailsView.swift */; };
 		E4EA57AA2AF2F04700F5E130 /* RecipeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4EA57A82AF2F04700F5E130 /* RecipeManager.swift */; };
@@ -54,6 +55,7 @@
 		E49E840F299D88BC003E4E77 /* User OLD.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "User OLD.swift"; sourceTree = "<group>"; };
 		E49E8412299E88DB003E4E77 /* MealSwipe.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MealSwipe.xcdatamodel; sourceTree = "<group>"; };
 		E49E8414299EB02C003E4E77 /* DataController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataController.swift; sourceTree = "<group>"; };
+		E4A2D0832B616CA2006DA764 /* ShareController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareController.swift; sourceTree = "<group>"; };
 		E4CB2C7F297893CC00A829AE /* RecipesList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipesList.swift; sourceTree = "<group>"; };
 		E4CB2C812979C28700A829AE /* RecipeDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeDetailsView.swift; sourceTree = "<group>"; };
 		E4EA57A82AF2F04700F5E130 /* RecipeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeManager.swift; sourceTree = "<group>"; };
@@ -78,6 +80,7 @@
 			children = (
 				E40BCEE22B27F6E300E43CDB /* View Extensions.swift */,
 				E43634F92AD5E9BF007F238F /* CloudSharingController.swift */,
+				E4A2D0832B616CA2006DA764 /* ShareController.swift */,
 				E41D5076297DE959003CD008 /* Household.swift */,
 				E48CE0AB2B18F47700C296C1 /* Filters.swift */,
 			);
@@ -235,6 +238,7 @@
 				E41D5075297DE372003CD008 /* WebService.swift in Sources */,
 				E4875D802B192CFA00A192CE /* PurchaseManager.swift in Sources */,
 				E4CB2C80297893CC00A829AE /* RecipesList.swift in Sources */,
+				E4A2D0842B616CA2006DA764 /* ShareController.swift in Sources */,
 				E4512F6D2B5587E3003F9B44 /* Vote + CoreData.swift in Sources */,
 				E40BCEE32B27F6E300E43CDB /* View Extensions.swift in Sources */,
 				E43634FA2AD5E9BF007F238F /* CloudSharingController.swift in Sources */,

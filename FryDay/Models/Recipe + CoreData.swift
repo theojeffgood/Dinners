@@ -59,6 +59,17 @@ extension Recipe {
 //    @NSManaged public var user: NSSet?
 //    @NSManaged public var userDislikes: NSSet?
 
+    func isAMatch(with newVote: Vote) -> Bool{
+        guard newVote.isLiked,
+              let context = self.managedObjectContext else { return false }
+        
+        let recipePredicate = NSPredicate(format: "recipeId == %d AND ownerId != %@", recipeId, newVote.ownerId!)
+        let request = Vote.fetchRequest(predicate: recipePredicate)
+        let votes = try! context.fetch(request)
+        
+        let isMatch = !votes.isEmpty && votes.allSatisfy({ $0.isLiked })
+        return isMatch
+    }
 }
 
 //// MARK: Generated accessors for user

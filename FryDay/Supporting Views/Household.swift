@@ -17,10 +17,19 @@ struct Household: View {
     
     @State var householdMembers: [CKShare.Participant] = [] /*<-- or use this?*/
     
+//    if let currentUser = share.currentUserParticipant, currentUser == share.owner {
+//        return true
+//    }
+
     @State private var share: CKShare?
     @State private var showShareSheet = false
     
-    var recipes: [Recipe]
+//    var recipes: [Recipe]
+    
+    init(share: CKShare?, dismissAction: @escaping () -> Void){
+        self.share = share
+        self.dismissAction = dismissAction
+    }
 
     @State private var householdState: HouseholdState = .notLoggedIn
     enum HouseholdState {
@@ -115,17 +124,14 @@ struct Household: View {
                                 Button(action: {
 //                                    withAnimation {
                                     
-                                    if !UserDefaults.standard.bool(forKey: "inAHousehold") ||
+                                    if share == nil,
+                                        !UserDefaults.standard.bool(forKey: "inAHousehold") ||
                                         UserDefaults.standard.bool(forKey: "isHouseholdOwner"){
                                         
                                         Task {
                                             self.share = try await shareCoordinator.createShare()
                                         }
                                         showShareSheet = true
-                                        
-//                                        recipes.forEach { $0.isShared = true }
-//                                        users  .forEach { $0.isShared = true }
-//                                        try! moc.save()
                                         
                                         UserDefaults.standard.set(true, forKey: "inAHousehold")
                                         UserDefaults.standard.set(true, forKey: "isHouseholdOwner")
@@ -208,7 +214,7 @@ struct Household: View {
         })
         .onAppear(){
             Task{
-                self.householdMembers = await shareCoordinator.getParticipants()
+                self.householdMembers = await shareCoordinator.getParticipants(share: share)
 //                self.householdMembers = await getParticipants()
             }
             

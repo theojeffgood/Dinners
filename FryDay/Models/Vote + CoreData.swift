@@ -20,6 +20,22 @@ public class Vote: NSManagedObject {
         return ownerId == UserDefaults.standard.string(forKey: "userID")!
     }
     
+    convenience init(forRecipeId recipeId: Int64,
+                     liked: Bool,
+                     in context: NSManagedObjectContext) {
+        self.init(context: context)
+        
+        let userId: String = UserDefaults.standard.string(forKey: "userID")!
+//        let vote = Vote(context: context)
+        self.isLiked = liked
+        self.date = Date.now
+        self.ownerId = userId
+        self.recipeId = recipeId
+    }
+}
+
+extension Vote{
+    
     @nonobjc public class func fetchRequest(sort: [NSSortDescriptor] = [], 
                                             predicate: NSPredicate? = nil) -> NSFetchRequest<Vote> {
         let fetchRequest = NSFetchRequest<Vote>(entityName: String(describing: Vote.self))

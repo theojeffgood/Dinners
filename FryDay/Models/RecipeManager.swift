@@ -7,6 +7,7 @@
 //
 
 import CoreData
+import CloudKit
 
 class RecipeManager: NSObject, ObservableObject {
     
@@ -28,6 +29,8 @@ class RecipeManager: NSObject, ObservableObject {
     private let recipesController: NSFetchedResultsController<Recipe>
     private let votesController: NSFetchedResultsController<Vote>
     
+    private let context: NSManagedObjectContext
+    
     init(managedObjectContext: NSManagedObjectContext) {
         recipesController = NSFetchedResultsController(fetchRequest: Recipe.allRecipesFetchRequest,
                                                        managedObjectContext: managedObjectContext,
@@ -44,6 +47,8 @@ class RecipeManager: NSObject, ObservableObject {
         householdLikes = []
         currentUserLikes = []
         dislikes = []
+        
+        context = managedObjectContext
         super.init()
         
         recipesController.delegate = self
@@ -115,7 +120,7 @@ extension RecipeManager{
         recipe = allRecipes[recipeIndex]
     }
     
-    func getMatches(inContext context: NSManagedObjectContext) -> [Recipe]{
+    func getMatches() -> [Recipe]{
         var recipesAndVotes: [Int64: Int] = [:] //** [RecipeIDs : VoteCount] **//
         var matches: [Int64] = []
         
@@ -133,11 +138,11 @@ extension RecipeManager{
         }
         
         let uniqueRecipes = Set(matches)
-        let recipes = getRecipesById(ids: Array(uniqueRecipes), fromContext: context)
+        let recipes = getRecipesById(ids: Array(uniqueRecipes))
         return recipes ?? []
     }
     
-    func getRecipesById(ids: [Int64], fromContext context: NSManagedObjectContext) -> [Recipe]?{
+    func getRecipesById(ids: [Int64]) -> [Recipe]?{
         let likesPredicate = NSPredicate(format: "recipeId IN %@", ids)
         let request = Recipe.fetchRequest(predicate: likesPredicate)
         let recipes = try? context.fetch(request)

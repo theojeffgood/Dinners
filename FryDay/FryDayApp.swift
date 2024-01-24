@@ -37,9 +37,13 @@ struct FryDayApp: App {
             ContentView(recipeManager: recipeManager)
                 .environment(\.managedObjectContext, DataController.shared.context)
                 .environmentObject(purchaseManager)
-                                .task {
-                                    await purchaseManager.updatePurchasedProducts()
-                                }
+                .task {
+                    await purchaseManager.updatePurchasedProducts()
+                }
+                .environmentObject(ShareCoordinator.shared)
+                .task {
+                    ShareCoordinator.shared.fetchShare()
+                }
                 .onOpenURL { url in
                     print("### this fires when user opens app via link. the link url is: \(url)")
                 }
@@ -73,8 +77,8 @@ final class SceneDelegate: NSObject, UIWindowSceneDelegate {
 //        DataController.shared.ckContainer.accept(cloudKitShareMetadata) { share, error in }
         persistentContainer.acceptShareInvitations(from: [cloudKitShareMetadata], into: shareStore) { shareMetaData, error in
             if let error = error {
-//                print("acceptShareInvitation error :\(error)")
-                fatalError("FAILED TO CREATE HOUSEHOLD USER Point #00")
+                print("### shareInvitation error :\(error)")
+//                fatalError("FAILED TO CREATE HOUSEHOLD USER Point #00")
 //                return
             }
             
