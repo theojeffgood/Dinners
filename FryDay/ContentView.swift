@@ -177,8 +177,20 @@ extension ContentView{
     }
 }
 
-//struct ContentView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        ContentView()
-//    }
-//}
+import CoreData
+
+struct ContentView_Previews: PreviewProvider {
+    static let entity = NSManagedObjectModel.mergedModel(from: nil)?.entitiesByName["Recipe"]
+        
+    static var previews: some View {
+        let recipeOne = Recipe(entity: entity!, insertInto: nil)
+        recipeOne.title = "Eggs and Bacon"
+        recipeOne.imageUrl = "https://halflemons-media.s3.amazonaws.com/787.jpg"
+        
+        let moc = DataController.shared.context
+        let recipeManager = RecipeManager(managedObjectContext: moc)
+        recipeManager.recipe = recipeOne
+        
+        return ContentView(recipeManager: recipeManager)
+    }
+}
