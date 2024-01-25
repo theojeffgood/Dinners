@@ -12,37 +12,39 @@ struct RecipesList: View {
     var recipes: [Recipe]
     
     var body: some View {
-        if !recipes.isEmpty{
-            ScrollView{
-                LazyVGrid(columns: [GridItem(.flexible(), spacing: 0),
-                                    GridItem(.flexible())]) {
-                    ForEach(recipes, id: \.self) { recipe in
-                        RecipeCell(recipe: recipe)
+        NavigationView {
+            if !recipes.isEmpty{
+                ScrollView{
+                    LazyVGrid(columns: [GridItem(.flexible(), spacing: 0),
+                                        GridItem(.flexible())]) {
+                        ForEach(recipes, id: \.self) { recipe in
+                            RecipeCell(recipe: recipe)
+                        }
                     }
-                }
-            }.navigationTitle(recipesType)
-        } else{
-            VStack(spacing: 45, content: {
-                Image(systemName: "person.badge.plus")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 100, height: 100)
-                    .foregroundColor(.gray.opacity(0.6))
-                
-                Text("Your household is empty. \n Add people to see matches.")
-                    .multilineTextAlignment(.center)
-                    .font(.title3)
-                
-                Button("Add to your Household"){
-                    print("asdf")
-                }
-                .font(.title)
-                .padding()
-                .foregroundColor(.black)
-                .background(.orange)
-                .cornerRadius(25, corners: .allCorners)
-            })
-            .navigationTitle(recipesType)
+                }.navigationTitle(recipesType)
+            } else{
+                VStack(spacing: 45, content: {
+                    Image(systemName: "person.badge.plus")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 100, height: 100)
+                        .foregroundColor(.gray.opacity(0.6))
+                    
+                    Text("Your household is empty. \n Add people to see matches.")
+                        .multilineTextAlignment(.center)
+                        .font(.title3)
+                    
+                    Button("Add to your Household"){
+                        print("asdf")
+                    }
+                    .font(.title)
+                    .padding()
+                    .foregroundColor(.black)
+                    .background(.orange)
+                    .cornerRadius(25, corners: .allCorners)
+                })
+                .navigationTitle(recipesType)
+            }
         }
     }
 }
@@ -76,6 +78,7 @@ struct RecipeCell: View {
                                alignment: .leading)
                         .background(.white)
                         .font(.system(size: 18, weight: .regular))
+                        .foregroundColor(.black)
                 }
                 .frame(height: 290)
                 .cornerRadius(10, corners: .allCorners)

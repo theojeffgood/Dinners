@@ -34,7 +34,7 @@ struct FryDayApp: App {
     var body: some Scene {
         
         WindowGroup {
-            ContentView(recipeManager: recipeManager)
+            MainView(recipeManager: recipeManager)
                 .environment(\.managedObjectContext, DataController.shared.context)
                 .environmentObject(purchaseManager)
                 .task {
@@ -47,6 +47,7 @@ struct FryDayApp: App {
                 .onOpenURL { url in
                     print("### this fires when user opens app via link. the link url is: \(url)")
                 }
+//            ContentView(recipeManager: recipeManager)
         }
 //        .onChange(of: scenePhase) { newValue in
 //            try? DataController.shared.context.save()

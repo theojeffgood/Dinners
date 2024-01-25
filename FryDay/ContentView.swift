@@ -20,22 +20,10 @@ struct ContentView: View {
     @State private var showFilters: Bool = false
     @State private var appliedFilters: [Category] = []
     
-    private var matches: [Recipe]{
-        let matches = recipeManager.getMatches()
-        return matches
-    }
-    private var likes: [Recipe]{
-        let votedRecipeIds = allVotes.filter({ $0.isLiked && $0.isCurrentUser }).map({ $0.recipeId })
-        let recipes = recipeManager.getRecipesById(ids: votedRecipeIds)
-        return recipes ?? []
-    }
-    
     var body: some View {
         NavigationView {
             VStack {
                 HStack{
-                    LikesAndMatches(matches: matches,
-                            likes: likes)
                     if !$appliedFilters.isEmpty{
                         ForEach(appliedFilters){ filter in
                             Text(filter.title)
@@ -57,8 +45,6 @@ struct ContentView: View {
                                        liked: liked,
                                        showSwipe: false)
                     }
-//                    .transition(.opacity)
-//                    .animation(.easeInOut(duration: 0.65), value: recipe)
                 }
                 
                 
@@ -169,8 +155,8 @@ extension ContentView{
     func loadRecipes(){
         if !UserDefaults.standard.bool(forKey: "appOpenedBefore"){
             Task{
-                try? await Webservice(context: moc).load (Recipe.all)
-                try! moc.save()
+//                try? await Webservice(context: moc).load (Recipe.all)
+//                try! moc.save()
             }
             UserDefaults.standard.set(true, forKey: "appOpenedBefore")
         }
