@@ -86,7 +86,9 @@ final class ShareCoordinator: ObservableObject {
             
             let stack = DataController.shared
             stack.persistentContainer.share([vote], to: existingShare) { _, _, _, error in
-                if let error{ fatalError("### failed to share vote: \(error)") }
+                if let error{
+                    print("attempted to save vote: \(vote)")
+                    fatalError("### failed to share vote: \(error)") }
             }
         }
     }

@@ -12,9 +12,7 @@ struct ContentView: View {
     
     @EnvironmentObject private var shareCoordinator: ShareCoordinator
     @Environment(\.managedObjectContext) var moc
-    //    @State private var existingShare: CKShare?
     @ObservedObject var recipeManager: RecipeManager
-//    @StateObject private var shareCoordinator = ShareCoordinator()
     
     @FetchRequest(fetchRequest: Vote.allVotes) var allVotes
     
@@ -31,10 +29,6 @@ struct ContentView: View {
         let recipes = recipeManager.getRecipesById(ids: votedRecipeIds)
         return recipes ?? []
     }
-    
-//    init() {
-//        _shareCoordinator = .init(wrappedValue: ShareCoordinator() )
-//    }
     
     var body: some View {
         NavigationView {
@@ -61,15 +55,18 @@ struct ContentView: View {
                     RecipeCardView(recipe: recipe){ liked in
                         popRecipeStack(for: recipe,
                                        liked: liked,
-                                       delayPop: false)
+                                       showSwipe: false)
                     }
+//                    .transition(.opacity)
+//                    .animation(.easeInOut(duration: 0.65), value: recipe)
                 }
+                
+                
                 Spacer()
-                //ACTION BUTTONS
                 HStack(spacing: 65) {
                     Button(action: {
                         guard let recipe = recipeManager.recipe else { return }
-                        popRecipeStack(for: recipe, liked: false)
+                        popRecipeStack(for: recipe, liked: false, showSwipe: true)
                     }) {
                         Image(systemName: "xmark")
                             .rejectStyle()
@@ -77,7 +74,7 @@ struct ContentView: View {
                     
                     Button(action: {
                         guard let recipe = recipeManager.recipe else { return }
-                        popRecipeStack(for: recipe, liked: true)
+                        popRecipeStack(for: recipe, liked: true, showSwipe: true)
                     }) {
                         Text("✓")
                             .acceptStyle()
@@ -131,10 +128,11 @@ struct ContentView: View {
         .accentColor(.black)
         .onAppear(){ loadRecipes() }
         .onChange(of: recipeManager.recipe, perform: { _ in
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-                NotificationCenter.default.post(name: Notification.Name.resetOffset,
-                                                object: nil, userInfo: nil )
-            }
+            print("###Recipe changed")
+//            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+//                NotificationCenter.default.post(name: Notification.Name.resetOffset,
+//                                                object: nil, userInfo: nil )
+//            }
         })
         
 //---------SHOW JOINING-A-HOUSEHOLD ONBOARDING HERE
@@ -145,20 +143,23 @@ struct ContentView: View {
 }
 
 extension ContentView{
-    func popRecipeStack(for recipe: Recipe, liked: Bool, delayPop: Bool = true){
-        DispatchQueue.main.asyncAfter(deadline: .now() + (delayPop ? 0.15 : 0.0)) {
-            let newVote = Vote(forRecipeId: recipe.recipeId, liked: liked, in: moc)
-            shareCoordinator.shareVoteIfNeeded(newVote) //1 of 2 (must come before moc.save)
-            try! moc.save() //2 of 2 (must come after moc.save)
+    func popRecipeStack(for recipe: Recipe, liked: Bool, showSwipe: Bool){
+            print("###Recording vote")
+            let newVote = Vote(forRecipeId: recipe.recipeId, like: liked, in: moc)
+            shareCoordinator.shareVoteIfNeeded(newVote) //1 of 2 (before moc.save)
+            try! moc.save() //2 of 2 (after ck.share)
             if recipe.isAMatch(with: newVote){ celebrate() }
-        }
         
-        if delayPop{ // show swipe animation when like/disliked via button //
-            NotificationCenter.default.post(name: Notification.Name.swipeNotification,
+        if showSwipe{ // swipe animation //
+            print("###Triggering swipe animation")
+            NotificationCenter.default.post(name: Notification.Name.showSwipe,
                                             object: "Swiped", userInfo: ["swipeRight": liked])
         }
         
-        recipeManager.nextRecipe()
+//        DispatchQueue.main.asyncAfter(deadline: .now() + (showSwipe ? 0.15 : 0.0)) {
+            print("###Switching to next recipe")
+            recipeManager.nextRecipe()
+//        }
     }
     
     func celebrate() {

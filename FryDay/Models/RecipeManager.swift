@@ -79,7 +79,6 @@ extension RecipeManager: NSFetchedResultsControllerDelegate {
         
         if case let recipes = controller.fetchedObjects as? [Recipe],
            recipes?.isEmpty == false{
-            print("###NEW RECIPES")
             
             allRecipes = filterRecipes(recipes!)
             if allRecipes.indices.contains(recipeIndex),
@@ -90,7 +89,6 @@ extension RecipeManager: NSFetchedResultsControllerDelegate {
         
         if case let votes = controller.fetchedObjects as? [Vote],
            votes?.isEmpty == false{
-            print("###NEW VOTES")
 
             allVotes = votes!
             let recipes = allRecipes
@@ -107,7 +105,6 @@ extension RecipeManager: NSFetchedResultsControllerDelegate {
 extension RecipeManager{
     
     func filterRecipes(_ recipes: [Recipe]) -> [Recipe]{
-        print("###NEW FILTERS: ")
         let removeAnyDislikes = recipes.filter({ !dislikes.contains($0.recipeId) })
         var removeOldLikes = removeAnyDislikes.filter({ !currentUserLikes.contains($0.recipeId) })
         
