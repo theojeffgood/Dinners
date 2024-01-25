@@ -12,32 +12,21 @@ import CloudKit
 struct Household: View {
     
     @Environment(\.managedObjectContext) var moc
+    @EnvironmentObject private var shareCoordinator: ShareCoordinator
     private let stack = DataController.shared
-    private let shareCoordinator = ShareCoordinator()
     
+    @State private var share: CKShare?
     @State var householdMembers: [CKShare.Participant] = [] /*<-- or use this?*/
-    
+    @State private var showShareSheet = false
 //    if let currentUser = share.currentUserParticipant, currentUser == share.owner {
 //        return true
 //    }
-
-    @State private var share: CKShare?
-    @State private var showShareSheet = false
-    
-//    var recipes: [Recipe]
-    
+        
     init(share: CKShare?, dismissAction: @escaping () -> Void){
         self.share = share
         self.dismissAction = dismissAction
     }
 
-    @State private var householdState: HouseholdState = .notLoggedIn
-    enum HouseholdState {
-        case loggedIn
-        case notLoggedIn
-//        case addMember
-        case inviteSent
-    }
     var dismissAction: () -> Void
     
     var body: some View {
@@ -57,44 +46,18 @@ struct Household: View {
                     Spacer()
                 }
                 
-                switch householdState{
-                    
-//MARK: -- // NOT LOGGED IN //
-                case .notLoggedIn:
-                    Text("Please sign in to\n create a household.")
-                        .font(.system(size: 20))
-                        .multilineTextAlignment(.center)
-                    Button("  Sign in with Apple            ") {
-                        withAnimation {
-                            householdState = .loggedIn
-                        }
-                    }
-                    .font(.system(size: 20))
-                    .padding()
-                    .background(Color.black)
-                    .cornerRadius(30)
-                    .foregroundColor(.white)
-                    
-//MARK: -- // LOGGED IN //
-                case .loggedIn:
                     HStack(spacing: 10){
                         ForEach(householdMembers) { member in
                             VStack(spacing: 5){
                                 ZStack{
                                     Circle()
                                         .padding([.leading, .trailing])
-//                                    Text(user.state.image)
                                     Text(image(for: member.role))
                                         .font(.system(size: 45))
                                     Button(action: {
-//                                        let user = users.last!
-//                                        moc.delete(user)
-                                        
                                         withAnimation {
-//                                            try? moc.save()
-                                            if householdMembers.isEmpty{
-                                                householdState = .notLoggedIn
-                                            }
+                                                shareCoordinator.existingShare?.removeParticipant(member)
+//                                            if householdMembers.isEmpty{}
                                         }
                                     }) {
                                         Image(systemName: "minus.circle.fill")
@@ -104,45 +67,38 @@ struct Household: View {
                                     .offset(x: 30, y: -30)
                                     .frame(width: 25, height: 25)
                                 }
-//                                Text(user.state.text)
                                 
-                                if member.role == .owner{
-                                    let title = member.userIdentity.nameComponents?.givenName ?? "You"
-                                    Text(title)
-                                } else if member.acceptanceStatus == .accepted{
-                                    let title = member.userIdentity.nameComponents?.givenName ?? "Fam #1"
+                                if member.role == .owner ||
+                                    member.acceptanceStatus == .accepted{
+                                    let title = member.userIdentity.nameComponents?.givenName ?? "Chef"
                                     Text(title)
                                 } else if member.acceptanceStatus == .pending{
-//                                    Text(string(for: user.permission))
                                     Text("Invite sent")
                                 }
                             }
                         }
                         
-                        if householdMembers.count < 3{
+                        if !UserDefaults.standard.bool(forKey: "inAHousehold") ||
+                            UserDefaults.standard.bool(forKey: "isHouseholdOwner"){
+                            
                             VStack(spacing: 5){
                                 Button(action: {
-//                                    withAnimation {
-                                    
-                                    if share == nil,
-                                        !UserDefaults.standard.bool(forKey: "inAHousehold") ||
-                                        UserDefaults.standard.bool(forKey: "isHouseholdOwner"){
-                                        
+                                    if share == nil{
                                         Task {
                                             self.share = try await shareCoordinator.createShare()
                                         }
-                                        showShareSheet = true
-                                        
-                                        UserDefaults.standard.set(true, forKey: "inAHousehold")
-                                        UserDefaults.standard.set(true, forKey: "isHouseholdOwner")
                                     }
+                                    showShareSheet = true
+                                    
+                                    UserDefaults.standard.set(true, forKey: "inAHousehold")
+                                    UserDefaults.standard.set(true, forKey: "isHouseholdOwner")
                                 }) {
                                     Image(systemName: "plus.circle.fill")
                                         .resizable()
                                         .frame(width: 75, height: 75)
                                         .foregroundColor(.gray)
                                 }
-                                Text("Add a member")
+                                Text("Add peeps")
                             }
                         }
                         
@@ -188,15 +144,6 @@ struct Household: View {
 //                        }
 //                        .padding([.bottom])
 //                    }
-                    
-                    
-//MARK: -- // INVITE SENT //
-                case .inviteSent:
-                    Text("Invitation sent! 🎉")
-                        .font(.system(size: 30, weight: .medium))
-                        .multilineTextAlignment(.center)
-                        .padding(50)
-                }
             }
             .padding()
             .padding(.bottom)
@@ -208,28 +155,20 @@ struct Household: View {
             if let share = share,
                share.currentUserParticipant?.role == .owner{
                 CloudSharingView(share: share, container: stack.ckContainer)
-            } else{
-//                showWarningOnlyHouseholdOwnersCanAddNewMembers()
             }
         })
         .onAppear(){
             Task{
                 self.householdMembers = await shareCoordinator.getParticipants(share: share)
-//                self.householdMembers = await getParticipants()
-            }
-            
-//            self.share = stack.getShare(recipe)
-            if !householdMembers.isEmpty{
-                householdState = .loggedIn
             }
         }
     }
     
-    func handleInviteSent(){
-        withAnimation {
-            householdState = .inviteSent
-        }
-    }
+//    func handleInviteSent(){
+//        withAnimation {
+//            householdState = .inviteSent
+//        }
+//    }
 }
 
 //struct Household_Previews: PreviewProvider {
@@ -243,19 +182,6 @@ struct Household: View {
 // MARK: -- Returns CKShare participant permission, methods and properties to share
 
 extension Household {
-//    SHARES INDIVIDUAL OBJECTS. E.G. RECIPES. NOT ENTIRE ZONE. BUT IT WORKS.
-//    private func createShare(_ recipe: Recipe) async {
-//        do {
-//            let (_, share, _) = try await stack.persistentContainer.share([recipe], to: nil)
-//            share[CKShare.SystemFieldKey.title] = recipe.title
-//            self.share = share
-//        } catch {
-//            print("Failed to create share")
-//        }
-//    }
-    
-    
-    
     private func string(for permission: CKShare.ParticipantPermission) -> String {
         switch permission {
         case .unknown:
@@ -287,7 +213,6 @@ extension Household {
     }
     
     private func string(for acceptanceStatus: CKShare.ParticipantAcceptanceStatus) -> String {
-//    func string(for acceptanceStatus: CKShare.ParticipantAcceptanceStatus) -> String {
         switch acceptanceStatus {
         case .accepted:
             return "Accepted"
@@ -316,10 +241,4 @@ extension Household {
             fatalError("A new value added to CKShare.Participant.Role")
         }
     }
-    
-//    private var canEdit: Bool {
-//        stack.canEdit(object: recipe)
-//    }
 }
-
-extension CKShare.Participant: Identifiable{}

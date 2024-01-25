@@ -72,11 +72,9 @@ final class ShareCoordinator: ObservableObject {
     }
     
     func getParticipants(share existingShare: CKShare?) async -> [CKShare.Participant]{
-        if let existingShare{
-            let participants = existingShare.participants
-            return participants
-        }
-        return []
+        guard let existingShare else { return [] }
+        let participants = existingShare.participants
+        return participants
     }
     
     func shareVoteIfNeeded(_ vote: Vote){
@@ -93,3 +91,5 @@ final class ShareCoordinator: ObservableObject {
         }
     }
 }
+
+extension CKShare.Participant: Identifiable{}
