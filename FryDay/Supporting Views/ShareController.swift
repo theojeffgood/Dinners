@@ -71,7 +71,7 @@ final class ShareCoordinator: ObservableObject {
         }
     }
     
-    func getParticipants(share existingShare: CKShare?) async -> [CKShare.Participant]{
+    func getParticipants(share existingShare: CKShare?) -> [CKShare.Participant]{
         guard let existingShare else { return [] }
         let participants = existingShare.participants
         return participants

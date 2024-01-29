@@ -29,26 +29,26 @@ struct RoundedCorner: Shape {
     }
 }
 
-extension View{
-    func rejectStyle() -> some View{
-        //X-MARK
-        self
-            .frame(width: 90, height: 90)
-            .background(Color.red) // red
-            .foregroundColor(.white) // white text
-            .cornerRadius(45)
-            .font(.system(size: 48, weight: .bold))
-            .shadow(radius: 25)
-    }
-    
-    func acceptStyle() -> some View{
-        //CHECK-MARK
-        self
-            .frame(width: 90, height: 90)
-            .background(Color.green) // green
-            .foregroundColor(.black) // black text
-            .cornerRadius(45)
-            .font(.system(size: 48, weight: .heavy))
-            .shadow(radius: 25)
-    }
-}
+//extension View{
+//    func rejectStyle() -> some View{
+//        //X-MARK
+//        self
+//            .frame(width: 90, height: 90)
+//            .background(Color.red) // red
+//            .foregroundColor(.white) // white text
+//            .cornerRadius(45)
+//            .font(.system(size: 48, weight: .bold))
+//            .shadow(radius: 25)
+//    }
+//    
+//    func acceptStyle() -> some View{
+//        //CHECK-MARK
+//        self
+//            .frame(width: 90, height: 90)
+//            .background(Color.green) // green
+//            .foregroundColor(.black) // black text
+//            .cornerRadius(45)
+//            .font(.system(size: 48, weight: .heavy))
+//            .shadow(radius: 25)
+//    }
+//}

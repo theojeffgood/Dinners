@@ -105,45 +105,7 @@ struct Household: View {
                         Spacer()
                     }.frame(height: 100)
                     
-////MARK: -- // SEND AN INVITATION //
-//                case .addMember:
-//                    VStack(spacing: 15){
-//                        Text("Send invitation")
-//                            .font(.system(size: 22, weight: .medium))
-//                            .multilineTextAlignment(.center)
-//                        HStack(spacing: 50){
-//                            VStack{
-//                                Button(action: {
-//                                    ShareHelper.shared.sendText(){
-//                                        handleInviteSent()
-//                                    }
-//                                }) {
-//                                    Image("imessage")
-//                                }
-//                                Text("iMessage")
-//                            }
-//                            VStack{
-//                                Button(action: {
-//                                    ShareHelper.shared.sendWhatsApp()
-//                                    handleInviteSent()
-//                                }) {
-//                                    Image("whatsapp")
-//                                }
-//                                Text("WhatsApp")
-//                            }
-//                            VStack{
-//                                Button(action: {
-//                                    ShareHelper.shared.sendEmail(){
-//                                        handleInviteSent()
-//                                    }
-//                                }) {
-//                                    Image("email")
-//                                }
-//                                Text("Email")
-//                            }
-//                        }
-//                        .padding([.bottom])
-//                    }
+
             }
             .padding()
             .padding(.bottom)
@@ -158,9 +120,7 @@ struct Household: View {
             }
         })
         .onAppear(){
-            Task{
-                self.householdMembers = await shareCoordinator.getParticipants(share: share)
-            }
+            self.householdMembers = shareCoordinator.getParticipants(share: share)
         }
     }
     
@@ -171,13 +131,13 @@ struct Household: View {
 //    }
 }
 
-//struct Household_Previews: PreviewProvider {
-//    static var previews: some View {
-//        Household(recipes: [],
-//                  users: [],
-//                  dismissAction: {})
-//    }
-//}
+struct Household_Previews: PreviewProvider {
+    
+    
+    static var previews: some View {
+        Household(share: nil, dismissAction: {})
+    }
+}
 
 // MARK: -- Returns CKShare participant permission, methods and properties to share
 
@@ -242,3 +202,47 @@ extension Household {
         }
     }
 }
+
+
+
+
+
+////MARK: -- // SEND AN INVITATION //
+//                case .addMember:
+//                    VStack(spacing: 15){
+//                        Text("Send invitation")
+//                            .font(.system(size: 22, weight: .medium))
+//                            .multilineTextAlignment(.center)
+//                        HStack(spacing: 50){
+//                            VStack{
+//                                Button(action: {
+//                                    ShareHelper.shared.sendText(){
+//                                        handleInviteSent()
+//                                    }
+//                                }) {
+//                                    Image("imessage")
+//                                }
+//                                Text("iMessage")
+//                            }
+//                            VStack{
+//                                Button(action: {
+//                                    ShareHelper.shared.sendWhatsApp()
+//                                    handleInviteSent()
+//                                }) {
+//                                    Image("whatsapp")
+//                                }
+//                                Text("WhatsApp")
+//                            }
+//                            VStack{
+//                                Button(action: {
+//                                    ShareHelper.shared.sendEmail(){
+//                                        handleInviteSent()
+//                                    }
+//                                }) {
+//                                    Image("email")
+//                                }
+//                                Text("Email")
+//                            }
+//                        }
+//                        .padding([.bottom])
+//                    }

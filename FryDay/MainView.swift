@@ -10,42 +10,33 @@ import CloudKit
 
 struct MainView: View {
     
-    @EnvironmentObject private var shareCoordinator: ShareCoordinator
-    @Environment(\.managedObjectContext) var moc
+//    @EnvironmentObject private var shareCoordinator: ShareCoordinator
+//    @Environment(\.managedObjectContext) var moc
     @ObservedObject var recipeManager: RecipeManager
     
-    @FetchRequest(fetchRequest: Vote.allVotes) var allVotes
-    
-    private var matches: [Recipe]{
-        let matches = recipeManager.getMatches()
-        return matches
-    }
-    
-    private var likes: [Recipe]{
-        let votedRecipeIds = allVotes.filter({ $0.isLiked && $0.isCurrentUser }).map({ $0.recipeId })
-        let recipes = recipeManager.getRecipesById(ids: votedRecipeIds)
-        return recipes ?? []
-    }
+//    @FetchRequest(fetchRequest: Vote.allVotes) var allVotes
     
     var body: some View {
         TabView {
             ContentView(recipeManager: recipeManager)
-                .tabItem {
-                    Label("Menu", systemImage: "frying.pan")
-                }
+            .tabItem {
+                Label("Menu", systemImage: "frying.pan")
+            }
             
-            RecipesList(recipesType: "Matches",
-                        recipes: matches)
+            RecipesList(recipeManager: recipeManager, recipesType: "Matches")
+//                        recipes: matches)
             .tabItem {
                 Label("Matches", systemImage: "link")
             }
             
-            RecipesList(recipesType: "Likes",
-                        recipes: likes)
+            RecipesList(recipeManager: recipeManager, 
+                        recipesType: "Likes")
+//                        recipes: likes)
             .tabItem {
                 Label("Likes", systemImage: "heart")
             }
         }
+        .accentColor(.black)
     }
 }
 

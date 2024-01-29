@@ -10,85 +10,82 @@ import SwiftUI
 struct RecipeCardView: View{
     var recipe: Recipe
     var popRecipeStack: ((Bool) -> Void)
-        
+    
     @State private var isVisible = true
     @State private var offset = CGSize.zero
     
     var body: some View{
-        NavigationLink(
-            destination: RecipeDetailsView(recipe: recipe,
-                                       recipeTitle: recipe.title!),
-            label: {
-                ZStack(alignment: Alignment(horizontal: .center, vertical: .bottom), content: {
-                    
-                    //Image Sizing: www.hackingwithswift.com/books/ios-swiftui/resizing-images-to-fit-the-screen-using-geometryreader
-                    GeometryReader { geo in
-                        AsyncImage(url: URL(string: recipe.imageUrl!)) { image in
-                            image
-                                .resizable()
-                                .scaledToFill()
-                                .frame(width: geo.size.width)
-                                .clipped()
-//                                .opacity(isVisible ? (2.0 - Double(abs(offset.width / 50) )) : 0 )
-                                .background(colorForOffset(offset))
-                        } placeholder: {
-                            ProgressView()
-                        }
-                    }
-                    
-                    Text(recipe.title!)
-//                        .multilineTextAlignment(.leading)
+        ZStack(alignment: Alignment(horizontal: .center, vertical: .bottom), content: {
+            
+//            Image Sizing: www.hackingwithswift.com/books/ios-swiftui/resizing-images-to-fit-the-screen-using-geometryreader
+            GeometryReader { geo in
+                AsyncImage(url: URL(string: recipe.imageUrl!)) { image in
+                    image
+                        .resizable()
+                        .scaledToFill()
+//                        .scaledToFit()
+                        .frame(width: geo.size.width)
+                        .clipped()
 //                        .opacity(isVisible ? (2.0 - Double(abs(offset.width / 50) )) : 0 )
-                        .foregroundColor(.white)
-                        .padding(.leading)
-                        .frame(maxWidth: .infinity,
-                               maxHeight: 75,
-                               alignment: .leading)
-                        .background(.black.opacity(0.5))
-                        .font(.title3)
-                })
-                .cornerRadius(10, corners: .allCorners)
-                .shadow(radius: 5)
-                
-                .rotationEffect(.degrees(Double(offset.width / 30)))
-                .offset(x: offset.width * 0.8, y: offset.height * 0.4)
-                .opacity(isVisible ? (2.0 - Double(abs(offset.width / 50) )) : 0 )
-                
-                .transition(.opacity) // 1 of 2
-                .animation(.easeInOut(duration: 0.65), value: recipe) // 2 of 2
-                
-                .gesture(
-                    DragGesture()
-                        .onChanged({ gesture in
-                            offset = gesture.translation
-                        })
-                        .onEnded({ gesture in
-                            if offset.width < -100{ //left swipe
-                                popRecipeStack(false)
-                                resetOffset()
-                                
-                            } else if offset.width > 100{ //right swipe
-                                popRecipeStack(true)
-                                resetOffset()
-                                
-                            } else{ //no swipe
-                                withAnimation { offset = .zero }
-                            }
-                        })
-                )
-                // like + dislike via Buttons. No swipe.
-                .onReceive(NotificationCenter.default.publisher(for: Notification.Name.showSwipe)) { object in
-                    guard let swipeInfo = object.userInfo as? [String: Bool],
-                          let swipeRight = swipeInfo["swipeRight"] else { return }
-                    setOffset(swipeRight: swipeRight)
+                        .background(colorForOffset(offset))
+                } placeholder: {
+                    ProgressView()
                 }
-//                .onChange(of: recipe, perform: { _ in
-//                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-//                        if offset != .zero {
-//                                offset = .zero
-//                        }
-//                    }
-            }).buttonStyle(FlatLinkStyle()) //disable tap-opacity https://stackoverflow.com/a/62311089
+            }
+            
+            Text(recipe.title!)
+                .multilineTextAlignment(.leading)
+//                .opacity(isVisible ? (2.0 - Double(abs(offset.width / 50) )) : 0 )
+                .foregroundColor(.white)
+                .padding(.leading)
+                .frame(maxWidth: .infinity,
+                       maxHeight: 75,
+                       alignment: .leading)
+                .background(.black.opacity(0.5))
+                .font(.title3)
+        })
+        .cornerRadius(10, corners: .allCorners)
+        .shadow(radius: 5)
+        
+        .rotationEffect(.degrees(Double(offset.width / 30)))
+        .offset(x: offset.width * 0.8, y: offset.height * 0.4)
+        .opacity(isVisible ? (2.0 - Double(abs(offset.width / 50) )) : 0 )
+        
+        .transition(.opacity) // 1 of 2
+        .animation(.easeInOut(duration: 0.65), value: recipe) // 2 of 2
+        
+        .gesture(
+            DragGesture()
+                .onChanged({ gesture in
+                    offset = gesture.translation
+                })
+                .onEnded({ gesture in
+                    if offset.width < -100{ //left swipe
+                        popRecipeStack(false)
+                        resetOffset()
+                        
+                    } else if offset.width > 100{ //right swipe
+                        popRecipeStack(true)
+                        resetOffset()
+                        
+                    } else{ //no swipe
+                        withAnimation { offset = .zero }
+                    }
+                })
+        )
+        // like + dislike via Buttons. No swipe.
+        .onReceive(NotificationCenter.default.publisher(for: Notification.Name.showSwipe)) { object in
+            guard let swipeInfo = object.userInfo as? [String: Bool],
+                  let swipeRight = swipeInfo["swipeRight"] else { return }
+            setOffset(swipeRight: swipeRight)
+        }
+//        .onChange(of: recipe, perform: { _ in
+//            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+//                if offset != .zero {
+//                    offset = .zero
+//                }a
+//            }
+//            .buttonStyle(FlatLinkStyle()) //disable tap-opacity https://stackoverflow.com/a/62311089
     }
     
     func setOffset(swipeRight: Bool){
@@ -130,7 +127,7 @@ struct RecipeCardView: View{
 
 extension Notification.Name {
     static let showSwipe = Notification.Name("showSwipe")
-//    static let resetOffset       = Notification.Name("resetOffset")
+    //    static let resetOffset       = Notification.Name("resetOffset")
 }
 
 import CoreData
@@ -146,7 +143,7 @@ struct RecipeCardView_Previews: PreviewProvider {
         return RecipeCardView(recipe: recipeOne,
                               popRecipeStack: { _ in }).previewLayout(.sizeThatFits)
     }
-        
+    
 }
 
 struct FlatLinkStyle: ButtonStyle {

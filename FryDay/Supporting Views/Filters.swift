@@ -15,7 +15,7 @@ struct Filters: View {
     @State private var filterWasApplied = false
     @Binding var appliedFilters: [Category]
 //    var filterApplied: (Category?) -> Void
-    var dismissAction: () -> Void
+//    var dismissAction: () -> Void
     
     var body: some View {
         NavigationStack{
@@ -181,7 +181,7 @@ struct Filters: View {
 }
 
 #Preview {
-    Filters(appliedFilters: .constant([]), dismissAction: {})
+    Filters(appliedFilters: .constant([]))
 }
 
 //let filterTypes: [String:String] = [

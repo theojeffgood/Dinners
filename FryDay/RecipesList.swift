@@ -6,10 +6,15 @@
 //
 
 import SwiftUI
+import CloudKit
 
 struct RecipesList: View {
+    
+    @ObservedObject var recipeManager: RecipeManager
+    @FetchRequest(fetchRequest: Vote.allVotes) var allVotes
+    
     var recipesType: String
-    var recipes: [Recipe]
+    @State var recipes: [Recipe] = []
     
     var body: some View {
         NavigationView {
@@ -45,7 +50,17 @@ struct RecipesList: View {
                 })
                 .navigationTitle(recipesType)
             }
-        }
+        }.onAppear(perform: {
+            switch recipesType {
+            case "Matches":
+                recipes = recipeManager.getMatches()
+            case "Likes":
+                let votedRecipeIds = allVotes.filter({ $0.isLiked && $0.isCurrentUser }).map({ $0.recipeId })
+                recipes = recipeManager.getRecipesById(ids: votedRecipeIds) ?? []
+            default:
+                fatalError("###Unrecognized list of recipes.")
+            }
+        })
     }
 }
 
@@ -95,7 +110,9 @@ struct RecipeCell: View {
 import CoreData
 
 struct RecipesList_Previews: PreviewProvider {
-    static let entity = NSManagedObjectModel.mergedModel(from: nil)?.entitiesByName["Recipe"]
+    static let entity = NSManagedObjectModel
+        .mergedModel(from: nil)?
+        .entitiesByName["Recipe"]
     
     static var previews: some View {
         let recipeOne = Recipe(entity: entity!, insertInto: nil)
@@ -110,9 +127,10 @@ struct RecipesList_Previews: PreviewProvider {
         recipeThree.title = "BBQ Ribs"
         recipeThree.imageUrl = "https://halflemons-media.s3.amazonaws.com/784.jpg"
         
-        return RecipesList(recipesType: "Matches", recipes: [])
-//        return RecipesList(recipesType: "Matches", recipes: [recipeOne,
-//                                                             recipeTwo,
-//                                                             recipeThree])
+        let moc = DataController.shared.context
+        let recipeManager = RecipeManager(managedObjectContext: moc)
+        
+//        return RecipesList(recipesType: "Matches", recipes: [])
+        return RecipesList(recipeManager: recipeManager, recipesType: "Matches", recipes: [recipeOne, recipeTwo, recipeThree])
     }
 }
