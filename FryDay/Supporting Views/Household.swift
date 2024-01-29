@@ -123,12 +123,6 @@ struct Household: View {
             self.householdMembers = shareCoordinator.getParticipants(share: share)
         }
     }
-    
-//    func handleInviteSent(){
-//        withAnimation {
-//            householdState = .inviteSent
-//        }
-//    }
 }
 
 struct Household_Previews: PreviewProvider {
