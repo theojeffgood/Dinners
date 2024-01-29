@@ -14,6 +14,7 @@ struct ContentView: View {
     @Environment(\.managedObjectContext) var moc
     @ObservedObject var recipeManager: RecipeManager
     
+    @State private var playConfetti = false
     @State private var showTabbar: Bool = true
     @State private var showHousehold: Bool = false
     @State private var showFilters: Bool = false
@@ -52,6 +53,12 @@ struct ContentView: View {
                                 popRecipeStack(for: recipe,
                                                liked: liked,
                                                showSwipe: false)
+                            }
+                            if playConfetti{
+                                CelebrationView(name: "Confetti",
+                                                play: $playConfetti)
+                                .id(1) // gobbledygook
+                                .allowsHitTesting(false)
                             }
                             
                             HStack() {
@@ -167,6 +174,7 @@ extension ContentView{
     }
     
     func celebrate() {
+        playConfetti = true
         UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
     }
     
