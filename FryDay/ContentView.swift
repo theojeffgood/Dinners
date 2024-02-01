@@ -32,20 +32,21 @@ struct ContentView: View {
                 }
             } label: {
                 VStack {
-//                    HStack{
-//                        if !$appliedFilters.isEmpty{
-//                            ForEach(appliedFilters){ filter in
-//                                Text(filter.title)
-//                                    .frame(height: 45)
-//                                    .padding([.leading, .trailing])
-//                                    .foregroundColor(.black)
-//                                    .overlay(
-//                                        RoundedRectangle(cornerRadius: 5)
-//                                            .stroke(Color.black, lineWidth: 1)
-//                                    )
-//                            }
-//                        }
-//                    }.padding(.bottom, 5)
+                    HStack {
+                        if !$appliedFilters.isEmpty{
+                            ForEach(appliedFilters){ filter in
+                                Text(filter.title)
+                                    .frame(height: 45)
+                                    .padding([.leading, .trailing])
+                                    .foregroundColor(.black)
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 5)
+                                            .stroke(Color.black, lineWidth: 1)
+                                    )
+                            }
+                            Spacer()
+                        }
+                    }.padding([.bottom, .leading], 5)
                     Spacer()
                     if let recipe = recipeManager.recipe{
                         ZStack(alignment: .center) {
@@ -57,7 +58,7 @@ struct ContentView: View {
                             if playConfetti{
                                 CelebrationView(name: "Confetti",
                                                 play: $playConfetti)
-                                .id(1) // gobbledygook
+                                .id(1) // swiftui unique-ness thing
                                 .allowsHitTesting(false)
                             }
                             
@@ -99,8 +100,8 @@ struct ContentView: View {
                     }
                 }
                 .padding([.leading, .bottom, .trailing], 5)
-                .navigationTitle("Fryday")
                 .toolbar(showTabbar ? .visible : .hidden, for: .tabBar)
+                .navigationTitle("Fryday")
                 .navigationBarItems(
                     trailing:
                         HStack(content: {
@@ -134,23 +135,14 @@ struct ContentView: View {
                     Household(share: shareCoordinator.existingShare,
                               dismissAction: dismiss)
                 }
-            }.sheet(isPresented: $showFilters, content: {
+            }.sheet(isPresented: $showFilters, onDismiss: { /*TBD*/ }, content: {
                 Filters(appliedFilters: $appliedFilters)
-            })
-            .onAppear(){
+            }).onAppear(){
                 loadRecipes()
                 showTabbar = true
             }
         }
     }
-
-//        .onChange(of: recipeManager.recipe, perform: { _ in
-//            print("###Recipe changed")
-//            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-//                NotificationCenter.default.post(name: Notification.Name.resetOffset,
-//                                                object: nil, userInfo: nil )
-//            }
-//        })
 }
 
 extension ContentView{
@@ -181,8 +173,9 @@ extension ContentView{
     func loadRecipes(){
         if !UserDefaults.standard.bool(forKey: "appOpenedBefore"){
             Task{
-//                try? await Webservice(context: moc).load (Recipe.all)
-//                try! moc.save()
+                try? await Webservice(context: moc).load (Recipe.all)
+                try? await Webservice(context: moc).load (Category.all)
+                try! moc.save()
             }
             UserDefaults.standard.set(true, forKey: "appOpenedBefore")
         }

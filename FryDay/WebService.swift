@@ -85,7 +85,11 @@ extension URL {
     }
     
     static var allRecipes: URL {
-        URL(string: "https://appdata.halflemons.com/recipes")!
+        URL(string: "https://staging.halflemons.com/recipes")!
+    }
+    
+    static var allCategories: URL {
+        URL(string: "https://staging.halflemons.com/categories")!
     }
 }
 
@@ -95,8 +99,12 @@ extension Recipe {
     static var all: Resource<[Recipe]>{
         return Resource(url: URL.allRecipes)
     }
-    
-    
+}
+
+extension Category {
+    static var all: Resource<[Category]>{
+        return Resource(url: URL.allCategories)
+    }
 }
 
 extension RecipeDetails {
