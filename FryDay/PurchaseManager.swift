@@ -11,29 +11,28 @@ import StoreKit
 @MainActor
 class PurchaseManager: NSObject, ObservableObject {
 
-    private let productIds: Set<String> = [
-        "filters.diets.glutenFree",
-        "filters.diets.vegetarian",
-        "filters.diets.vegan",
-        "filters.keyIngredients.chicken",
-        "filters.keyIngredients.groundBeef",
-        "filters.keyIngredients.pasta",
-        "filters.keyIngredients.tofuTempeh",
-        "filters.keyIngredients.legumes",
-        "filters.keyIngredients.fish",
-        "filters.keyIngredients.sausage",
-        "filters.cuisines.asian",
-        "filters.cuisines.french",
-        "filters.cuisines.italian",
-        "filters.cuisines.mediterranean",
-        "filters.cuisines.mexican",
-        "filters.cuisines.middleEastern",
-        "filters.mealTypes.dinner",
-        "filters.mealTypes.breakfast",
-        "filters.mealTypes.onePot",
-        "filters.mealTypes.underThirtyMin",
-        
-    ]
+//    private let productIds: Set<String> = [
+//        "filters.diets.glutenFree",
+//        "filters.diets.vegetarian",
+//        "filters.diets.vegan",
+//        "filters.keyIngredients.chicken",
+//        "filters.keyIngredients.groundBeef",
+//        "filters.keyIngredients.pasta",
+//        "filters.keyIngredients.tofuTempeh",
+//        "filters.keyIngredients.legumes",
+//        "filters.keyIngredients.fish",
+//        "filters.keyIngredients.sausage",
+//        "filters.cuisines.asian",
+//        "filters.cuisines.french",
+//        "filters.cuisines.italian",
+//        "filters.cuisines.mediterranean",
+//        "filters.cuisines.mexican",
+//        "filters.cuisines.middleEastern",
+//        "filters.mealTypes.dinner",
+//        "filters.mealTypes.breakfast",
+//        "filters.mealTypes.onePot",
+//        "filters.mealTypes.underThirtyMin",
+//    ]
 
     @Published
     private(set) var products: [Product] = []
@@ -57,12 +56,24 @@ class PurchaseManager: NSObject, ObservableObject {
         self.updates?.cancel()
     }
 
-    func loadProducts() async throws {
+    func loadAppStoreProducts(for categories: [Category]) async throws {
         guard !self.productsLoaded else { return }
-        self.products = try await Product.products(for: productIds)
+//        guard categories
+        let categoryIds = categories.map({ $0.appStoreProductId })
+                
+        self.products = try await Product.products(for: categoryIds)
+        
 //        self.products.forEach({ print("product display name: \($0.displayName)") })
         self.productsLoaded = true
     }
+    
+    func getProductsForCategories(_ categories: [Category]?) -> [Product]{
+        guard let categories, !categories.isEmpty else { return [] }
+        
+        let categoryIds = categories.map({ $0.appStoreProductId })
+        var filteredProducts = products.filter({ categoryIds.contains($0.id) })
+        return filteredProducts
+    } 
 
     func purchase(_ product: Product) async throws {
         let result = try await product.purchase()
