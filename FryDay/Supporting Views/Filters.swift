@@ -13,39 +13,33 @@ struct Filters: View {
     @Environment(\.managedObjectContext) var moc
     @EnvironmentObject private var purchaseManager: PurchaseManager
     
-    //    @State private var products: [Product] = []
-    //    var filterApplied: (Category?) -> Void
-    //    var dismissAction: () -> Void
-    
     @Binding var appliedFilters: [Category]
-    @State private var groupedCategories: [String: [Category]] = [:] /* ["Filter Type": [Filters of the type]] */
+    @State private var categoryList: [String: [Category]] = [:] /* ["Filter Type": [Filters of the type]] */
     @State private var filterWasApplied = false
     
     var body: some View {
         NavigationStack{
             List{
-                let groups = Array(groupedCategories.keys)
-                ForEach(groups, id: \.self){ group in
-//                    ForEach(groupedCategories, id: \.self) { key, value in
+                let sortedCategoryList = categoryList.sorted(by: { $0.key < $1.key })
+                ForEach(sortedCategoryList, id: \.key){ categoryTitle, categories in
                     Section{
-                        let categoryGroup: [Category]? = groupedCategories[group]
-                        let products:   [Product]      = purchaseManager.getProductsForCategories(categoryGroup)
-                        
-                        ForEach(products, id: \.self){ product in
+                        ForEach(categories, id: \.self){ category in
                             HStack{
-                                Text(product.displayName)
+                                Text(category.appStoreProduct?.displayName ?? "")
                                 Spacer()
                                 Button {
-                                    _ = Task<Void, Never> {
-                                        do {
-                                            try await purchaseManager.purchase(product)
-                                            self.filterWasApplied = true
-                                        } catch {
-                                            print(error)
+                                    if let product = category.appStoreProduct{
+                                        Task<Void, Never> {
+                                            do {
+                                                try await purchaseManager.purchase(product)
+//                                                appliedFilters.append(category)
+                                            } catch {
+                                                print(error)
+                                            }
                                         }
                                     }
                                 } label: {
-                                    Text(verbatim: product.displayPrice)
+                                    Text(verbatim: category.appStoreProduct?.displayPrice ?? "")
                                         .padding(8.5)
                                         .foregroundStyle(.blue)
                                         .background(.gray.opacity(0.3))
@@ -55,13 +49,13 @@ struct Filters: View {
                             }
                         }
                     }
-                    
                 header: {
-                    Text(verbatim: group)
+                    Text(verbatim: categoryTitle)
                         .headerProminence(.increased)
                 }
                 footer: {
-                    if group == groups.last{
+                    let isLastSection = (categoryTitle == sortedCategoryList.last?.key)
+                    if isLastSection{
                         HStack{
                             Text("Want to see a new filter?")
                                 .font(.subheadline)
@@ -76,27 +70,22 @@ struct Filters: View {
                     }
                 }
                 }
-            }.listStyle(.grouped)
-                .navigationTitle("Filters")
-                .navigationBarTitleDisplayMode(.large)
-                .onAppear(perform: {
-                    let categories = Category.allCategories(in: moc)
-                    groupCategoriesByType(categories)
-                    
-                    _ = Task<Void, Never> {
-                        do {
-                            try! await purchaseManager.loadAppStoreProducts(for: categories)
-                            //                        self.products = purchaseManager.products
-                        } catch {
-                            print(error)
-                        }
+            }
+            .listStyle(.grouped)
+            .navigationTitle("Filters")
+            .navigationBarTitleDisplayMode(.large)
+            .onAppear(perform: {
+                let categories = Category.allCategories(in: moc)
+                groupCategoriesByType(categories)
+                
+                _ = Task<Void, Never> {
+                    do {
+                        try await purchaseManager.loadAppStoreProducts(for: categories)
+                    } catch {
+                        print(error)
                     }
-                })
-                .onDisappear(perform: {
-                    let purchases = purchaseManager.purchasedProductIDs
-                    let filters = purchasedCategoriesFor(purchases)
-                    self.appliedFilters = filters
-                })
+                }
+            })
         }
     }
 }
@@ -109,55 +98,46 @@ extension Filters{
     
     func groupCategoriesByType(_ categories: [Category]){
         for category in categories {
-            if var categoryGroup = groupedCategories[category.group]{
+            if var categoryGroup = categoryList[category.group]{
                 categoryGroup.append(category)
-                groupedCategories[category.group] = categoryGroup
+                categoryList[category.group] = categoryGroup
             } else{
-                groupedCategories[category.group] = [category]
+                categoryList[category.group] = [category]
             }
         }
     }
-    
-    func purchasedCategoriesFor(_ productIds: Set<String>) -> [Category]{
-        let categories = Category.allCategories(in: moc)
-        let purchasedProducts = categories.filter({ productIds.contains($0.appStoreProductId) })
-        return purchasedProducts
-    }
 }
 
-//struct ProductsList: View {
+//struct ProductsSection: View {
 //    
 //    @State var categories: [Category]
-//    @State var products: [Product]
 //    @State var purchase: (Product) async throws -> Void
-//    @State var title: String
+//    @State var categoryTitle: String
 //    
-//    init(categories: [Category], products: [Product], purchase: @escaping (Product) async throws -> Void, title: String) {
+//    init(categories: [Category], categoryTitle: String, purchase: @escaping (Product) async throws -> Void) {
 //        self.categories = categories
-//        self.products = products.filter({ categories.map({ $0.title }).contains( $0.displayName ) })
 //        self.purchase = purchase
-//        self.title = title
+//        self.categoryTitle = categoryTitle
 //    }
 //    
 //    var body: some View{
 //        Section{
-////            let diets = [Category(title: "Vegetarian", id: 1), Category(title: "Vegan", id: 2), Category(title: "Gluten Free", id: 3)]
-//            ForEach(products, id: \.self){ filter in
+//            ForEach(categories, id: \.self){ category in
 //                HStack{
-//                    Text(filter.displayName)
+//                    Text(category.appStoreProduct?.displayName ?? "")
 //                    Spacer()
 //                    Button {
 //                        _ = Task<Void, Never> {
 //                            do {
-//                                try? await self.purchase(filter)
-////                                try await purchaseManager.purchase(filter)
-////                                self.filterWasApplied = true
+////                                try await purchaseManager.purchase(category.appStoreProduct!)
+//                                try await purchase(category.appStoreProduct!)
+////                                appliedFilters.append(category)
 //                            } catch {
 //                                print(error)
 //                            }
 //                        }
 //                    } label: {
-//                        Text(verbatim: filter.displayPrice)
+//                        Text(verbatim: category.appStoreProduct?.displayPrice ?? "")
 //                            .padding(8.5)
 //                            .foregroundStyle(.blue)
 //                            .background(.gray.opacity(0.3))
@@ -166,9 +146,26 @@ extension Filters{
 //                    }
 //                }
 //            }
-//        } header: {
-//            Text(verbatim: title)
-//                .headerProminence(.increased)
 //        }
+//    header: {
+//        Text(verbatim: categoryTitle)
+//            .headerProminence(.increased)
+//    }
+////    footer: {
+////        let isLastSection = (categoryTitle == sortedCategoryList.last?.key)
+////        if isLastSection{
+////            HStack{
+////                Text("Want to see a new filter?")
+////                    .font(.subheadline)
+////                Button {
+////                    print("penis")
+////                } label: {
+////                    Text("Let us know!")
+////                        .foregroundStyle(.blue)
+////                        .font(.subheadline)
+////                }
+////            }
+////        }
+////    }
 //    }
 //}

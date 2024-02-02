@@ -57,23 +57,27 @@ class PurchaseManager: NSObject, ObservableObject {
     }
 
     func loadAppStoreProducts(for categories: [Category]) async throws {
-        guard !self.productsLoaded else { return }
-//        guard categories
-        let categoryIds = categories.map({ $0.appStoreProductId })
-                
-        self.products = try await Product.products(for: categoryIds)
+        // Get products from App Store
+        if !self.productsLoaded{
+            let categoryIds = categories.map({ $0.appStoreProductId })
+            self.products = try await Product.products(for: categoryIds)
+        }
         
-//        self.products.forEach({ print("product display name: \($0.displayName)") })
+        // Assign App Store products to categories
+        for category in categories {
+            category.appStoreProduct = products.first(where: { $0.id == category.appStoreProductId })
+        }
+
         self.productsLoaded = true
     }
     
-    func getProductsForCategories(_ categories: [Category]?) -> [Product]{
-        guard let categories, !categories.isEmpty else { return [] }
-        
-        let categoryIds = categories.map({ $0.appStoreProductId })
-        var filteredProducts = products.filter({ categoryIds.contains($0.id) })
-        return filteredProducts
-    } 
+//    func getProductsForCategories(_ categories: [Category]?) -> [Product]{
+//        guard let categories, !categories.isEmpty else { return [] }
+//        
+//        let categoryIds = categories.map({ $0.appStoreProductId })
+//        let filteredProducts = products.filter({ categoryIds.contains($0.id) })
+//        return filteredProducts
+//    } 
 
     func purchase(_ product: Product) async throws {
         let result = try await product.purchase()
