@@ -27,24 +27,34 @@ struct Filters: View {
                             HStack{
                                 Text(category.appStoreProduct?.displayName ?? "")
                                 Spacer()
-                                Button {
-                                    if let product = category.appStoreProduct{
-                                        Task<Void, Never> {
-                                            do {
-                                                try await purchaseManager.purchase(product)
-//                                                appliedFilters.append(category)
-                                            } catch {
-                                                print(error)
+                                if purchaseManager.purchasedProductIDs.contains(category.appStoreProductId){
+                                    Image(systemName: "checkmark.circle.fill")
+                                        .resizable()
+                                        .foregroundStyle(.green)
+                                        .frame(width: 25, height: 25)
+                                        .padding(.trailing)
+                                } else{
+                                    Button {
+                                        if let product = category.appStoreProduct{
+                                            Task<Void, Never> {
+                                                do {
+                                                    try await purchaseManager.purchase(product)
+                                                    if !appliedFilters.contains(category){
+                                                        appliedFilters.append(category)
+                                                    }
+                                                } catch {
+                                                    print(error)
+                                                }
                                             }
                                         }
+                                    } label: {
+                                        Text(verbatim: category.appStoreProduct?.displayPrice ?? "")
+                                            .padding(8.5)
+                                            .foregroundStyle(.blue)
+                                            .background(.gray.opacity(0.3))
+                                            .clipShape(.capsule)
+                                            .padding(1.0)
                                     }
-                                } label: {
-                                    Text(verbatim: category.appStoreProduct?.displayPrice ?? "")
-                                        .padding(8.5)
-                                        .foregroundStyle(.blue)
-                                        .background(.gray.opacity(0.3))
-                                        .clipShape(.capsule)
-                                        .padding(1.0)
                                 }
                             }
                         }
@@ -74,7 +84,7 @@ struct Filters: View {
             .listStyle(.grouped)
             .navigationTitle("Filters")
             .navigationBarTitleDisplayMode(.large)
-            .onAppear(perform: {
+            .onAppear{
                 let categories = Category.allCategories(in: moc)
                 groupCategoriesByType(categories)
                 
@@ -85,7 +95,11 @@ struct Filters: View {
                         print(error)
                     }
                 }
-            })
+            }
+            .onDisappear {
+                let purchasedProductIds = purchaseManager.purchasedProductIDs
+                appliedFilters.removeAll(where: { !purchasedProductIds.contains($0.appStoreProductId) })
+            }
         }
     }
 }

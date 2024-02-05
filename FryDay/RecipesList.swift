@@ -39,8 +39,9 @@ struct RecipesList: View {
                         }
                         }
                     }
-                }.navigationTitle(recipesType)
-                    .onAppear(){ showTabbar = true }
+                }
+                .onAppear(){ showTabbar = true }
+                .navigationTitle(recipesType)
             } else{
                 VStack(spacing: 45, content: {
                     Image(systemName: "person.badge.plus")
@@ -64,20 +65,18 @@ struct RecipesList: View {
                     .foregroundColor(.black)
                     .background(.orange)
                     .cornerRadius(25, corners: .allCorners)
-                })
+                }).navigationTitle(recipesType)
             }
         }
         .toolbar(showTabbar ? .visible : .hidden, for: .tabBar)
         .overlay(alignment: .bottom) {
             if showHousehold{
-                let dismiss = {
+                Household(share: nil, onDismiss: {
                     withAnimation {
                         showTabbar = true
                         showHousehold = false
                     }
-                }
-                Household(share: nil,
-                          dismissAction: dismiss)
+                })
             }
         }
         .onAppear(perform: {

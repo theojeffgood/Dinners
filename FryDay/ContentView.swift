@@ -19,6 +19,8 @@ struct ContentView: View {
     @State private var showHousehold: Bool = false
     @State private var showFilters: Bool = false
     @State private var appliedFilters: [Category] = []
+    @State private var filterIsActive: Bool = false
+    @State private var activeFilter: Category? = nil
     
     var body: some View {
         NavigationStack{
@@ -32,28 +34,32 @@ struct ContentView: View {
                 }
             } label: {
                 VStack {
-                    HStack {
-                        if !$appliedFilters.isEmpty{
-                            ForEach(appliedFilters){ filter in
-                                Text(filter.title)
-                                    .frame(height: 45)
-                                    .padding([.leading, .trailing])
-                                    .foregroundColor(.black)
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 5)
-                                            .stroke(Color.black, lineWidth: 1)
-                                    )
+                    if !$appliedFilters.isEmpty{
+                        HStack {
+                            Text("Filters: ")
+                            
+                            let items: [Category] = filterIsActive ? [activeFilter!] : appliedFilters
+                            ForEach(items){ item in
+                                Button {
+                                    withAnimation{
+                                        filterIsActive.toggle()
+                                        self.activeFilter = filterIsActive ? item : nil
+                                        recipeManager.applyFilter(activeFilter)
+                                    }
+                                } label: {
+                                    Text(item.title + (filterIsActive ? "  X" : ""))
+                                        .frame(height: 35)
+                                        .padding([.leading, .trailing])
+                                        .overlay( RoundedRectangle(cornerRadius: 5).stroke(.black, lineWidth: 1) )
+                                }
                             }
                             Spacer()
-                        }
-                    }.padding([.bottom, .leading], 5)
-                    Spacer()
+                        }.padding(.leading, 10)
+                    }
                     if let recipe = recipeManager.recipe{
                         ZStack(alignment: .center) {
                             RecipeCardView(recipe: recipe){ liked in
-                                popRecipeStack(for: recipe,
-                                               liked: liked,
-                                               showSwipe: false)
+                                popRecipeStack(for: recipe, liked: liked, showSwipe: false)
                             }
                             if playConfetti{
                                 CelebrationView(name: "Confetti",
@@ -64,11 +70,7 @@ struct ContentView: View {
                             
                             HStack() {
                                 VStack(alignment: .trailing) {
-                                    Button(action: {
-                                        popRecipeStack(for: recipe, 
-                                                       liked: false,
-                                                       showSwipe: true)
-                                    }) {
+                                    Button(action: { popRecipeStack(for: recipe, liked: false) }) {
                                         Image(systemName: "arrow.turn.up.left")
                                             .resizable()
                                             .tint(.white)
@@ -80,11 +82,7 @@ struct ContentView: View {
                                 }
                                 Spacer()
                                 VStack(alignment: .leading) {
-                                    Button(action: {
-                                        popRecipeStack(for: recipe, 
-                                                       liked: true,
-                                                       showSwipe: true)
-                                    }) {
+                                    Button(action: { popRecipeStack(for: recipe, liked: true) }) {
                                         Image(systemName: "arrow.turn.up.right")
                                             .resizable()
                                             .tint(.white)
@@ -126,14 +124,12 @@ struct ContentView: View {
                 )
             }.overlay(alignment: .bottom) {
                 if showHousehold{
-                    let dismiss = {
+                    Household(share: shareCoordinator.existingShare, onDismiss: {
                         withAnimation {
                             showTabbar = true
                             showHousehold = false
                         }
-                    }
-                    Household(share: shareCoordinator.existingShare,
-                              dismissAction: dismiss)
+                    })
                 }
             }.sheet(isPresented: $showFilters, onDismiss: { /*TBD*/ }, content: {
                 Filters(appliedFilters: $appliedFilters)
@@ -146,7 +142,7 @@ struct ContentView: View {
 }
 
 extension ContentView{
-    func popRecipeStack(for recipe: Recipe, liked: Bool, showSwipe: Bool){
+    func popRecipeStack(for recipe: Recipe, liked: Bool, showSwipe: Bool = true){
             print("###Recording vote")
             let newVote = Vote(forRecipeId: recipe.recipeId, like: liked, in: moc)
             shareCoordinator.shareVoteIfNeeded(newVote) //1 of 2 (before moc.save)

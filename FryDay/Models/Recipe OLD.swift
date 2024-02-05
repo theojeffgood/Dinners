@@ -61,7 +61,7 @@ public class Recipe: NSManagedObject, Codable {
         
         let categoriesList = try! container.decode(String.self, forKey: .categories)
         let newRecipeCategoriesList = (categoriesList.split(separator: ";"))
-        let recipeCategoriesArray = newRecipeCategoriesList.map{ Int($0) ?? 0 }
+        let recipeCategoriesArray = newRecipeCategoriesList.map{ Int($0)! }
         categories = recipeCategoriesArray
     }
     

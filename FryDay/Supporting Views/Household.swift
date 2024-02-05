@@ -18,23 +18,22 @@ struct Household: View {
     @State private var share: CKShare?
     @State var householdMembers: [CKShare.Participant] = [] /*<-- or use this?*/
     @State private var showShareSheet = false
+    var onDismiss: () -> Void
 //    if let currentUser = share.currentUserParticipant, currentUser == share.owner {
 //        return true
 //    }
         
-    init(share: CKShare?, dismissAction: @escaping () -> Void){
+    init(share: CKShare?, onDismiss: @escaping () -> Void){
         self.share = share
-        self.dismissAction = dismissAction
+        self.onDismiss = onDismiss
     }
-
-    var dismissAction: () -> Void
     
     var body: some View {
         VStack(spacing: -15){
             Rectangle()
                 .fill(Color.gray.opacity(0.5))
                 .onTapGesture {
-                    dismissAction()
+                    onDismiss()
                 }
             VStack(spacing: 30){
                 HStack(spacing: 7){
@@ -129,7 +128,7 @@ struct Household_Previews: PreviewProvider {
     
     
     static var previews: some View {
-        Household(share: nil, dismissAction: {})
+        Household(share: nil, onDismiss: {})
     }
 }
 

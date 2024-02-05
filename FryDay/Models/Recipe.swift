@@ -47,7 +47,7 @@ extension Recipe {
     @NSManaged public var id: UUID?
     @NSManaged public var imageUrl: String?
     @NSManaged public var ingredients: [Int]?
-    @NSManaged public var categories: [Int]?
+    @NSManaged public var categories: [Int]
 //    @NSManaged public var isLiked: Bool
 //    @NSManaged public var isShared: Bool
     @NSManaged public var recipeId: Int64
