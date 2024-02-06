@@ -136,6 +136,8 @@ extension RecipeManager{
     }
     
     func getMatches() -> [Recipe]{
+        guard UserDefaults.standard.bool(forKey: "inAHousehold") else { return [] }
+        
         var recipesAndVotes: [Int64: Int] = [:] //** [RecipeIDs : VoteCount] **//
         var matches: [Int64] = []
         
