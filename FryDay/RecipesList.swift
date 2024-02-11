@@ -18,6 +18,17 @@ struct RecipesList: View {
     
     @State private var showTabbar: Bool = true
     @State private var showHousehold: Bool = false
+    var emptyStateMessage: String{
+        if recipesType == "Matches"{
+            let message = UserDefaults.standard.bool(forKey: "inAHousehold") ?
+            "No matches, yet. \n Like recipes to get matches." :
+            "No matches, yet. \n Add friends to get matches."
+            return message
+        } else if recipesType == "Likes"{
+            return "No likes yet."
+        }
+        return "There are no results" // this should never happen
+    }
     
     var body: some View {
         NavigationStack{
@@ -43,28 +54,33 @@ struct RecipesList: View {
                 .onAppear(){ showTabbar = true }
                 .navigationTitle(recipesType)
             } else{
-                VStack(spacing: 45, content: {
+                VStack(spacing: 20, content: {
                     Image(systemName: "person.badge.plus")
                         .resizable()
                         .scaledToFit()
                         .frame(width: 100, height: 100)
                         .foregroundColor(.gray.opacity(0.6))
                     
-                    Text("Your household is empty. \n Add people to see matches.")
+                    Text(emptyStateMessage)
                         .multilineTextAlignment(.center)
                         .font(.title3)
+                        .padding(.bottom, 55)
                     
-                    Button("Add to your Household"){
-                        withAnimation {
-                            showTabbar = false
-                            showHousehold = true
+                    if recipesType == "Matches"{
+                        Button("See your Household"){
+                            withAnimation {
+                                showTabbar = false
+                                showHousehold = true
+                            }
                         }
+                        .font(.title)
+                        .padding(20)
+                        .foregroundColor(.black)
+                        .background(.orange)
+                        .cornerRadius(25, corners: .allCorners)
+                        .shadow(radius: 25)
                     }
-                    .font(.title)
-                    .padding()
-                    .foregroundColor(.black)
-                    .background(.orange)
-                    .cornerRadius(25, corners: .allCorners)
+                    
                 }).navigationTitle(recipesType)
             }
         }

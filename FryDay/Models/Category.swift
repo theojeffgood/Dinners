@@ -16,6 +16,7 @@ public class Category: NSManagedObject, Codable {
     @NSManaged public var title: String
     @NSManaged public var group: String
     @NSManaged public var appStoreProductId: String
+    @NSManaged public var isPurchased: Bool
     var appStoreProduct: Product?
     
     convenience init(title: String,
@@ -68,6 +69,12 @@ extension Category{
         let fetchRequest = NSFetchRequest<Category>(entityName: String(describing: Category.self))
         fetchRequest.predicate = predicate
         fetchRequest.sortDescriptors = sort
+        
+        if UserDefaults.standard.bool(forKey: "inAHousehold") &&
+           !UserDefaults.standard.bool(forKey: "isHouseholdOwner"){
+            fetchRequest.affectedStores = [DataController.shared.sharedPersistentStore]
+        }
+        
         return fetchRequest
     }
     

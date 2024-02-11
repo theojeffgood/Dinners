@@ -17,7 +17,9 @@ struct ContentView: View {
     @State private var playConfetti = false
     @State private var showTabbar: Bool = true
     @State private var showHousehold: Bool = false
+    
     @State private var showFilters: Bool = false
+    @State private var allFilters: [Category] = []
     @State private var appliedFilters: [Category] = []
     @State private var filterIsActive: Bool = false
     @State private var activeFilter: Category? = nil
@@ -38,23 +40,30 @@ struct ContentView: View {
                         HStack {
                             Text("Filters: ")
                             
-                            let items: [Category] = filterIsActive ? [activeFilter!] : appliedFilters
-                            ForEach(items){ item in
-                                Button {
-                                    withAnimation{
-                                        filterIsActive.toggle()
-                                        self.activeFilter = filterIsActive ? item : nil
-                                        recipeManager.applyFilter(activeFilter)
+                            ScrollView(.horizontal){
+                                HStack {
+                                    let items: [Category] = filterIsActive ? [activeFilter!] : appliedFilters
+                                    ForEach(items){ item in
+                                        Button {
+                                            withAnimation{
+                                                filterIsActive.toggle()
+                                                self.activeFilter = filterIsActive ? item : nil
+                                                recipeManager.applyFilter(activeFilter)
+                                            }
+                                        } label: {
+                                            Text(item.title + (filterIsActive ? "  X" : ""))
+                                                .frame(height: 40)
+                                                .padding([.leading, .trailing])
+                                                .overlay( RoundedRectangle(cornerRadius: 5).stroke(.black, lineWidth: 1) )
+                                                .padding([.top, .bottom], 1)
+                                        }
                                     }
-                                } label: {
-                                    Text(item.title + (filterIsActive ? "  X" : ""))
-                                        .frame(height: 35)
-                                        .padding([.leading, .trailing])
-                                        .overlay( RoundedRectangle(cornerRadius: 5).stroke(.black, lineWidth: 1) )
-                                }
-                            }
-                            Spacer()
-                        }.padding(.leading, 10)
+                                    Spacer()
+                                }.padding(.leading, 1)
+                            }.scrollIndicators(.never)
+                        }
+                        .padding(.leading, 10)
+                        .padding([.top, .bottom], 5)
                     }
                     if let recipe = recipeManager.recipe{
                         ZStack(alignment: .center) {
@@ -71,26 +80,30 @@ struct ContentView: View {
                             HStack() {
                                 VStack(alignment: .trailing) {
                                     Button(action: { popRecipeStack(for: recipe, liked: false) }) {
-                                        Image(systemName: "arrow.turn.up.left")
-                                            .resizable()
-                                            .tint(.white)
-                                            .frame(width: 75, height: 75)
+                                        VStack {
+                                            Image(systemName: "arrow.turn.up.left")
+                                                .resizable()
+                                                .tint(.white)
+                                                .frame(width: 75, height: 75)
+                                            Text("Nay!")
+                                                .foregroundColor(.white)
+                                                .font(.title)
+                                        }
                                     }
-                                    Text("Nay!")
-                                        .foregroundColor(.white)
-                                        .font(.title)
                                 }
                                 Spacer()
                                 VStack(alignment: .leading) {
                                     Button(action: { popRecipeStack(for: recipe, liked: true) }) {
-                                        Image(systemName: "arrow.turn.up.right")
-                                            .resizable()
-                                            .tint(.white)
-                                            .frame(width: 75, height: 75)
+                                        VStack {
+                                            Image(systemName: "arrow.turn.up.right")
+                                                .resizable()
+                                                .tint(.white)
+                                                .frame(width: 75, height: 75)
+                                            Text("Yay!")
+                                                .foregroundColor(.white)
+                                                .font(.title)
+                                        }
                                     }
-                                    Text("Yay!")
-                                        .foregroundColor(.white)
-                                        .font(.title)
                                 }
                             }
                             .padding([.leading, .trailing], 3)
@@ -131,17 +144,25 @@ struct ContentView: View {
                         }
                     })
                 }
-            }.sheet(isPresented: $showFilters, onDismiss: { /*TBD*/ }, content: {
-                Filters(appliedFilters: $appliedFilters)
+            }.sheet(isPresented: $showFilters, onDismiss: { loadFilters() }, content: {
+//                Filters(appliedFilters: $appliedFilters)
+                Filters()
             }).onAppear(){
                 loadRecipes()
                 showTabbar = true
+                
+                loadFilters()
             }
         }
     }
 }
 
 extension ContentView{
+    func loadFilters(){
+        allFilters = Category.allCategories(in: moc)
+        appliedFilters = allFilters.filter({ $0.isPurchased })
+    }
+    
     func popRecipeStack(for recipe: Recipe, liked: Bool, showSwipe: Bool = true){
             print("###Recording vote")
             let newVote = Vote(forRecipeId: recipe.recipeId, like: liked, in: moc)

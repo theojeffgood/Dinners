@@ -11,37 +11,35 @@ import StoreKit
 @MainActor
 class PurchaseManager: NSObject, ObservableObject {
 
-//    private let productIds: Set<String> = [
-//        "filters.diets.glutenFree",
-//        "filters.diets.vegetarian",
-//        "filters.diets.vegan",
-//        "filters.keyIngredients.chicken",
-//        "filters.keyIngredients.groundBeef",
-//        "filters.keyIngredients.pasta",
-//        "filters.keyIngredients.tofuTempeh",
-//        "filters.keyIngredients.legumes",
-//        "filters.keyIngredients.fish",
-//        "filters.keyIngredients.sausage",
-//        "filters.cuisines.asian",
-//        "filters.cuisines.french",
-//        "filters.cuisines.italian",
-//        "filters.cuisines.mediterranean",
-//        "filters.cuisines.mexican",
-//        "filters.cuisines.middleEastern",
-//        "filters.mealTypes.dinner",
-//        "filters.mealTypes.breakfast",
-//        "filters.mealTypes.onePot",
-//        "filters.mealTypes.underThirtyMin",
-//    ]
+    //    private let productIds: Set<String> = [
+    //        "filters.diets.glutenFree",
+    //        "filters.diets.vegetarian",
+    //        "filters.diets.vegan",
+    //        "filters.keyIngredients.chicken",
+    //        "filters.keyIngredients.groundBeef",
+    //        "filters.keyIngredients.pasta",
+    //        "filters.keyIngredients.tofuTempeh",
+    //        "filters.keyIngredients.legumes",
+    //        "filters.keyIngredients.fish",
+    //        "filters.keyIngredients.sausage",
+    //        "filters.cuisines.asian",
+    //        "filters.cuisines.french",
+    //        "filters.cuisines.italian",
+    //        "filters.cuisines.mediterranean",
+    //        "filters.cuisines.mexican",
+    //        "filters.cuisines.middleEastern",
+    //        "filters.mealTypes.dinner",
+    //        "filters.mealTypes.breakfast",
+    //        "filters.mealTypes.onePot",
+    //        "filters.mealTypes.underThirtyMin",
+    //    ]
+    
+    @Published private(set) var products: [Product] = []
+    @Published private(set) var purchasedProductIDs = Set<String>()
 
-    @Published
-    private(set) var products: [Product] = []
-    @Published
-    private(set) var purchasedProductIDs = Set<String>()
-
-    var hasUnlockedPro: Bool {
-           return !self.purchasedProductIDs.isEmpty
-        }
+//    var hasUnlockedPro: Bool {
+//        return !self.purchasedProductIDs.isEmpty
+//    }
     
     private var productsLoaded = false
     private var updates: Task<Void, Never>? = nil
@@ -79,7 +77,7 @@ class PurchaseManager: NSObject, ObservableObject {
 //        return filteredProducts
 //    } 
 
-    func purchase(_ product: Product) async throws {
+    func purchase(_ product: Product) async throws -> Product.PurchaseResult {
         let result = try await product.purchase()
 
         switch result {
@@ -101,6 +99,8 @@ class PurchaseManager: NSObject, ObservableObject {
         @unknown default:
             break
         }
+        
+        return result
     }
 
     func updatePurchasedProducts() async {

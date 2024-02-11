@@ -13,7 +13,7 @@ struct Filters: View {
     @Environment(\.managedObjectContext) var moc
     @EnvironmentObject private var purchaseManager: PurchaseManager
     
-    @Binding var appliedFilters: [Category]
+//    @Binding var appliedFilters: [Category]
     @State private var categoryList: [String: [Category]] = [:] /* ["Filter Type": [Filters of the type]] */
     @State private var filterWasApplied = false
     
@@ -38,9 +38,15 @@ struct Filters: View {
                                         if let product = category.appStoreProduct{
                                             Task<Void, Never> {
                                                 do {
-                                                    try await purchaseManager.purchase(product)
-                                                    if !appliedFilters.contains(category){
-                                                        appliedFilters.append(category)
+                                                    let result = try await purchaseManager.purchase(product)
+                                                    switch result {
+                                                    case .success:
+                                                        print("###purchase was a success")
+                                                        category.isPurchased = true
+                                                        try! moc.save()
+                                                        
+                                                    case .pending, .userCancelled:
+                                                        print("###purchase was a fail")
                                                     }
                                                 } catch {
                                                     print(error)
@@ -61,27 +67,29 @@ struct Filters: View {
                     }
                 header: {
                     Text(verbatim: categoryTitle)
-                        .headerProminence(.increased)
                 }
-                footer: {
-                    let isLastSection = (categoryTitle == sortedCategoryList.last?.key)
-                    if isLastSection{
-                        HStack{
-                            Text("Want to see a new filter?")
-                                .font(.subheadline)
-                            Button {
-                                print("penis")
-                            } label: {
-                                Text("Let us know!")
-                                    .foregroundStyle(.blue)
-                                    .font(.subheadline)
-                            }
-                        }
-                    }
-                }
+//                footer: {
+//                    let isLastSection = (categoryTitle == sortedCategoryList.last?.key)
+//                    if isLastSection{
+//                        HStack{
+//                            Text("Want to see a new filter?")
+//                                .font(.subheadline)
+//                            Button {
+//                                print("penis")
+//                            } label: {
+//                                Text("Let us know!")
+//                                    .foregroundStyle(.blue)
+//                                    .font(.subheadline)
+//                            }
+//                        }
+//                    }
+//                }
                 }
             }
-            .listStyle(.grouped)
+            .environment(\.defaultMinListRowHeight, 60)
+//            .listStyle(.grouped)
+            .headerProminence(.increased)
+            
             .navigationTitle("Filters")
             .navigationBarTitleDisplayMode(.large)
             .onAppear{
@@ -96,23 +104,32 @@ struct Filters: View {
                     }
                 }
             }
-            .onDisappear {
-                let purchasedProductIds = purchaseManager.purchasedProductIDs
-                appliedFilters.removeAll(where: { !purchasedProductIds.contains($0.appStoreProductId) })
-            }
+//            .onDisappear {
+//                let purchasedProductIds = purchaseManager.purchasedProductIDs
+//                for productId in purchasedProductIds{
+//                    guard let category = appliedFilters.first(where: { $0.appStoreProductId == productId }) else { continue }
+//                    appliedFilters.removeAll(where: { $0 == category })
+//                    category.isPurchased = false
+//                }
+////                appliedFilters.removeAll(where: { !purchasedProductIds.contains($0.appStoreProductId) })
+//            }
         }
     }
 }
 
 #Preview {
-    Filters(appliedFilters: .constant([]))
+//    Filters(appliedFilters: .constant([]))
+    Filters()
 }
 
 extension Filters{
     
     func groupCategoriesByType(_ categories: [Category]){
+        print("### processing categories")
         for category in categories {
+            print("### processing category: \(category.id) \(category.title) \(category.group) \(category.isPurchased) \(category.appStoreProductId) \(category.appStoreProduct)")
             if var categoryGroup = categoryList[category.group]{
+                if categoryGroup.contains(category){ continue }
                 categoryGroup.append(category)
                 categoryList[category.group] = categoryGroup
             } else{

@@ -49,12 +49,3 @@ extension Vote{
         return request
     }
 }
-
-
-
-
-//public class Dislike: NSManagedObject {
-//    @NSManaged public var date: Date?
-//    @NSManaged public var ownerId: String?
-//    @NSManaged public var recipeId: Int64
-//}

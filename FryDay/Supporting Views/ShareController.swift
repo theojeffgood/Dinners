@@ -7,6 +7,7 @@
 
 import Foundation
 import CloudKit
+import CoreData
 
 //class ShareCoordinator: NSObject, ObservableObject{
 //    static let shared = DataController()
@@ -57,6 +58,10 @@ final class ShareCoordinator: ObservableObject {
            let shareList = try? stack.persistentContainer.fetchShares(in: stack.privatePersistentStore),
            let existingShare = shareList.first,
               existingShare.recordID.recordName == CKRecordNameZoneWideShare{
+            
+            if self.existingShare == nil{
+                self.existingShare = existingShare
+            }
             return existingShare
             
         } else{
@@ -67,6 +72,11 @@ final class ShareCoordinator: ObservableObject {
             let share = CKShare(recordZoneID: recipeZone.zoneID)
             share.publicPermission = .readOnly
             let result = try await stack.ckContainer.privateCloudDatabase.save(share)
+            
+            if self.existingShare == nil{
+                self.existingShare = result as? CKShare
+            }
+            
             return result as! CKShare
         }
     }
@@ -77,17 +87,26 @@ final class ShareCoordinator: ObservableObject {
         return participants
     }
     
-    func shareVoteIfNeeded(_ vote: Vote){
+    func shareVoteIfNeeded(_ voteOrCategory: NSManagedObject) {
         if UserDefaults.standard.bool(forKey: "inAHousehold"),
            !UserDefaults.standard.bool(forKey: "isHouseholdOwner"),
            let existingShare{
             
             let stack = DataController.shared
-            stack.persistentContainer.share([vote], to: existingShare) { _, _, _, error in
-                if let error{
-                    print("attempted to save vote: \(vote)")
-                    fatalError("### failed to share vote: \(error)") }
+
+            Task{
+                do{
+                    try await stack.persistentContainer.share([voteOrCategory], to: existingShare)
+                } catch{
+                    print("### failed to share vote OR category: \(error)")
+                }
             }
+            
+//            stack.persistentContainer.share([voteOrCategory], to: existingShare) { _, _, _, error in
+//                if let error{
+//                    print("attempted to save vote OR category: \(voteOrCategory)")
+//                    fatalError("### failed to share vote OR category: \(error)") }
+//            }
         }
     }
 }
