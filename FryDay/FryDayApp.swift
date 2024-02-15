@@ -37,22 +37,15 @@ struct FryDayApp: App {
             MainView(recipeManager: recipeManager)
                 .environment(\.managedObjectContext, DataController.shared.context)
                 .environmentObject(purchaseManager)
-                .task {
-                    await purchaseManager.updatePurchasedProducts()
-                }
                 .environmentObject(ShareCoordinator.shared)
                 .task {
-                    ShareCoordinator.shared.fetchShare()
+                    ShareCoordinator.shared.fetchShare() // is this needed? since it's now part of household onAppear.
+                    await purchaseManager.updatePurchasedProducts()
                 }
-                .onOpenURL { url in
-                    print("### this fires when user opens app via link. the link url is: \(url)")
-                }
+                .onOpenURL { url in } /* Fires when app opens via deeplink. Link is url. */
 //            ContentView(recipeManager: recipeManager)
         }
-//        .onChange(of: scenePhase) { newValue in
-//            try? DataController.shared.context.save()
-//            print("### CHANGE OF APP SCENE PHASE")
-//        } //save context when app goes to background
+//        .onChange(of: scenePhase) { _ in try? moc.save() } /* Fires when app goes to background */
     }
 }
 
@@ -67,53 +60,25 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
     }
 }
 
+import OSLog
+
 final class SceneDelegate: NSObject, UIWindowSceneDelegate {
     func windowScene(_ windowScene: UIWindowScene, 
                      userDidAcceptCloudKitShareWith cloudKitShareMetadata: CKShare.Metadata) {
-//        UserDefaults.standard.set(false, forKey: "inAHousehold") //TESTING only. REMOVE in PROD.
         
         let shareStore = DataController.shared.sharedPersistentStore
         let persistentContainer = DataController.shared.persistentContainer
-        
-//        DataController.shared.ckContainer.accept(cloudKitShareMetadata) { share, error in }
         persistentContainer.acceptShareInvitations(from: [cloudKitShareMetadata], into: shareStore) { shareMetaData, error in
             if let error = error {
                 print("### shareInvitation error :\(error)")
-//                fatalError("FAILED TO CREATE HOUSEHOLD USER Point #00")
-//                return
+                Logger.sharing.warning("Failed to accept share invitation: \(error)")
+                return
             }
             
 ////            CKAcceptSharesOperation() -- is this needed to accept share invites?
-//            
-//            let incomingShareRequest = cloudKitShareMetadata.share
-////            if cloudKitShareMetadata.participantStatus == .accepted,
-//                if !UserDefaults.standard.bool(forKey: "inAHousehold"){
-//                
-//                let context = DataController.shared.context
-//                context.performAndWait {
-//                    let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: String(describing: User.self))
-//                    guard let users = try? context.fetch(fetchRequest) as? [User] else { fatalError("FAILED TO CREATE HOUSEHOLD USER Point #0") }
-//                    
-////                    let userId = currentUser.userIdentity.userRecordID?.recordName
-//                    let userId = UserDefaults.standard.string(forKey: "userID")!
-////                    let userAlreadyExists = users.contains(where: { $0.id == userId && $0.isShared == true })
-//                    let userAlreadyExists = users.contains(where: { $0.id == userId })
-//                    guard !userAlreadyExists,
-//                          let currentUser = incomingShareRequest.currentUserParticipant else { fatalError("FAILED TO CREATE HOUSEHOLD USER Point #1") }
-//                    
-//                    let newUser = User(context: DataController.shared.context)
-//                    newUser.id = userId
-//                    newUser.name = currentUser.userIdentity.nameComponents?.givenName
-//                    newUser.userType = 1
-////                    newUser.isShared = true
-//                    
-//                    DataController.shared.context.assign(newUser, to: DataController.shared.sharedPersistentStore)
-//                    try! DataController.shared.context.save()
-                    UserDefaults.standard.set(true, forKey: "inAHousehold")
-//                }
-//            } else{
-//                fatalError("FAILED TO CREATE HOUSEHOLD USER Point #2")
-//            }
+            
+            UserDefaults.standard.set(true, forKey: "inAHousehold")
+            Logger.sharing.debug("New share participant status is (cloudKitShareMetadata.participantStatus.rawValue): \(cloudKitShareMetadata.participantStatus.rawValue)")
         }
     }
 }

@@ -8,6 +8,7 @@
 import Foundation
 import CloudKit
 import CoreData
+import OSLog
 
 //class ShareCoordinator: NSObject, ObservableObject{
 //    static let shared = DataController()
@@ -46,11 +47,12 @@ final class ShareCoordinator: ObservableObject {
 //        }
     }
     
-    func createShare() async throws -> CKShare {
+    func createShare() async throws -> CKShare? {
         let stack = DataController.shared
         
         let allZones = try await stack.ckContainer.privateCloudDatabase.allRecordZones()
         guard let recipeZone = allZones.first(where: { $0.zoneID.zoneName == "com.apple.coredata.cloudkit.zone" }) else {
+            Logger.sharing.warning("Failed to find CloudKit zone named: com.apple.coredata.cloudkit.zone.")
             fatalError("no recipe zone exists in cloudkit.")
         }
                 
@@ -65,20 +67,36 @@ final class ShareCoordinator: ObservableObject {
             return existingShare
             
         } else{
-            _ = try await stack.ckContainer.privateCloudDatabase.modifyRecordZones(
-                saving: [CKRecordZone(zoneName: recipeZone.zoneID.zoneName)],
-                deleting: [] )
+            do{
+                let zoneResults = try await stack.ckContainer.privateCloudDatabase.modifyRecordZones(
+                    saving: [CKRecordZone(zoneName: recipeZone.zoneID.zoneName)],
+                    deleting: [] )
+                print("### database modify success: \(zoneResults.saveResults)")
+                Logger.sharing.debug("Database modify success: \(zoneResults.saveResults)")
+            } catch{
+                print("### failed to modify private database: \(error)")
+                Logger.sharing.warning("Failed to modify private database: \(error)")
+            }
+            
+            
             
             let share = CKShare(recordZoneID: recipeZone.zoneID)
             share.publicPermission = .readOnly
-            let result = try await stack.ckContainer.privateCloudDatabase.save(share)
             
-            if self.existingShare == nil{
-                self.existingShare = result as? CKShare
+            do{
+                let result = try await stack.ckContainer.privateCloudDatabase.save(share)
+                if self.existingShare == nil{
+                    self.existingShare = result as? CKShare
+                }
+                Logger.sharing.debug("Saved share success: \(result.debugDescription)")
+                return (result as! CKShare)
+            } catch{
+                print("### failed to save share: \(error)")
+                Logger.sharing.warning("failed to save share: \(error)")
+                fatalError()
             }
-            
-            return result as! CKShare
         }
+        return nil
     }
     
     func getParticipants(share existingShare: CKShare?) -> [CKShare.Participant]{

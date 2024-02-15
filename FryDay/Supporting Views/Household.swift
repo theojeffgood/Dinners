@@ -119,6 +119,10 @@ struct Household: View {
             }
         })
         .onAppear(){
+            if share == nil{
+                shareCoordinator.fetchShare()
+                self.share = shareCoordinator.existingShare
+            }
             self.householdMembers = shareCoordinator.getParticipants(share: share)
         }
     }

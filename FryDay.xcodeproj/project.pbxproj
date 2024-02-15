@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		E40BCEE32B27F6E300E43CDB /* View Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E40BCEE22B27F6E300E43CDB /* View Extensions.swift */; };
+		E40BCEE32B27F6E300E43CDB /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E40BCEE22B27F6E300E43CDB /* Extensions.swift */; };
 		E41D5075297DE372003CD008 /* WebService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E41D5074297DE372003CD008 /* WebService.swift */; };
 		E41D5077297DE959003CD008 /* Household.swift in Sources */ = {isa = PBXBuildFile; fileRef = E41D5076297DE959003CD008 /* Household.swift */; };
 		E43634FA2AD5E9BF007F238F /* CloudSharingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E43634F92AD5E9BF007F238F /* CloudSharingController.swift */; };
@@ -39,7 +39,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		E40BCEE22B27F6E300E43CDB /* View Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View Extensions.swift"; sourceTree = "<group>"; };
+		E40BCEE22B27F6E300E43CDB /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		E41D5074297DE372003CD008 /* WebService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebService.swift; sourceTree = "<group>"; };
 		E41D5076297DE959003CD008 /* Household.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Household.swift; sourceTree = "<group>"; };
 		E43634F92AD5E9BF007F238F /* CloudSharingController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudSharingController.swift; sourceTree = "<group>"; };
@@ -88,7 +88,7 @@
 		E40BCEE42B27F7AB00E43CDB /* Supporting Views */ = {
 			isa = PBXGroup;
 			children = (
-				E40BCEE22B27F6E300E43CDB /* View Extensions.swift */,
+				E40BCEE22B27F6E300E43CDB /* Extensions.swift */,
 				E43634F92AD5E9BF007F238F /* CloudSharingController.swift */,
 				E4A2D0832B616CA2006DA764 /* ShareController.swift */,
 				E41D5076297DE959003CD008 /* Household.swift */,
@@ -258,7 +258,7 @@
 				E4A2D0842B616CA2006DA764 /* ShareController.swift in Sources */,
 				E4512F6D2B5587E3003F9B44 /* Vote.swift in Sources */,
 				E4E305D92B69926600BA09B6 /* Category.swift in Sources */,
-				E40BCEE32B27F6E300E43CDB /* View Extensions.swift in Sources */,
+				E40BCEE32B27F6E300E43CDB /* Extensions.swift in Sources */,
 				E43634FA2AD5E9BF007F238F /* CloudSharingController.swift in Sources */,
 				E47071EE2B62F53400683E68 /* MainView.swift in Sources */,
 				E48CE0AC2B18F47700C296C1 /* Filters.swift in Sources */,
@@ -387,7 +387,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = FryDay/FryDay.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 7;
 				DEVELOPMENT_ASSET_PATHS = "\"FryDay/Preview Content\"";
 				DEVELOPMENT_TEAM = 78U3X38B3F;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -429,7 +429,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = FryDay/FryDay.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 7;
 				DEVELOPMENT_ASSET_PATHS = "\"FryDay/Preview Content\"";
 				DEVELOPMENT_TEAM = 78U3X38B3F;
 				ENABLE_HARDENED_RUNTIME = YES;
