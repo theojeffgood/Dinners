@@ -60,7 +60,7 @@ extension Logger {
     private static var subsystem = Bundle.main.bundleIdentifier!
 
     /// Logs the view cycles like a view that appeared.
-    static let sharing = Logger(subsystem: subsystem, category: "sharing")
+    static let share = Logger(subsystem: subsystem, category: "share")
 
     /// All logs related to tracking and analytics.
 //    static let statistics = Logger(subsystem: subsystem, category: "statistics")

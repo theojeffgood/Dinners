@@ -87,7 +87,8 @@ struct RecipesList: View {
         .toolbar(showTabbar ? .visible : .hidden, for: .tabBar)
         .overlay(alignment: .bottom) {
             if showHousehold{
-                Household(share: nil, onDismiss: {
+//                Household(share: nil, onDismiss: {
+                Household(onDismiss: {
                     withAnimation {
                         showTabbar = true
                         showHousehold = false

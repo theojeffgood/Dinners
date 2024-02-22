@@ -15,18 +15,11 @@ struct Household: View {
     @EnvironmentObject private var shareCoordinator: ShareCoordinator
     private let stack = DataController.shared
     
-    @State private var share: CKShare?
-    @State var householdMembers: [CKShare.Participant] = [] /*<-- or use this?*/
     @State private var showShareSheet = false
     var onDismiss: () -> Void
 //    if let currentUser = share.currentUserParticipant, currentUser == share.owner {
 //        return true
 //    }
-        
-    init(share: CKShare?, onDismiss: @escaping () -> Void){
-        self.share = share
-        self.onDismiss = onDismiss
-    }
     
     var body: some View {
         VStack(spacing: -15){
@@ -46,33 +39,35 @@ struct Household: View {
                 }
                 
                     HStack(spacing: 10){
-                        ForEach(householdMembers) { member in
-                            VStack(spacing: 5){
-                                ZStack{
-                                    Circle()
-                                        .padding([.leading, .trailing])
-                                    Text(image(for: member.role))
-                                        .font(.system(size: 45))
-                                    Button(action: {
-                                        withAnimation {
-                                                shareCoordinator.existingShare?.removeParticipant(member)
-//                                            if householdMembers.isEmpty{}
+                        if let share = shareCoordinator.existingShare{
+                            let shareParticipants = share.participants
+                            ForEach(shareParticipants) { participant in
+                                VStack(spacing: 5){
+                                    ZStack{
+                                        Circle()
+                                            .padding([.leading, .trailing])
+                                        Text("😎")
+                                            .font(.system(size: 45))
+                                        Button(action: {
+                                            withAnimation {
+                                                share.removeParticipant(participant)
+                                            }
+                                        }) {
+                                            Image(systemName: "minus.circle.fill")
+                                                .resizable()
+                                                .foregroundColor(.red)
                                         }
-                                    }) {
-                                        Image(systemName: "minus.circle.fill")
-                                            .resizable()
-                                            .foregroundColor(.red)
+                                        .offset(x: 30, y: -30)
+                                        .frame(width: 25, height: 25)
                                     }
-                                    .offset(x: 30, y: -30)
-                                    .frame(width: 25, height: 25)
-                                }
-                                
-                                if member.role == .owner ||
-                                    member.acceptanceStatus == .accepted{
-                                    let title = member.userIdentity.nameComponents?.givenName ?? "Chef"
-                                    Text(title)
-                                } else if member.acceptanceStatus == .pending{
-                                    Text("Invite sent")
+                                    
+                                    if participant.role == .owner ||
+                                        participant.acceptanceStatus == .accepted{
+                                        let title = participant.userIdentity.nameComponents?.givenName ?? "Chef"
+                                        Text(title)
+                                    } else if participant.acceptanceStatus == .pending{
+                                        Text("Invite sent")
+                                    }
                                 }
                             }
                         }
@@ -82,9 +77,12 @@ struct Household: View {
                             
                             VStack(spacing: 5){
                                 Button(action: {
-                                    if share == nil{
+                                    if shareCoordinator.existingShare == nil{
                                         Task {
-                                            self.share = try await shareCoordinator.createShare()
+                                            do {
+                                                try await shareCoordinator.getShare()
+                                                
+                                            } catch { /*showShareError()*/ }
                                         }
                                     }
                                     showShareSheet = true
@@ -100,10 +98,8 @@ struct Household: View {
                                 Text("Add peeps")
                             }
                         }
-                        
                         Spacer()
                     }.frame(height: 100)
-                    
 
             }
             .padding()
@@ -113,94 +109,24 @@ struct Household: View {
         }
         .ignoresSafeArea()
         .sheet(isPresented: $showShareSheet, content: {
-            if let share = share,
+            if let share = shareCoordinator.existingShare,
                share.currentUserParticipant?.role == .owner{
                 CloudSharingView(share: share, container: stack.ckContainer)
             }
         })
         .onAppear(){
-            if share == nil{
-                shareCoordinator.fetchShare()
-                self.share = shareCoordinator.existingShare
-            }
-            self.householdMembers = shareCoordinator.getParticipants(share: share)
+            shareCoordinator.fetchExistingShare()
         }
     }
 }
 
 struct Household_Previews: PreviewProvider {
     
-    
     static var previews: some View {
-        Household(share: nil, onDismiss: {})
+//        Household(share: nil, onDismiss: {})
+        Household(onDismiss: {})
     }
 }
-
-// MARK: -- Returns CKShare participant permission, methods and properties to share
-
-extension Household {
-    private func string(for permission: CKShare.ParticipantPermission) -> String {
-        switch permission {
-        case .unknown:
-            return "Unknown"
-        case .none:
-            return "None"
-        case .readOnly:
-            return "Read-Only"
-        case .readWrite:
-            return "Read-Write"
-        @unknown default:
-            fatalError("A new value added to CKShare.Participant.Permission")
-        }
-    }
-    
-    private func string(for role: CKShare.ParticipantRole) -> String {
-        switch role {
-        case .owner:
-            return "Owner"
-        case .privateUser:
-            return "Private User"
-        case .publicUser:
-            return "Public User"
-        case .unknown:
-            return "Unknown"
-        @unknown default:
-            fatalError("A new value added to CKShare.Participant.Role")
-        }
-    }
-    
-    private func string(for acceptanceStatus: CKShare.ParticipantAcceptanceStatus) -> String {
-        switch acceptanceStatus {
-        case .accepted:
-            return "Accepted"
-        case .removed:
-            return "Removed"
-        case .pending:
-            return "Invited"
-        case .unknown:
-            return "Unknown"
-        @unknown default:
-            fatalError("A new value added to CKShare.Participant.AcceptanceStatus")
-        }
-    }
-    
-    private func image(for role: CKShare.ParticipantRole) -> String {
-        switch role {
-        case .owner:
-            return "😎"
-        case .privateUser:
-            return "😎"
-        case .publicUser:
-            return "😎"
-        case .unknown:
-            return "🥳"
-        @unknown default:
-            fatalError("A new value added to CKShare.Participant.Role")
-        }
-    }
-}
-
-
 
 
 

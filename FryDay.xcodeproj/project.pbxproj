@@ -18,7 +18,7 @@
 		E439227629772E8300CC9E53 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E439227529772E8300CC9E53 /* Preview Assets.xcassets */; };
 		E4512F6D2B5587E3003F9B44 /* Vote.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4512F6C2B5587E3003F9B44 /* Vote.swift */; };
 		E465A711298307D30058B564 /* RecipeCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E465A710298307D30058B564 /* RecipeCardView.swift */; };
-		E47071EE2B62F53400683E68 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E47071ED2B62F53400683E68 /* MainView.swift */; };
+		E47071EE2B62F53400683E68 /* TabBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E47071ED2B62F53400683E68 /* TabBarView.swift */; };
 		E4875D802B192CFA00A192CE /* PurchaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4875D7F2B192CFA00A192CE /* PurchaseManager.swift */; };
 		E48CE0AC2B18F47700C296C1 /* Filters.swift in Sources */ = {isa = PBXBuildFile; fileRef = E48CE0AB2B18F47700C296C1 /* Filters.swift */; };
 		E4985E5D2AE6F69800495720 /* User DELETE.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4985E5B2AE6F69800495720 /* User DELETE.swift */; };
@@ -52,7 +52,7 @@
 		E439227529772E8300CC9E53 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		E4512F6C2B5587E3003F9B44 /* Vote.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vote.swift; sourceTree = "<group>"; };
 		E465A710298307D30058B564 /* RecipeCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeCardView.swift; sourceTree = "<group>"; };
-		E47071ED2B62F53400683E68 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
+		E47071ED2B62F53400683E68 /* TabBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarView.swift; sourceTree = "<group>"; };
 		E4875D7F2B192CFA00A192CE /* PurchaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PurchaseManager.swift; sourceTree = "<group>"; };
 		E4875D842B1FB6EC00A192CE /* FridayStorekitConfig.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = FridayStorekitConfig.storekit; sourceTree = "<group>"; };
 		E48CE0AB2B18F47700C296C1 /* Filters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Filters.swift; sourceTree = "<group>"; };
@@ -122,7 +122,7 @@
 				E49E8414299EB02C003E4E77 /* DataController.swift */,
 				E41D5074297DE372003CD008 /* WebService.swift */,
 				E439226F29772E8200CC9E53 /* ContentView.swift */,
-				E47071ED2B62F53400683E68 /* MainView.swift */,
+				E47071ED2B62F53400683E68 /* TabBarView.swift */,
 				E40BCEE42B27F7AB00E43CDB /* Supporting Views */,
 				E465A710298307D30058B564 /* RecipeCardView.swift */,
 				E4CB2C7F297893CC00A829AE /* RecipesList.swift */,
@@ -260,7 +260,7 @@
 				E4E305D92B69926600BA09B6 /* Category.swift in Sources */,
 				E40BCEE32B27F6E300E43CDB /* Extensions.swift in Sources */,
 				E43634FA2AD5E9BF007F238F /* CloudSharingController.swift in Sources */,
-				E47071EE2B62F53400683E68 /* MainView.swift in Sources */,
+				E47071EE2B62F53400683E68 /* TabBarView.swift in Sources */,
 				E48CE0AC2B18F47700C296C1 /* Filters.swift in Sources */,
 				E4F7ECA32989DF6000996CB3 /* Recipe OLD.swift in Sources */,
 				E43634FC2AD6EFCB007F238F /* ShareHelper.swift in Sources */,
@@ -387,7 +387,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = FryDay/FryDay.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 10;
 				DEVELOPMENT_ASSET_PATHS = "\"FryDay/Preview Content\"";
 				DEVELOPMENT_TEAM = 78U3X38B3F;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -429,7 +429,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = FryDay/FryDay.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 10;
 				DEVELOPMENT_ASSET_PATHS = "\"FryDay/Preview Content\"";
 				DEVELOPMENT_TEAM = 78U3X38B3F;
 				ENABLE_HARDENED_RUNTIME = YES;

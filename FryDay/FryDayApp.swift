@@ -12,8 +12,8 @@ import CoreData
 @main
 struct FryDayApp: App {
     
-    @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate // necessary to fire scene delegate. accept share invitates.
-//    @Environment(\.scenePhase) var scenePhase //track changes of scene phase e.g. app goes to background
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate // call appDelegate to handle cloudkit shares.
+//    @Environment(\.scenePhase) var scenePhase // "scene phase" i.e. app goes to background
     
     @StateObject var recipeManager: RecipeManager
     @StateObject private var purchaseManager: PurchaseManager
@@ -34,16 +34,14 @@ struct FryDayApp: App {
     var body: some Scene {
         
         WindowGroup {
-            MainView(recipeManager: recipeManager)
+            TabBarView(recipeManager: recipeManager)
                 .environment(\.managedObjectContext, DataController.shared.context)
                 .environmentObject(purchaseManager)
                 .environmentObject(ShareCoordinator.shared)
                 .task {
-                    ShareCoordinator.shared.fetchShare() // is this needed? since it's now part of household onAppear.
                     await purchaseManager.updatePurchasedProducts()
                 }
-                .onOpenURL { url in } /* Fires when app opens via deeplink. Link is url. */
-//            ContentView(recipeManager: recipeManager)
+                .onOpenURL { url in } /* Fires when app opens via url aka deeplink. */
         }
 //        .onChange(of: scenePhase) { _ in try? moc.save() } /* Fires when app goes to background */
     }
@@ -60,25 +58,47 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
     }
 }
 
-import OSLog
 
-final class SceneDelegate: NSObject, UIWindowSceneDelegate {
-    func windowScene(_ windowScene: UIWindowScene, 
+import OSLog
+final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
+    
+    //Adopted from https://developer.apple.com/forums/thread/699927?answerId=743760022#743760022
+    func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
+        if let cloudKitShareMetadata = connectionOptions.cloudKitShareMetadata{
+            Logger.share.debug("Handling share invitation via Scene.willConnectTo.")
+            joinHouseholdUsing(cloudKitShareMetadata)
+        }
+    }
+    
+    func windowScene(_ windowScene: UIWindowScene,
                      userDidAcceptCloudKitShareWith cloudKitShareMetadata: CKShare.Metadata) {
-        
+        Logger.share.debug("Handling share invitation via Scene.userDidAcceptCloudKitShareWith.")
+        joinHouseholdUsing(cloudKitShareMetadata)
+    }
+}
+
+extension SceneDelegate{
+    
+    func joinHouseholdUsing(_ cloudKitShareMetadata: CKShare.Metadata){
         let shareStore = DataController.shared.sharedPersistentStore
         let persistentContainer = DataController.shared.persistentContainer
+        
         persistentContainer.acceptShareInvitations(from: [cloudKitShareMetadata], into: shareStore) { shareMetaData, error in
             if let error = error {
-                print("### shareInvitation error :\(error)")
-                Logger.sharing.warning("Failed to accept share invitation: \(error)")
+                Logger.share.warning("Failed to accept share invitation: \(error)")
                 return
             }
             
-////            CKAcceptSharesOperation() -- is this needed to accept share invites?
+//            if UserDefaults.standard.bool(forKey: "inAHousehold"){
+//                ShareCoordinator.shared.leaveOtherShares()
+//                if UserDefaults.standard.bool(forKey: "isHouseholdOwner"){
+//                    UserDefaults.standard.set(false, forKey: "isHouseholdOwner")
+//                }
+//            }
             
             UserDefaults.standard.set(true, forKey: "inAHousehold")
-            Logger.sharing.debug("New share participant status is (cloudKitShareMetadata.participantStatus.rawValue): \(cloudKitShareMetadata.participantStatus.rawValue)")
+            
+            Logger.share.debug("New participant's share status: \(cloudKitShareMetadata.participantStatus.description, privacy: .public)")
         }
     }
 }

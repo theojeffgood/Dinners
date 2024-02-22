@@ -7,6 +7,7 @@
 
 import SwiftUI
 import CloudKit
+import OSLog
 
 struct CloudSharingView: UIViewControllerRepresentable {
     let share: CKShare
@@ -17,12 +18,25 @@ struct CloudSharingView: UIViewControllerRepresentable {
     }
     
     func makeUIViewController(context: Context) -> UICloudSharingController {
-//        share[CKShare.SystemFieldKey.title] = recipe.title
         share[CKShare.SystemFieldKey.title] = "Great Recipes"
+        
+//        if let cover = UIImage(named: "PLACEHOLDER FOR ICON FROM JULIE"), let data = cover.pngData() {
+//            share[CKShare.SystemFieldKey.thumbnailImageData] = data
+//        }
+        
         let controller = UICloudSharingController(share: share, container: container)
         controller.modalPresentationStyle = .formSheet
-        controller.availablePermissions = [.allowReadWrite, .allowPrivate]
+        controller.availablePermissions = [.allowReadWrite, .allowPrivate] //TO DO: TEST WHAT PUBLIC SHARE LOOKS LIKE
+//        controller.availablePermissions = [.allowPublic] //TO DO: UNCOMMENT THIS LINE
         controller.delegate = context.coordinator
+        let asdf = controller.share!.publicPermission.rawValue.description
+        Logger.share.info("Share's public permissions are: \(asdf, privacy: .public)")
+        
+//         Needed to avoid crash on iPad
+//        if let popover = controller.popoverPresentationController {
+//            popover.barButtonItem = barButtonItem
+//          }
+        
         return controller
     }
     
@@ -31,18 +45,19 @@ struct CloudSharingView: UIViewControllerRepresentable {
 }
 
 final class CloudSharingCoordinator: NSObject, UICloudSharingControllerDelegate {
-    let stack = DataController.shared
     
     func itemTitle(for csc: UICloudSharingController) -> String? {
         "Great Recipes"
     }
     
 //    func itemThumbnailData(for csc: UICloudSharingController) -> Data? {
-//        guard let icon = NSDataAsset(name: "thumbnail") else {
-//            return nil
-//        }
-//        
-//        
+// attempt #1
+//        guard let cover = UIImage(named: "PLACEHOLDER FOR ICON FROM JULIE"), let data = cover.pngData() else { return nil }
+//            share[CKShare.SystemFieldKey.thumbnailImageData] = data
+//            return data
+        
+// attempt #2
+//        guard let icon = NSDataAsset(name: "thumbnail") else { return nil }
 //        return icon.data
 //    }
     
@@ -55,8 +70,6 @@ final class CloudSharingCoordinator: NSObject, UICloudSharingControllerDelegate 
     }
     
     func cloudSharingControllerDidStopSharing(_ csc: UICloudSharingController) {
-//        if !stack.isOwner(object: recipe) {
-//            stack.delete(recipe)
-//        }
+        print("cloudSharingControllerDidStopSharing")
     }
 }

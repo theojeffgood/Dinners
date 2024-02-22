@@ -1,5 +1,5 @@
 //
-//  MainView.swift
+//  TabBarView.swift
 //  FryDay
 //
 //  Created by Theo Goodman on 1/25/24.
@@ -8,13 +8,9 @@
 import SwiftUI
 import CloudKit
 
-struct MainView: View {
+struct TabBarView: View {
     
-//    @EnvironmentObject private var shareCoordinator: ShareCoordinator
-//    @Environment(\.managedObjectContext) var moc
     @ObservedObject var recipeManager: RecipeManager
-    
-//    @FetchRequest(fetchRequest: Vote.allVotes) var allVotes
     
     var body: some View {
         TabView {
@@ -24,14 +20,12 @@ struct MainView: View {
             }
             
             RecipesList(recipeManager: recipeManager, recipesType: "Matches")
-//                        recipes: matches)
             .tabItem {
                 Label("Matches", systemImage: "link")
             }
             
             RecipesList(recipeManager: recipeManager, 
                         recipesType: "Likes")
-//                        recipes: likes)
             .tabItem {
                 Label("Likes", systemImage: "heart")
             }
@@ -54,5 +48,5 @@ import CoreData
     let recipeManager = RecipeManager(managedObjectContext: moc)
     recipeManager.recipe = recipeOne
     
-    return MainView(recipeManager: recipeManager)
+    return TabBarView(recipeManager: recipeManager)
 }
