@@ -29,6 +29,44 @@ struct RoundedCorner: Shape {
     }
 }
 
+struct ActionButtons: View {
+    var action: (Bool) -> Void
+    
+    var body: some View{
+        HStack() {
+            VStack(alignment: .trailing) {
+                Button(action: { action(false) }) {
+                    VStack {
+                        Image(systemName: "arrow.turn.up.left")
+                            .resizable()
+                            .tint(.white)
+                            .frame(width: 75, height: 75)
+                        Text("Nay!")
+                            .foregroundColor(.white)
+                            .font(.title)
+                    }
+                }
+            }
+            Spacer()
+            VStack(alignment: .leading) {
+                Button(action: { action(true) }) {
+                    VStack {
+                        Image(systemName: "arrow.turn.up.right")
+                            .resizable()
+                            .tint(.white)
+                            .frame(width: 75, height: 75)
+                        Text("Yay!")
+                            .foregroundColor(.white)
+                            .font(.title)
+                    }
+                }
+            }
+        }
+        .padding([.leading, .trailing], 3)
+     }
+ }
+
+
 //extension View{
 //    func rejectStyle() -> some View{
 //        //X-MARK
@@ -59,9 +97,12 @@ extension Logger {
     /// Using your bundle identifier is a great way to ensure a unique identifier.
     private static var subsystem = Bundle.main.bundleIdentifier!
 
-    /// Logs the view cycles like a view that appeared.
+    /// Logs the events related to sharing.
     static let share = Logger(subsystem: subsystem, category: "share")
 
+    /// Logs the events related to in app purchases.
+    static let store = Logger(subsystem: subsystem, category: "store")
+    
     /// All logs related to tracking and analytics.
 //    static let statistics = Logger(subsystem: subsystem, category: "statistics")
 }

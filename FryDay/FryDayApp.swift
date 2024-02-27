@@ -37,7 +37,7 @@ struct FryDayApp: App {
             TabBarView(recipeManager: recipeManager)
                 .environment(\.managedObjectContext, DataController.shared.context)
                 .environmentObject(purchaseManager)
-                .environmentObject(ShareCoordinator.shared)
+//                .environmentObject(ShareCoordinator.shared)
                 .task {
                     await purchaseManager.updatePurchasedProducts()
                 }
@@ -60,7 +60,7 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
 
 
 import OSLog
-final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
+final class SceneDelegate: NSObject, UIWindowSceneDelegate {
     
     //Adopted from https://developer.apple.com/forums/thread/699927?answerId=743760022#743760022
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {

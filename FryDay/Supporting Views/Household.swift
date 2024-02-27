@@ -12,7 +12,7 @@ import CloudKit
 struct Household: View {
     
     @Environment(\.managedObjectContext) var moc
-    @EnvironmentObject private var shareCoordinator: ShareCoordinator
+//    @EnvironmentObject private var shareCoordinator: ShareCoordinator
     private let stack = DataController.shared
     
     @State private var showShareSheet = false
@@ -39,7 +39,7 @@ struct Household: View {
                 }
                 
                     HStack(spacing: 10){
-                        if let share = shareCoordinator.existingShare{
+                        if let share = ShareCoordinator.shared.existingShare{
                             let shareParticipants = share.participants
                             ForEach(shareParticipants) { participant in
                                 VStack(spacing: 5){
@@ -77,10 +77,10 @@ struct Household: View {
                             
                             VStack(spacing: 5){
                                 Button(action: {
-                                    if shareCoordinator.existingShare == nil{
+                                    if ShareCoordinator.shared.existingShare == nil{
                                         Task {
                                             do {
-                                                try await shareCoordinator.getShare()
+                                                try await ShareCoordinator.shared.getShare()
                                                 
                                             } catch { /*showShareError()*/ }
                                         }
@@ -109,13 +109,13 @@ struct Household: View {
         }
         .ignoresSafeArea()
         .sheet(isPresented: $showShareSheet, content: {
-            if let share = shareCoordinator.existingShare,
+            if let share = ShareCoordinator.shared.existingShare,
                share.currentUserParticipant?.role == .owner{
                 CloudSharingView(share: share, container: stack.ckContainer)
             }
         })
         .onAppear(){
-            shareCoordinator.fetchExistingShare()
+            ShareCoordinator.shared.fetchExistingShare()
         }
     }
 }

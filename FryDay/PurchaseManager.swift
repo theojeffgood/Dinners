@@ -7,42 +7,18 @@
 
 import Foundation
 import StoreKit
+import OSLog
 
 @MainActor
 class PurchaseManager: NSObject, ObservableObject {
-
-    //    private let productIds: Set<String> = [
-    //        "filters.diets.glutenFree",
-    //        "filters.diets.vegetarian",
-    //        "filters.diets.vegan",
-    //        "filters.keyIngredients.chicken",
-    //        "filters.keyIngredients.groundBeef",
-    //        "filters.keyIngredients.pasta",
-    //        "filters.keyIngredients.tofuTempeh",
-    //        "filters.keyIngredients.legumes",
-    //        "filters.keyIngredients.fish",
-    //        "filters.keyIngredients.sausage",
-    //        "filters.cuisines.asian",
-    //        "filters.cuisines.french",
-    //        "filters.cuisines.italian",
-    //        "filters.cuisines.mediterranean",
-    //        "filters.cuisines.mexican",
-    //        "filters.cuisines.middleEastern",
-    //        "filters.mealTypes.dinner",
-    //        "filters.mealTypes.breakfast",
-    //        "filters.mealTypes.onePot",
-    //        "filters.mealTypes.underThirtyMin",
-    //    ]
     
     @Published private(set) var products: [Product] = []
     @Published private(set) var purchasedProductIDs = Set<String>()
-
-//    var hasUnlockedPro: Bool {
-//        return !self.purchasedProductIDs.isEmpty
-//    }
     
     private var productsLoaded = false
     private var updates: Task<Void, Never>? = nil
+    
+//    var hasUnlockedPro: Bool { !self.purchasedProductIDs.isEmpty }
 
     override init() {
         super.init()
@@ -55,27 +31,22 @@ class PurchaseManager: NSObject, ObservableObject {
     }
 
     func loadAppStoreProducts(for categories: [Category]) async throws {
-        // Get products from App Store
+        guard !categories.isEmpty else { return }
+            
+        // Fetch App Store products
         if !self.productsLoaded{
             let categoryIds = categories.map({ $0.appStoreProductId })
             self.products = try await Product.products(for: categoryIds)
+            if !products.isEmpty{ self.productsLoaded = true }
         }
         
-        // Assign App Store products to categories
+        // Connect Filters w/ App Store Produts
         for category in categories {
-            category.appStoreProduct = products.first(where: { $0.id == category.appStoreProductId })
+            let appStoreProduct = products.first(where: { $0.id == category.appStoreProductId })
+            category.appStoreProduct = appStoreProduct
+//            print("### Category: \(category.title) assigned product: \(category.appStoreProduct)")
         }
-
-        self.productsLoaded = true
     }
-    
-//    func getProductsForCategories(_ categories: [Category]?) -> [Product]{
-//        guard let categories, !categories.isEmpty else { return [] }
-//        
-//        let categoryIds = categories.map({ $0.appStoreProductId })
-//        let filteredProducts = products.filter({ categoryIds.contains($0.id) })
-//        return filteredProducts
-//    } 
 
     func purchase(_ product: Product) async throws -> Product.PurchaseResult {
         let result = try await product.purchase()
@@ -85,18 +56,23 @@ class PurchaseManager: NSObject, ObservableObject {
             // Successful purchase
             await transaction.finish()
             await self.updatePurchasedProducts()
+            Logger.store.info("Purchase succeeded.")
         case let .success(.unverified(_, error)):
             // Successful purchase but transaction/receipt can't be verified
             // Could be a jailbroken phone
+            Logger.store.info("Purchase succeeded: but not verified.")
             break
         case .pending:
             // Transaction waiting on SCA (Strong Customer Authentication) or
             // approval from Ask to Buy
+            Logger.store.warning("Purchase failed: it's pending")
             break
         case .userCancelled:
             // ^^^
+            Logger.store.warning("Purchase failed: user cancelled.")
             break
         @unknown default:
+            Logger.store.warning("Purchase failed: unknown reason.")
             break
         }
         
@@ -129,11 +105,33 @@ class PurchaseManager: NSObject, ObservableObject {
 }
 
 extension PurchaseManager: SKPaymentTransactionObserver {
-    func paymentQueue(_ queue: SKPaymentQueue, updatedTransactions transactions: [SKPaymentTransaction]) {
-
-    }
+    func paymentQueue(_ queue: SKPaymentQueue, updatedTransactions transactions: [SKPaymentTransaction]) { }
 
     func paymentQueue(_ queue: SKPaymentQueue, shouldAddStorePayment payment: SKPayment, for product: SKProduct) -> Bool {
         return true
     }
 }
+
+
+//    private let productIds: Set<String> = [
+//        "filters.diets.glutenFree",
+//        "filters.diets.vegetarian",
+//        "filters.diets.vegan",
+//        "filters.keyIngredients.chicken",
+//        "filters.keyIngredients.groundBeef",
+//        "filters.keyIngredients.pasta",
+//        "filters.keyIngredients.tofuTempeh",
+//        "filters.keyIngredients.legumes",
+//        "filters.keyIngredients.fish",
+//        "filters.keyIngredients.sausage",
+//        "filters.cuisines.asian",
+//        "filters.cuisines.french",
+//        "filters.cuisines.italian",
+//        "filters.cuisines.mediterranean",
+//        "filters.cuisines.mexican",
+//        "filters.cuisines.middleEastern",
+//        "filters.mealTypes.dinner",
+//        "filters.mealTypes.breakfast",
+//        "filters.mealTypes.onePot",
+//        "filters.mealTypes.underThirtyMin",
+//    ]

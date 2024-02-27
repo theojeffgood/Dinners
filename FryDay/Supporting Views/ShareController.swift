@@ -30,7 +30,7 @@ final class ShareCoordinator: ObservableObject {
             let shares = try stack.persistentContainer.fetchShares(in: persistentStore)
             self.existingShare = shares.filter({ $0.recordID.recordName == CKRecordNameZoneWideShare }).first
             
-        } catch { Logger.share.warning("Error fetching share from persistent store: \(error)") }
+        } catch { Logger.share.warning("Error fetching share from persistent store: \(error, privacy: .public)") }
     }
     
     /* TO DO: Get rid of Throws? or throw error. */
@@ -48,7 +48,7 @@ final class ShareCoordinator: ObservableObject {
                 return
                 
             } else { Logger.share.warning("The defaultZone doesn't exist.") }
-        } catch { Logger.share.warning("Failed to fetch CloudKit zones: \(error)") }
+        } catch { Logger.share.warning("Failed to fetch CloudKit zones: \(error, privacy: .public)") }
 
         do{ /* Step 2: New zone. Create & Share. */
             let newDefaultZone = CKRecordZone(zoneName: defaultZone)
@@ -58,7 +58,7 @@ final class ShareCoordinator: ObservableObject {
             await shareZone(newDefaultZone)
             return
             
-        } catch{ Logger.share.warning("Failed to create new defaultZone: \(error)") }
+        } catch{ Logger.share.warning("Failed to create new defaultZone: \(error, privacy: .public)") }
     }
     
     func shareZone(_ recipeZone: CKRecordZone) async{
@@ -70,7 +70,7 @@ final class ShareCoordinator: ObservableObject {
             let result = try await stack.ckContainer.privateCloudDatabase.save(share)
             self.existingShare = (result as! CKShare)
             
-        } catch{ Logger.share.warning("Failed to save share: \(error)") }
+        } catch{ Logger.share.warning("Failed to save share: \(error, privacy: .public)") }
     }
     
 //    func fetchShareFromZone(_ zone: CKRecordZone,
@@ -101,14 +101,21 @@ extension ShareCoordinator{
     
     func shareVoteIfNeeded(_ vote: Vote) {
         guard UserDefaults.standard.bool(forKey: "inAHousehold"),
-              !UserDefaults.standard.bool(forKey: "isHouseholdOwner"),
-              let existingShare else { return }
+              !UserDefaults.standard.bool(forKey: "isHouseholdOwner") else { return }
         
+        if existingShare == nil{ fetchExistingShare() }
+        if existingShare == nil{ return }
+          
+//        if vote.objectID.persistentStore == stack.privatePersistentStore{
+            stack.persistentContainer.viewContext.assign(vote, to: stack.sharedPersistentStore)
+//        }
+            
         Task{
             do{
                 try await stack.persistentContainer.share([vote], to: existingShare)
+                Logger.share.info("Sharing vote for recipeId: \(vote.recipeId)")
                 
-            } catch{ Logger.share.warning("Failed to share vote: \(error)") }
+            } catch{ Logger.share.warning("Failed to share vote: \(error, privacy: .public)") }
         }
     }
 }
