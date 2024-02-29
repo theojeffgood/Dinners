@@ -27,8 +27,9 @@ struct CloudSharingView: UIViewControllerRepresentable {
         let controller = UICloudSharingController(share: share, container: container)
         controller.modalPresentationStyle = .formSheet
         controller.availablePermissions = [.allowReadWrite, .allowPrivate] //TO DO: TEST WHAT PUBLIC SHARE LOOKS LIKE
-//        controller.availablePermissions = [.allowPublic] //TO DO: UNCOMMENT THIS LINE
+//        controller.availablePermissions = [.allowPublic] //TO DO: MAYBE make the share public? instead of private..
         controller.delegate = context.coordinator
+        
         let asdf = controller.share!.publicPermission.rawValue.description
         Logger.sharing.info("Share's public permissions are: \(asdf, privacy: .public)")
         

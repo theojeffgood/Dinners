@@ -13,6 +13,7 @@ struct Household: View {
     
     @Environment(\.managedObjectContext) var moc
 //    @EnvironmentObject private var shareCoordinator: ShareCoordinator
+    @ObservedObject var shareCoordinator: ShareCoordinator = ShareCoordinator.shared
     private let stack = DataController.shared
     
     @State private var showShareSheet = false
@@ -112,6 +113,7 @@ struct Household: View {
             if let share = ShareCoordinator.shared.existingShare,
                share.currentUserParticipant?.role == .owner{
                 CloudSharingView(share: share, container: stack.ckContainer)
+                    .onDisappear { ShareCoordinator.shared.fetchExistingShare() }
             }
         })
         .onAppear(){
@@ -123,7 +125,6 @@ struct Household: View {
 struct Household_Previews: PreviewProvider {
     
     static var previews: some View {
-//        Household(share: nil, onDismiss: {})
         Household(onDismiss: {})
     }
 }
