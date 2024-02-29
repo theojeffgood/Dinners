@@ -23,7 +23,11 @@ struct ContentView: View {
         }
     }
     
-    @State private var allFilters: [Category] = []
+    @State private var allFilters: [Category] = []{
+        didSet{
+            appliedFilters = allFilters.filter({ $0.isPurchased })
+        }
+    }
     @State private var appliedFilters: [Category] = []
     @State private var filterIsActive: Bool = false
     @State private var activeFilter: Category? = nil
@@ -93,16 +97,11 @@ struct ContentView: View {
                 .navigationBarItems(
                     trailing:
                         HStack(content: {
-                            Button{
-                                withAnimation { showFilters = true }
-                            } label: {
-                                Image(systemName: "slider.horizontal.3").tint(.black)
-                            }
-                            Button{
-                                withAnimation { showHousehold = true }
-                            } label: {
-                                Image(systemName: "person.badge.plus").tint(.black)
-                            }
+                            Button{ withAnimation { showFilters = true }
+                            } label: { Image(systemName: "slider.horizontal.3").tint(.black) }
+                            
+                            Button{ withAnimation { showHousehold = true }
+                            } label: { Image(systemName: "house").tint(.black) }
                         })
                 )
             }.overlay(alignment: .bottom) {
@@ -112,14 +111,12 @@ struct ContentView: View {
                     })
                 }
             }
-            .sheet(isPresented: $showFilters, onDismiss: { /* SET ACTIVE FILTERS? */ }, content: {
+            .sheet(isPresented: $showFilters, onDismiss: { appliedFilters = allFilters.filter({ $0.isPurchased }) }, content: {
                 Filters(allCategories: $allFilters)
             })
             .onAppear(){
                 loadRecipes()
-//                let asdf = Category.allCategories(in: moc)
-//                print("ContentView Categories count: \(asdf.count)")
-                allFilters = Category.allCategories(in: moc)
+                if allFilters.isEmpty{ allFilters = Category.allCategories(in: moc) }
                 showTabbar = true
             }
         }

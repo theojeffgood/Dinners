@@ -98,7 +98,7 @@ extension Logger {
     private static var subsystem = Bundle.main.bundleIdentifier!
 
     /// Logs the events related to sharing.
-    static let share = Logger(subsystem: subsystem, category: "share")
+    static let sharing = Logger(subsystem: subsystem, category: "sharing")
 
     /// Logs the events related to in app purchases.
     static let store = Logger(subsystem: subsystem, category: "store")

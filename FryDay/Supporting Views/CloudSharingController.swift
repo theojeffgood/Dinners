@@ -30,7 +30,7 @@ struct CloudSharingView: UIViewControllerRepresentable {
 //        controller.availablePermissions = [.allowPublic] //TO DO: UNCOMMENT THIS LINE
         controller.delegate = context.coordinator
         let asdf = controller.share!.publicPermission.rawValue.description
-        Logger.share.info("Share's public permissions are: \(asdf, privacy: .public)")
+        Logger.sharing.info("Share's public permissions are: \(asdf, privacy: .public)")
         
 //         Needed to avoid crash on iPad
 //        if let popover = controller.popoverPresentationController {
@@ -40,8 +40,7 @@ struct CloudSharingView: UIViewControllerRepresentable {
         return controller
     }
     
-    func updateUIViewController(_ uiViewController: UICloudSharingController, context: Context) {
-    }
+    func updateUIViewController(_ uiViewController: UICloudSharingController, context: Context) { }
 }
 
 final class CloudSharingCoordinator: NSObject, UICloudSharingControllerDelegate {
@@ -62,14 +61,14 @@ final class CloudSharingCoordinator: NSObject, UICloudSharingControllerDelegate 
 //    }
     
     func cloudSharingController(_ csc: UICloudSharingController, failedToSaveShareWithError error: Error) {
-        print("Failed to save share: \(error)")
+        Logger.sharing.info("cloudSharingController Failed to save share: \(error, privacy: .public).")
     }
     
     func cloudSharingControllerDidSaveShare(_ csc: UICloudSharingController) {
-        print("Saved the share")
+        Logger.sharing.info("cloudSharingControllerDidSaveShare.")
     }
     
     func cloudSharingControllerDidStopSharing(_ csc: UICloudSharingController) {
-        print("cloudSharingControllerDidStopSharing")
+        Logger.sharing.info("cloudSharingControllerDidStopSharing.")
     }
 }

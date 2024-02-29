@@ -112,15 +112,6 @@ struct Filters: View {
                     }
                 }
             }
-//            .onDisappear {
-//                let purchasedProductIds = purchaseManager.purchasedProductIDs
-//                for productId in purchasedProductIds{
-//                    guard let category = appliedFilters.first(where: { $0.appStoreProductId == productId }) else { continue }
-//                    appliedFilters.removeAll(where: { $0 == category })
-//                    category.isPurchased = false
-//                }
-////                appliedFilters.removeAll(where: { !purchasedProductIds.contains($0.appStoreProductId) })
-//            }
         }
     }
 }

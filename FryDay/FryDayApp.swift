@@ -65,14 +65,14 @@ final class SceneDelegate: NSObject, UIWindowSceneDelegate {
     //Adopted from https://developer.apple.com/forums/thread/699927?answerId=743760022#743760022
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         if let cloudKitShareMetadata = connectionOptions.cloudKitShareMetadata{
-            Logger.share.debug("Handling share invitation via Scene.willConnectTo.")
+            Logger.sharing.debug("Handling share invitation via Scene.willConnectTo.")
             joinHouseholdUsing(cloudKitShareMetadata)
         }
     }
     
     func windowScene(_ windowScene: UIWindowScene,
                      userDidAcceptCloudKitShareWith cloudKitShareMetadata: CKShare.Metadata) {
-        Logger.share.debug("Handling share invitation via Scene.userDidAcceptCloudKitShareWith.")
+        Logger.sharing.debug("Handling share invitation via Scene.userDidAcceptCloudKitShareWith.")
         joinHouseholdUsing(cloudKitShareMetadata)
     }
 }
@@ -85,7 +85,7 @@ extension SceneDelegate{
         
         persistentContainer.acceptShareInvitations(from: [cloudKitShareMetadata], into: shareStore) { shareMetaData, error in
             if let error = error {
-                Logger.share.warning("Failed to accept share invitation: \(error)")
+                Logger.sharing.warning("Failed to accept share invitation: \(error)")
                 return
             }
             
@@ -98,7 +98,7 @@ extension SceneDelegate{
             
             UserDefaults.standard.set(true, forKey: "inAHousehold")
             
-            Logger.share.debug("New participant's share status: \(cloudKitShareMetadata.participantStatus.description, privacy: .public)")
+            Logger.sharing.debug("New participant's share status: \(cloudKitShareMetadata.participantStatus.description, privacy: .public)")
         }
     }
 }

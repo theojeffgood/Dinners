@@ -30,7 +30,7 @@ final class ShareCoordinator: ObservableObject {
             let shares = try stack.persistentContainer.fetchShares(in: persistentStore)
             self.existingShare = shares.filter({ $0.recordID.recordName == CKRecordNameZoneWideShare }).first
             
-        } catch { Logger.share.warning("Error fetching share from persistent store: \(error, privacy: .public)") }
+        } catch { Logger.sharing.warning("Error fetching share from persistent store: \(error, privacy: .public)") }
     }
     
     /* TO DO: Get rid of Throws? or throw error. */
@@ -44,21 +44,22 @@ final class ShareCoordinator: ObservableObject {
             if let defaultZone = allZones.filter({ $0.zoneID.zoneName == defaultZone }).first{
 //                if let share = fetchShareFromZone(_ zone: defaultZone){ self.existingShare = share; return } - OR ->
 //                if let share = defaultZone.share, defaultZone.capabilities.contains(.zoneWideSharing){ self.existingShare = share; return }
+                
                 await shareZone(defaultZone)
                 return
                 
-            } else { Logger.share.warning("The defaultZone doesn't exist.") }
-        } catch { Logger.share.warning("Failed to fetch CloudKit zones: \(error, privacy: .public)") }
+            } else { Logger.sharing.warning("The defaultZone doesn't exist.") }
+        } catch { Logger.sharing.warning("Failed to fetch CloudKit zones: \(error, privacy: .public)") }
 
         do{ /* Step 2: New zone. Create & Share. */
             let newDefaultZone = CKRecordZone(zoneName: defaultZone)
             let results = try await stack.ckContainer.privateCloudDatabase.modifyRecordZones(
                 saving: [newDefaultZone], deleting: [] )
-            Logger.share.info("Created new defaultZone: \(results.saveResults)")
+            Logger.sharing.info("Created new defaultZone: \(results.saveResults)")
             await shareZone(newDefaultZone)
             return
             
-        } catch{ Logger.share.warning("Failed to create new defaultZone: \(error, privacy: .public)") }
+        } catch{ Logger.sharing.warning("Failed to create new defaultZone: \(error, privacy: .public)") }
     }
     
     func shareZone(_ recipeZone: CKRecordZone) async{
@@ -70,7 +71,7 @@ final class ShareCoordinator: ObservableObject {
             let result = try await stack.ckContainer.privateCloudDatabase.save(share)
             self.existingShare = (result as! CKShare)
             
-        } catch{ Logger.share.warning("Failed to save share: \(error, privacy: .public)") }
+        } catch{ Logger.sharing.warning("Failed to save share: \(error, privacy: .public)") }
     }
     
 //    func fetchShareFromZone(_ zone: CKRecordZone,
@@ -113,9 +114,9 @@ extension ShareCoordinator{
         Task{
             do{
                 try await stack.persistentContainer.share([vote], to: existingShare)
-                Logger.share.info("Sharing vote for recipeId: \(vote.recipeId)")
+                Logger.sharing.info("Sharing vote for recipeId: \(vote.recipeId)")
                 
-            } catch{ Logger.share.warning("Failed to share vote: \(error, privacy: .public)") }
+            } catch{ Logger.sharing.warning("Failed to share vote: \(error, privacy: .public)") }
         }
     }
 }
