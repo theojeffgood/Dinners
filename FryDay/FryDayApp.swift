@@ -29,6 +29,10 @@ struct FryDayApp: App {
         
         let storage = RecipeManager(managedObjectContext: DataController.shared.context)
         self._recipeManager = StateObject(wrappedValue: storage)
+        
+        if UserDefaults.standard.bool(forKey: "inAHousehold"){
+            ShareCoordinator.shared.fetchExistingShare()
+        }
     }
     
     var body: some Scene {
