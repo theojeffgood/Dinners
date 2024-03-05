@@ -63,6 +63,8 @@ public class Recipe: NSManagedObject, Codable {
         let newRecipeCategoriesList = (categoriesList.split(separator: ";"))
         let recipeCategoriesArray = newRecipeCategoriesList.map{ Int($0)! }
         categories = recipeCategoriesArray
+        
+        assignToPrivateStore()
     }
     
     public func encode(to encoder: Encoder) throws {

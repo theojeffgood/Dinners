@@ -31,6 +31,8 @@ public class Vote: NSManagedObject {
         self.date = Date.now
         self.ownerId = userId
         self.recipeId = recipeId
+        
+        assignToCorrectStore()
     }
 }
 

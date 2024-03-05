@@ -13,6 +13,7 @@ struct ContentView: View {
 //    @EnvironmentObject private var shareCoordinator: ShareCoordinator
     @Environment(\.managedObjectContext) var moc
     @ObservedObject var recipeManager: RecipeManager
+    @ObservedObject var filterManager: FilterManager
     
     @State private var playConfetti = false
     @State private var showFilters: Bool = false
@@ -22,16 +23,6 @@ struct ContentView: View {
             withAnimation { showTabbar = !showHousehold }
         }
     }
-    
-    @State private var allFilters: [Category] = []{
-        didSet{
-            appliedFilters = allFilters.filter({ $0.isPurchased })
-        }
-    }
-    @State private var appliedFilters: [Category] = []
-    @State private var filterIsActive: Bool = false
-    @State private var activeFilter: Category? = nil
-    
     
     var body: some View {
         NavigationStack{
@@ -45,22 +36,21 @@ struct ContentView: View {
                 }
             } label: {
                 VStack {
-                    if !$appliedFilters.isEmpty{
+                    if !filterManager.appliedFilters.isEmpty{
                         HStack {
                             Text("Filters: ")
                             
                             ScrollView(.horizontal){
                                 HStack {
-                                    let items: [Category] = filterIsActive ? [activeFilter!] : appliedFilters
-                                    ForEach(items){ item in
+                                    ForEach(filterManager.appliedFilters.sorted(by: { $0.id > $1.id })){ item in
                                         Button {
                                             withAnimation{
-                                                filterIsActive.toggle()
-                                                self.activeFilter = filterIsActive ? item : nil
-                                                recipeManager.applyFilter(activeFilter)
+                                                filterManager.toggleFilter(item)
+                                                filterManager.filterIsActive ? 
+                                                recipeManager.applyFilter(item) : recipeManager.cancelFilter()
                                             }
                                         } label: {
-                                            Text(item.title + (filterIsActive ? "  X" : ""))
+                                            Text(item.title + (filterManager.filterIsActive ? "  X" : ""))
                                                 .frame(height: 40)
                                                 .padding([.leading, .trailing])
                                                 .overlay( RoundedRectangle(cornerRadius: 5).stroke(.black, lineWidth: 1) )
@@ -111,12 +101,14 @@ struct ContentView: View {
                     })
                 }
             }
-            .sheet(isPresented: $showFilters, onDismiss: { appliedFilters = allFilters.filter({ $0.isPurchased }) }, content: {
-                Filters(allCategories: $allFilters)
+//            .sheet(isPresented: $showFilters, onDismiss: { appliedFilters = allFilters.filter({ $0.isPurchased }) }, content: {
+//                Filters(allCategories: $allFilters)
+            .sheet(isPresented: $showFilters, content: {
+                Filters(allCategories: filterManager.allFilters)
             })
             .onAppear(){
                 loadRecipes()
-                if allFilters.isEmpty{ allFilters = Category.allCategories(in: moc) }
+//                if allFilters.isEmpty{ allFilters = Category.allCategories(in: moc) }
                 showTabbar = true
             }
         }
@@ -127,7 +119,7 @@ extension ContentView{
     
     func popRecipeStack(for recipe: Recipe, liked: Bool, showSwipe: Bool = true){
         let newVote = Vote(forRecipeId: recipe.recipeId, like: liked, in: moc)
-        ShareCoordinator.shared.shareVoteIfNeeded(newVote) //1 of 2 (before moc.save)
+        ShareCoordinator.shared.shareIfNeeded(newVote) //1 of 2 (before moc.save)
         try! moc.save() //2 of 2 (after ck.share)
         if recipe.isAMatch(with: newVote){ celebrate() }
         
@@ -172,6 +164,8 @@ struct ContentView_Previews: PreviewProvider {
         let recipeManager = RecipeManager(managedObjectContext: moc)
         recipeManager.recipe = recipeOne
         
-        return ContentView(recipeManager: recipeManager)
+        let filterManager = FilterManager(managedObjectContext: moc)
+        
+        return ContentView(recipeManager: recipeManager, filterManager: filterManager)
     }
 }

@@ -11,10 +11,11 @@ import CloudKit
 struct TabBarView: View {
     
     @ObservedObject var recipeManager: RecipeManager
+    @ObservedObject var filterManager: FilterManager
     
     var body: some View {
         TabView {
-            ContentView(recipeManager: recipeManager)
+            ContentView(recipeManager: recipeManager, filterManager: filterManager)
             .tabItem {
                 Label("Menu", systemImage: "frying.pan")
             }
@@ -45,8 +46,9 @@ import CoreData
     recipeOne.imageUrl = "https://halflemons-media.s3.amazonaws.com/787.jpg"
     
     let moc = DataController.shared.context
+    let filterManager = FilterManager(managedObjectContext: moc)
     let recipeManager = RecipeManager(managedObjectContext: moc)
     recipeManager.recipe = recipeOne
     
-    return TabBarView(recipeManager: recipeManager)
+    return TabBarView(recipeManager: recipeManager, filterManager: filterManager)
 }

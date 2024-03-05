@@ -172,14 +172,17 @@ extension RecipeManager{
 }
 
 extension RecipeManager{
-    func applyFilter(_ filter: Category? = nil) {
-        
-        if let filter{
-            self.categoryFilter = filter
-        } else{
-            self.categoryFilter = nil
-        }
-        
+    func applyFilter(_ filter: Category) {
+        self.categoryFilter = filter
+        resetRecipes()
+    }
+    
+    func cancelFilter() {
+        self.categoryFilter = nil
+        resetRecipes()
+    }
+
+    func resetRecipes(){
         let request = Recipe.fetchRequest()
         let recipes = try! context.fetch(request)
         

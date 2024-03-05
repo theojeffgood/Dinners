@@ -18,10 +18,10 @@ extension Recipe {
         fetchRequest.sortDescriptors = sort
 //        return fetchRequest
         
-        if UserDefaults.standard.bool(forKey: "inAHousehold") &&
-           !UserDefaults.standard.bool(forKey: "isHouseholdOwner"){
-            fetchRequest.affectedStores = [DataController.shared.sharedPersistentStore]
-        }
+//        if UserDefaults.standard.bool(forKey: "inAHousehold") &&
+//           !UserDefaults.standard.bool(forKey: "isHouseholdOwner"){
+            fetchRequest.affectedStores = [DataController.shared.privatePersistentStore] // <<--THIS LINE BREAKS LOAD OF RECIPES?? WHY?
+//        }
         
         return fetchRequest
     }

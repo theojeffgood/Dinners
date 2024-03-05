@@ -100,21 +100,21 @@ final class ShareCoordinator: ObservableObject {
 
 extension ShareCoordinator{
     
-    func shareVoteIfNeeded(_ vote: Vote) {
+    func shareIfNeeded(_ voteOrPurchase: NSManagedObject) {
         guard UserDefaults.standard.bool(forKey: "inAHousehold"),
               !UserDefaults.standard.bool(forKey: "isHouseholdOwner") else { return }
         
         if existingShare == nil{ fetchExistingShare() }
         if existingShare == nil{ return }
-          
-//        if vote.objectID.persistentStore == stack.privatePersistentStore{
-            stack.persistentContainer.viewContext.assign(vote, to: stack.sharedPersistentStore)
-//        }
             
         Task{
             do{
-                try await stack.persistentContainer.share([vote], to: existingShare)
-                Logger.sharing.info("Sharing vote for recipeId: \(vote.recipeId)")
+                try await stack.persistentContainer.share([voteOrPurchase], to: existingShare)
+//                if voteOrPurchase.entity == Vote.self{
+//                    Logger.sharing.info("Sharing vote for recipeId: \(vote.recipeId)")
+//                } voteOrPurchase.entity == Purchase{
+//                    Logger.sharing.info("Sharing vote for recipeId: \(vote.recipeId)")
+//                }
                 
             } catch{ Logger.sharing.warning("Failed to share vote: \(error, privacy: .public)") }
         }

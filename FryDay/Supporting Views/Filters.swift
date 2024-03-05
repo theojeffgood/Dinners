@@ -11,9 +11,10 @@ import StoreKit
 struct Filters: View {
     
     @Environment(\.managedObjectContext) var moc
-    @EnvironmentObject private var purchaseManager: PurchaseManager
+    @EnvironmentObject private var purchaseManager: AppStoreManager
     
-    @Binding var allCategories: [Category]
+//    @Binding var allCategories: [Category]
+    @State var allCategories: [Category]
     @State private var categoryList: [String: [Category]] = [:] /* ["Filter Type": [Filters of the type]] */
 //    @State private var filterWasApplied = false
     
@@ -42,7 +43,11 @@ struct Filters: View {
                                                     switch result {
                                                     case .success:
                                                         category.isPurchased = true
-                                                        try! moc.save()
+                                                        
+                                                        let purchase = Purchase(categoryId: category.id, in: moc)
+                                                        ShareCoordinator.shared.shareIfNeeded(purchase) //1 of 2 (before moc.save)
+                                                        
+                                                        try! moc.save() //2 of 2 (after ck.share)
                                                         
                                                     case .pending, .userCancelled:
                                                         handlePurchaseFail()

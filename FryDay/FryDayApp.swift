@@ -16,11 +16,15 @@ struct FryDayApp: App {
 //    @Environment(\.scenePhase) var scenePhase // "scene phase" i.e. app goes to background
     
     @StateObject var recipeManager: RecipeManager
-    @StateObject private var purchaseManager: PurchaseManager
+    @StateObject var filterManager: FilterManager
+    @StateObject private var appStoreManager: AppStoreManager
     
     init() {
-        let purchaseManager = PurchaseManager()
-        self._purchaseManager = StateObject(wrappedValue: purchaseManager)
+        let appStoreManager = AppStoreManager()
+        self._appStoreManager = StateObject(wrappedValue: appStoreManager)
+        
+        let filterManager = FilterManager(managedObjectContext: DataController.shared.context)
+        self._filterManager = StateObject(wrappedValue: filterManager)
         
         if UserDefaults.standard.string(forKey: "userID") == nil {
             let userId: String = "\(UUID())"
@@ -38,12 +42,12 @@ struct FryDayApp: App {
     var body: some Scene {
         
         WindowGroup {
-            TabBarView(recipeManager: recipeManager)
+            TabBarView(recipeManager: recipeManager, filterManager: filterManager)
                 .environment(\.managedObjectContext, DataController.shared.context)
-                .environmentObject(purchaseManager)
+                .environmentObject(appStoreManager)
 //                .environmentObject(ShareCoordinator.shared)
                 .task {
-                    await purchaseManager.updatePurchasedProducts()
+                    await appStoreManager.updatePurchasedProducts()
                 }
                 .onOpenURL { url in } /* Fires when app opens via url aka deeplink. */
         }

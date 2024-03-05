@@ -1,5 +1,5 @@
 //
-//  PurchaseManager.swift
+//  AppStoreManager.swift
 //  FryDay
 //
 //  Created by Theo Goodman on 11/30/23.
@@ -10,7 +10,7 @@ import StoreKit
 import OSLog
 
 @MainActor
-class PurchaseManager: NSObject, ObservableObject {
+class AppStoreManager: NSObject, ObservableObject {
     
     @Published private(set) var products: [Product] = []
     @Published private(set) var purchasedProductIDs = Set<String>()
@@ -104,7 +104,7 @@ class PurchaseManager: NSObject, ObservableObject {
     }
 }
 
-extension PurchaseManager: SKPaymentTransactionObserver {
+extension AppStoreManager: SKPaymentTransactionObserver {
     func paymentQueue(_ queue: SKPaymentQueue, updatedTransactions transactions: [SKPaymentTransaction]) { }
 
     func paymentQueue(_ queue: SKPaymentQueue, shouldAddStorePayment payment: SKPayment, for product: SKProduct) -> Bool {

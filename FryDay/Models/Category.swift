@@ -8,8 +8,6 @@
 import Foundation
 import CoreData
 import StoreKit
-//import CloudKit
-//import SwiftUI
 
 public class Category: NSManagedObject, Codable {
     @NSManaged public var id: Int64
@@ -51,6 +49,8 @@ public class Category: NSManagedObject, Codable {
         title = try! container.decode(String.self, forKey: .title)
         group = try! container.decode(String.self, forKey: .group)
         appStoreProductId = try! container.decode(String.self, forKey: .appStoreProductId)
+        
+        assignToPrivateStore()
     }
     
     public func encode(to encoder: Encoder) throws {
@@ -70,10 +70,10 @@ extension Category{
         fetchRequest.predicate = predicate
         fetchRequest.sortDescriptors = sort
         
-        if UserDefaults.standard.bool(forKey: "inAHousehold") &&
-           !UserDefaults.standard.bool(forKey: "isHouseholdOwner"){
-            fetchRequest.affectedStores = [DataController.shared.sharedPersistentStore]
-        }
+//        if UserDefaults.standard.bool(forKey: "inAHousehold") &&
+//           !UserDefaults.standard.bool(forKey: "isHouseholdOwner"){
+            fetchRequest.affectedStores = [DataController.shared.privatePersistentStore]
+//        }
         
         return fetchRequest
     }
