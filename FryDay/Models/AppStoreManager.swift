@@ -37,7 +37,10 @@ class AppStoreManager: NSObject, ObservableObject {
         if !self.productsLoaded{
             let categoryIds = categories.map({ $0.appStoreProductId })
             self.products = try await Product.products(for: categoryIds)
-            if !products.isEmpty{ self.productsLoaded = true }
+            if !products.isEmpty{
+                self.productsLoaded = true
+                Logger.store.info("Successfully loaded app store products.")
+            }
         }
         
         // Connect Filters w/ App Store Produts
@@ -45,6 +48,7 @@ class AppStoreManager: NSObject, ObservableObject {
             let appStoreProduct = products.first(where: { $0.id == category.appStoreProductId })
             category.appStoreProduct = appStoreProduct
 //            print("### Category: \(category.title) assigned product: \(category.appStoreProduct)")
+            Logger.store.info("Category: \(category.title, privacy: .public) assigned product: \(category.appStoreProduct?.displayName ?? "nil", privacy: .public)")
         }
     }
 

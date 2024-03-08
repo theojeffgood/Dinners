@@ -123,7 +123,7 @@ extension NSManagedObject{
     func assignToCorrectStore(){
         let stack = DataController.shared
         let store = (UserDefaults.standard.bool(forKey: "inAHousehold") && !UserDefaults.standard.bool(forKey: "isHouseholdOwner")) ?
-        stack.privatePersistentStore : stack.sharedPersistentStore
+        stack.sharedPersistentStore : stack.privatePersistentStore
         stack.persistentContainer.viewContext.assign(self, to: store)
     }
     

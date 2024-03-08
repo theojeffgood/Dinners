@@ -10,7 +10,6 @@ import CloudKit
 
 struct ContentView: View {
     
-//    @EnvironmentObject private var shareCoordinator: ShareCoordinator
     @Environment(\.managedObjectContext) var moc
     @ObservedObject var recipeManager: RecipeManager
     @ObservedObject var filterManager: FilterManager
@@ -101,14 +100,11 @@ struct ContentView: View {
                     })
                 }
             }
-//            .sheet(isPresented: $showFilters, onDismiss: { appliedFilters = allFilters.filter({ $0.isPurchased }) }, content: {
-//                Filters(allCategories: $allFilters)
             .sheet(isPresented: $showFilters, content: {
                 Filters(allCategories: filterManager.allFilters)
             })
             .onAppear(){
                 loadRecipes()
-//                if allFilters.isEmpty{ allFilters = Category.allCategories(in: moc) }
                 showTabbar = true
             }
         }

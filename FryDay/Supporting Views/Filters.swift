@@ -7,6 +7,7 @@
 
 import SwiftUI
 import StoreKit
+import OSLog
 
 struct Filters: View {
     
@@ -43,16 +44,14 @@ struct Filters: View {
                                                     switch result {
                                                     case .success:
                                                         category.isPurchased = true
-                                                        
                                                         let purchase = Purchase(categoryId: category.id, in: moc)
                                                         ShareCoordinator.shared.shareIfNeeded(purchase) //1 of 2 (before moc.save)
-                                                        
                                                         try! moc.save() //2 of 2 (after ck.share)
                                                         
                                                     case .pending, .userCancelled:
                                                         handlePurchaseFail()
                                                     @unknown default:
-                                                        handlePurchaseFail()
+                                                        fatalError("Purchase failed for unknown reason.")
                                                     }
                                                 } catch {
                                                     print(error)
@@ -110,7 +109,7 @@ struct Filters: View {
                 
                 _ = Task<Void, Never> {
                     do {
-                        print("### Starting call to load appStoreProducts for: \(allCategories.count) categories")
+                        Logger.store.info("Call to load appStoreProducts for: \(allCategories.count, privacy: .public) categories")
                         try await purchaseManager.loadAppStoreProducts(for: allCategories)
                     } catch {
                         print(error)

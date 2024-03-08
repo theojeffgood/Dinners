@@ -82,12 +82,12 @@ struct Household: View {
                                         Task {
                                             do {
                                                 try await ShareCoordinator.shared.getShare()
-                                                
+                                                showShareSheet = true
                                             } catch { /*showShareError()*/ }
                                         }
+                                    } else{
+                                        showShareSheet = true
                                     }
-                                    showShareSheet = true
-                                    
                                     UserDefaults.standard.set(true, forKey: "inAHousehold")
                                     UserDefaults.standard.set(true, forKey: "isHouseholdOwner")
                                 }) {
@@ -101,7 +101,6 @@ struct Household: View {
                         }
                         Spacer()
                     }.frame(height: 100)
-
             }
             .padding()
             .padding(.bottom)

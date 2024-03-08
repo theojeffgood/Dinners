@@ -131,7 +131,6 @@
 				E465A710298307D30058B564 /* RecipeCardView.swift */,
 				E4CB2C7F297893CC00A829AE /* RecipesList.swift */,
 				E4CB2C812979C28700A829AE /* RecipeDetailsView.swift */,
-				E4875D7F2B192CFA00A192CE /* AppStoreManager.swift */,
 				E4875D842B1FB6EC00A192CE /* FridayStorekitConfig.storekit */,
 				E4985E5F2AE6FD8900495720 /* Models */,
 				E43634FB2AD6EFCB007F238F /* ShareHelper.swift */,
@@ -154,6 +153,7 @@
 		E4985E5F2AE6FD8900495720 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				E4875D7F2B192CFA00A192CE /* AppStoreManager.swift */,
 				E4EA57A82AF2F04700F5E130 /* RecipeManager.swift */,
 				E4B2236C2B927CDD00F9766C /* FilterManager.swift */,
 				E4EA57A92AF2F04700F5E130 /* Recipe.swift */,
@@ -395,7 +395,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = FryDay/FryDay.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 12;
+				CURRENT_PROJECT_VERSION = 14;
 				DEVELOPMENT_ASSET_PATHS = "\"FryDay/Preview Content\"";
 				DEVELOPMENT_TEAM = 78U3X38B3F;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -437,7 +437,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = FryDay/FryDay.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 12;
+				CURRENT_PROJECT_VERSION = 14;
 				DEVELOPMENT_ASSET_PATHS = "\"FryDay/Preview Content\"";
 				DEVELOPMENT_TEAM = 78U3X38B3F;
 				ENABLE_HARDENED_RUNTIME = YES;
