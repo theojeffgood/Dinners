@@ -12,15 +12,10 @@ import CloudKit
 struct Household: View {
     
     @Environment(\.managedObjectContext) var moc
-//    @EnvironmentObject private var shareCoordinator: ShareCoordinator
     @ObservedObject var shareCoordinator: ShareCoordinator = ShareCoordinator.shared
-    private let stack = DataController.shared
     
     @State private var showShareSheet = false
     var onDismiss: () -> Void
-//    if let currentUser = share.currentUserParticipant, currentUser == share.owner {
-//        return true
-//    }
     
     var body: some View {
         VStack(spacing: -15){
@@ -40,34 +35,38 @@ struct Household: View {
                 }
                 
                     HStack(spacing: 10){
-                        if let share = ShareCoordinator.shared.existingShare{
-                            let shareParticipants = share.participants
-                            ForEach(shareParticipants) { participant in
+                        if let share = shareCoordinator.existingShare{
+                            ForEach(share.participants) { participant in
                                 VStack(spacing: 5){
                                     ZStack{
-                                        Circle()
-                                            .padding([.leading, .trailing])
-                                        Text("😎")
-                                            .font(.system(size: 45))
-                                        Button(action: {
-                                            withAnimation {
-                                                share.removeParticipant(participant)
+                                        Circle().padding(.horizontal)
+                                        Text("😎").font(.system(size: 45))
+                                        
+                                        if participant.hasPermissions(in: share){
+                                            Button(action: {
+                                                withAnimation {
+                                                    if participant.role == .owner {
+                                                        share.removeParticipant(participant)
+                                                    } else if participant == share.currentUserParticipant{
+                                                        Task{ await shareCoordinator.removeSelf() }
+                                                    }
+                                                }
+                                            }) {
+                                                Image(systemName: "minus.circle.fill")
+                                                    .resizable()
+                                                    .foregroundColor(.red)
                                             }
-                                        }) {
-                                            Image(systemName: "minus.circle.fill")
-                                                .resizable()
-                                                .foregroundColor(.red)
+                                            .offset(x: 30, y: -30)
+                                            .frame(width: 25, height: 25)
                                         }
-                                        .offset(x: 30, y: -30)
-                                        .frame(width: 25, height: 25)
                                     }
                                     
-                                    if participant.role == .owner ||
-                                        participant.acceptanceStatus == .accepted{
-                                        let title = participant.userIdentity.nameComponents?.givenName ?? "Chef"
-                                        Text(title)
+                                    if participant == share.currentUserParticipant{
+                                        Text("You")
                                     } else if participant.acceptanceStatus == .pending{
                                         Text("Invite sent")
+                                    } else if let title = participant.userIdentity.nameComponents?.givenName{
+                                        Text(title)
                                     }
                                 }
                             }
@@ -78,16 +77,14 @@ struct Household: View {
                             
                             VStack(spacing: 5){
                                 Button(action: {
-                                    if ShareCoordinator.shared.existingShare == nil{
+                                    if shareCoordinator.existingShare == nil{
                                         Task {
                                             do {
-                                                try await ShareCoordinator.shared.getShare()
+                                                try await shareCoordinator.getShare()
                                                 showShareSheet = true
                                             } catch { /*showShareError()*/ }
                                         }
-                                    } else{
-                                        showShareSheet = true
-                                    }
+                                    } else{ showShareSheet = true }
                                     UserDefaults.standard.set(true, forKey: "inAHousehold")
                                     UserDefaults.standard.set(true, forKey: "isHouseholdOwner")
                                 }) {
@@ -108,16 +105,14 @@ struct Household: View {
             .cornerRadius(20)
         }
         .ignoresSafeArea()
+        .onAppear(){ shareCoordinator.fetchExistingShare() }
         .sheet(isPresented: $showShareSheet, content: {
-            if let share = ShareCoordinator.shared.existingShare,
+            if let share = shareCoordinator.existingShare,
                share.currentUserParticipant?.role == .owner{
-                CloudSharingView(share: share, container: stack.ckContainer)
-                    .onDisappear { ShareCoordinator.shared.fetchExistingShare() }
+                CloudSharingView(share: share)
+                    .onDisappear { shareCoordinator.fetchExistingShare() }
             }
         })
-        .onAppear(){
-            ShareCoordinator.shared.fetchExistingShare()
-        }
     }
 }
 

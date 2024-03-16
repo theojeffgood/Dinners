@@ -143,6 +143,21 @@ extension ShareCoordinator{
     //    }
 }
 
+extension ShareCoordinator{
+    func removeSelf() async{
+        if existingShare == nil{
+            fetchExistingShare(in: stack.sharedPersistentStore)
+        }
+        
+        guard let shareRecordId = existingShare?.recordID else { return}
+        do {
+            try await stack.ckContainer.sharedCloudDatabase.deleteRecord(withID: shareRecordId)
+        } catch {
+            Logger.sharing.warning("Failed to delete share: \(error, privacy: .public)")
+        }
+    }
+}
+
 
 
 
@@ -150,6 +165,17 @@ extension ShareCoordinator{
 
 
 extension CKShare.Participant: Identifiable{ }
+
+extension CKShare.Participant{
+    func hasPermissions(in share: CKShare) -> Bool{
+        if self.role == .owner ||
+            self == share.currentUserParticipant {
+            return true
+        } else{
+            return false
+        }
+    }
+}
 
 extension CKShare.ParticipantAcceptanceStatus{
     var description: String{

@@ -11,7 +11,7 @@ import OSLog
 
 struct CloudSharingView: UIViewControllerRepresentable {
     let share: CKShare
-    let container: CKContainer
+    let container: CKContainer = DataController.shared.ckContainer
     
     func makeCoordinator() -> CloudSharingCoordinator {
         CloudSharingCoordinator()
