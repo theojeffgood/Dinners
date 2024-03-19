@@ -34,70 +34,68 @@ struct Household: View {
                     Spacer()
                 }
                 
-                    HStack(spacing: 10){
-                        if let share = shareCoordinator.existingShare{
-                            ForEach(share.participants) { participant in
-                                VStack(spacing: 5){
-                                    ZStack{
-                                        Circle().padding(.horizontal)
-                                        Text("😎").font(.system(size: 45))
-                                        
-                                        if participant.hasPermissions(in: share){
-                                            Button(action: {
-                                                withAnimation {
-                                                    if participant.role == .owner {
-                                                        share.removeParticipant(participant)
-                                                    } else if participant == share.currentUserParticipant{
-                                                        Task{ await shareCoordinator.removeSelf() }
-                                                    }
-                                                }
-                                            }) {
-                                                Image(systemName: "minus.circle.fill")
-                                                    .resizable()
-                                                    .foregroundColor(.red)
-                                            }
-                                            .offset(x: 30, y: -30)
-                                            .frame(width: 25, height: 25)
-                                        }
-                                    }
-                                    
-                                    if participant == share.currentUserParticipant{
-                                        Text("You")
-                                    } else if participant.acceptanceStatus == .pending{
-                                        Text("Invite sent")
-                                    } else if let title = participant.userIdentity.nameComponents?.givenName{
-                                        Text(title)
-                                    }
-                                }
-                            }
-                        }
-                        
-                        if !UserDefaults.standard.bool(forKey: "inAHousehold") ||
-                            UserDefaults.standard.bool(forKey: "isHouseholdOwner"){
-                            
+                HStack(spacing: 10){
+                    if let share = shareCoordinator.existingShare{
+                        ForEach(share.participants) { participant in
                             VStack(spacing: 5){
-                                Button(action: {
-                                    if shareCoordinator.existingShare == nil{
-                                        Task {
-                                            do {
-                                                try await shareCoordinator.getShare()
-                                                showShareSheet = true
-                                            } catch { /*showShareError()*/ }
+                                ZStack{
+                                    Circle().padding(.horizontal)
+                                    Text("😎").font(.system(size: 45))
+                                    
+                                    let userIsShareOnwer  = (share.currentUserParticipant == share.owner)
+                                    let userIsParticipant = (share.currentUserParticipant == participant)
+                                    if userIsShareOnwer || userIsParticipant{
+                                        Button(action: {
+                                            withAnimation {
+                                                if userIsShareOnwer { share.removeParticipant(participant) }
+                                                else if userIsParticipant{ Task{ await shareCoordinator.removeSelf() } }
+                                            }
+                                        }) {
+                                            Image(systemName: "minus.circle.fill")
+                                                .resizable()
+                                                .foregroundColor(.red)
                                         }
-                                    } else{ showShareSheet = true }
-                                    UserDefaults.standard.set(true, forKey: "inAHousehold")
-                                    UserDefaults.standard.set(true, forKey: "isHouseholdOwner")
-                                }) {
-                                    Image(systemName: "plus.circle.fill")
-                                        .resizable()
-                                        .frame(width: 75, height: 75)
-                                        .foregroundColor(.gray)
+                                        .offset(x: 30, y: -30)
+                                        .frame(width: 25, height: 25)
+                                    }
                                 }
-                                Text("Add peeps")
+                                if participant == share.currentUserParticipant{
+                                    Text("You")
+                                } else if participant.acceptanceStatus == .pending{
+                                    Text("Invite sent")
+                                } else if let title = participant.userIdentity.nameComponents?.givenName{
+                                    Text(title)
+                                }
                             }
                         }
-                        Spacer()
-                    }.frame(height: 100)
+                    }
+                    
+                    
+                    if !UserDefaults.standard.bool(forKey: "inAHousehold") ||
+                        UserDefaults.standard.bool(forKey: "isHouseholdOwner"){
+                        VStack(spacing: 5){
+                            Button(action: {
+                                if shareCoordinator.existingShare == nil{
+                                    Task {
+                                        do {
+                                            try await shareCoordinator.getShare()
+                                            showShareSheet = true
+                                        } catch { /*showShareError()*/ }
+                                    }
+                                } else{ showShareSheet = true }
+                                UserDefaults.standard.set(true, forKey: "inAHousehold")
+                                UserDefaults.standard.set(true, forKey: "isHouseholdOwner")
+                            }) {
+                                Image(systemName: "plus.circle.fill")
+                                    .resizable()
+                                    .frame(width: 75, height: 75)
+                                    .foregroundColor(.gray)
+                            }
+                            Text("Add peeps")
+                        }
+                    }
+                    Spacer()
+                }.frame(height: 100)
             }
             .padding()
             .padding(.bottom)

@@ -82,7 +82,7 @@ struct ContentView: View {
                 }.padding([.leading, .bottom, .trailing], 5)
                 
                 .toolbar(showTabbar ? .visible : .hidden, for: .tabBar)
-                .navigationTitle("Fryday")
+                .navigationTitle("Dinners")
                 .navigationBarItems(
                     trailing:
                         HStack(content: {
