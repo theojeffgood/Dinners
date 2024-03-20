@@ -13,22 +13,37 @@ struct TabBarView: View {
     @ObservedObject var recipeManager: RecipeManager
     @ObservedObject var filterManager: FilterManager
     
+    @State var isPresenting = false
+    @State private var selectedItem = 1
+    @State private var oldSelectedItem = 1
+    
     var body: some View {
-        TabView {
+        TabView(selection: $selectedItem) {
             ContentView(recipeManager: recipeManager, filterManager: filterManager)
             .tabItem {
                 Label("Menu", systemImage: "frying.pan")
-            }
+            }.tag(1)
             
             RecipesList(recipeManager: recipeManager, recipesType: "Matches")
             .tabItem {
                 Label("Matches", systemImage: "link")
-            }
+            }.tag(2)
             
-            RecipesList(recipeManager: recipeManager, 
-                        recipesType: "Likes")
+            Text("")
             .tabItem {
-                Label("Likes", systemImage: "heart")
+                Label("Household", systemImage: "person.2")
+            }.tag(3)
+        }
+        .sheet(isPresented: $isPresenting) {
+            Household(onDismiss: { print("Household") })
+        }
+        
+        .onChange(of: selectedItem) {
+            if 3 == selectedItem {
+                self.isPresenting = true
+                self.selectedItem = self.oldSelectedItem
+            } else if (isPresenting == false) {
+                self.oldSelectedItem = $0
             }
         }
         .accentColor(.black)

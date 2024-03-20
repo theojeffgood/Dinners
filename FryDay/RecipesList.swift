@@ -45,9 +45,7 @@ struct RecipesList: View {
                                     withAnimation { showTabbar = false }
                                 })
                             }
-                        label: {
-                            RecipeCell(recipe: recipe)
-                        }
+                        label: { RecipeCell(recipe: recipe) }
                         }
                     }
                 }

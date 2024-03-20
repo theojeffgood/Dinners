@@ -16,64 +16,62 @@ struct Household: View {
     
     @State private var showShareSheet = false
     var onDismiss: () -> Void
+        
+    @State private var currentPresentationDetent: PresentationDetent = .height(225)
+    let presentationDetents: [PresentationDetent] = [.height(225), .height(325)]
     
     var body: some View {
-        VStack(spacing: -15){
-            Rectangle()
-                .fill(Color.gray.opacity(0.5))
-                .onTapGesture {
-                    onDismiss()
-                }
-            VStack(spacing: 30){
-                HStack(spacing: 7){
-                    Image(systemName: "house.fill")
-                        .resizable()
-                        .frame(width: 25, height: 25)
-                    Text("Household")
-                        .font(.system(size: 30, weight: .bold))
-                    Spacer()
-                }
-                
-                HStack(spacing: 10){
-                    if let share = shareCoordinator.existingShare{
-                        ForEach(share.participants) { participant in
-                            VStack(spacing: 5){
-                                ZStack{
-                                    Circle().padding(.horizontal)
-                                    Text("😎").font(.system(size: 45))
-                                    
-                                    let userIsShareOnwer  = (share.currentUserParticipant == share.owner)
-                                    let userIsParticipant = (share.currentUserParticipant == participant)
-                                    if userIsShareOnwer || userIsParticipant{
-                                        Button(action: {
-                                            withAnimation {
-                                                if userIsShareOnwer { share.removeParticipant(participant) }
-                                                else if userIsParticipant{ Task{ await shareCoordinator.removeSelf() } }
-                                            }
-                                        }) {
-                                            Image(systemName: "minus.circle.fill")
-                                                .resizable()
-                                                .foregroundColor(.red)
+        VStack(spacing: 30){
+            HStack(spacing: 7){
+                Image(systemName: "house.fill")
+                    .resizable()
+                    .frame(width: 25, height: 25)
+                Text("Household")
+                    .font(.system(size: 30, weight: .bold))
+                Spacer()
+            }
+            
+            if let share = shareCoordinator.existingShare{
+                LazyVGrid(columns: [GridItem(.flexible()),
+                                    GridItem(.flexible()),
+                                    GridItem(.flexible())]) {
+                    ForEach(share.participants) { participant in
+                        
+                        VStack(spacing: 0){
+                            ZStack{
+                                Circle().frame(width: 80, height: 80)
+                                Text("😎").font(.system(size: 45))
+                                
+                                let userIsShareOnwer  = (share.currentUserParticipant == share.owner)
+                                let userIsParticipant = (share.currentUserParticipant == participant)
+                                if userIsShareOnwer || userIsParticipant{
+                                    Button(action: {
+                                        withAnimation {
+                                            if userIsShareOnwer { share.removeParticipant(participant) }
+                                            else if userIsParticipant{ Task{ await shareCoordinator.removeSelf() } }
                                         }
-                                        .offset(x: 30, y: -30)
-                                        .frame(width: 25, height: 25)
+                                    }) {
+                                        Image(systemName: "minus.circle.fill")
+                                            .resizable()
+                                            .foregroundColor(.red)
                                     }
+                                    .offset(x: 32, y: -32)
+                                    .frame(width: 25, height: 25)
                                 }
-                                if participant == share.currentUserParticipant{
-                                    Text("You")
-                                } else if participant.acceptanceStatus == .pending{
-                                    Text("Invite sent")
-                                } else if let title = participant.userIdentity.nameComponents?.givenName{
-                                    Text(title)
-                                }
+                            }
+                            if participant == share.currentUserParticipant{
+                                Text("You")
+                            } else if participant.acceptanceStatus == .pending{
+                                Text("Invite sent")
+                            } else if let title = participant.userIdentity.nameComponents?.givenName{
+                                Text(title)
                             }
                         }
                     }
                     
-                    
                     if !UserDefaults.standard.bool(forKey: "inAHousehold") ||
                         UserDefaults.standard.bool(forKey: "isHouseholdOwner"){
-                        VStack(spacing: 5){
+                        VStack(spacing: 0){
                             Button(action: {
                                 if shareCoordinator.existingShare == nil{
                                     Task {
@@ -88,21 +86,17 @@ struct Household: View {
                             }) {
                                 Image(systemName: "plus.circle.fill")
                                     .resizable()
-                                    .frame(width: 75, height: 75)
+                                    .frame(width: 80, height: 80)
                                     .foregroundColor(.gray)
                             }
                             Text("Add peeps")
                         }
                     }
-                    Spacer()
-                }.frame(height: 100)
+                }
             }
-            .padding()
-            .padding(.bottom)
-            .background(Color.white)
-            .cornerRadius(20)
         }
-        .ignoresSafeArea()
+        .padding()
+
         .onAppear(){ shareCoordinator.fetchExistingShare() }
         .sheet(isPresented: $showShareSheet, content: {
             if let share = shareCoordinator.existingShare,
@@ -111,6 +105,14 @@ struct Household: View {
                     .onDisappear { shareCoordinator.fetchExistingShare() }
             }
         })
+
+        .presentationDetents(Set<PresentationDetent>(presentationDetents), selection: $currentPresentationDetent)
+        .presentationDragIndicator(.hidden)
+        .onChange(of: shareCoordinator.existingShare) { newValue in
+            let participants = (newValue?.participants.count ?? 0)
+            let sheetHeight: PresentationDetent = (participants > 2) ? .height(325) : .height(225)
+            currentPresentationDetent = sheetHeight
+        }
     }
 }
 

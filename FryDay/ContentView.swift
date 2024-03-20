@@ -17,11 +17,6 @@ struct ContentView: View {
     @State private var playConfetti = false
     @State private var showFilters: Bool = false
     @State private var showTabbar: Bool = true
-    @State private var showHousehold: Bool = false{
-        didSet{
-            withAnimation { showTabbar = !showHousehold }
-        }
-    }
     
     var body: some View {
         NavigationStack{
@@ -85,20 +80,19 @@ struct ContentView: View {
                 .navigationTitle("Dinners")
                 .navigationBarItems(
                     trailing:
-                        HStack(content: {
-                            Button{ withAnimation { showFilters = true }
-                            } label: { Image(systemName: "slider.horizontal.3").tint(.black) }
-                            
-                            Button{ withAnimation { showHousehold = true }
-                            } label: { Image(systemName: "house").tint(.black) }
-                        })
+                        Button{ withAnimation { showFilters = true }
+                        } label: {
+                            HStack {
+                                Image(systemName: "slider.horizontal.3")
+                                Text("Filters").font(.title3)
+                            }.tint(.black)
+                                .padding(7)
+                                .overlay(content: {
+                                    RoundedRectangle(cornerRadius: 7.5)
+                                        .stroke(.black, lineWidth: 1)
+                                })
+                        }
                 )
-            }.overlay(alignment: .bottom) {
-                if showHousehold{
-                    Household(onDismiss: {
-                        withAnimation { showHousehold = false }
-                    })
-                }
             }
             .sheet(isPresented: $showFilters, content: {
                 Filters(allCategories: filterManager.allFilters)
