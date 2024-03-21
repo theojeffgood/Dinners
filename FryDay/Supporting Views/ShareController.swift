@@ -166,17 +166,6 @@ extension ShareCoordinator{
 
 extension CKShare.Participant: Identifiable{ }
 
-extension CKShare.Participant{
-    func hasPermissions(in share: CKShare) -> Bool{
-        if self.role == .owner ||
-            self == share.currentUserParticipant {
-            return true
-        } else{
-            return false
-        }
-    }
-}
-
 extension CKShare.ParticipantAcceptanceStatus{
     var description: String{
         switch self {

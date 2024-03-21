@@ -34,10 +34,11 @@ struct TabBarView: View {
                 Label("Household", systemImage: "person.2")
             }.tag(3)
         }
+        
+        //adapted sheet mechanism from: https://stackoverflow.com/a/64104181/13551385
         .sheet(isPresented: $isPresenting) {
             Household(onDismiss: { print("Household") })
         }
-        
         .onChange(of: selectedItem) {
             if 3 == selectedItem {
                 self.isPresenting = true
