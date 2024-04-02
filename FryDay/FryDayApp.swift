@@ -29,6 +29,7 @@ struct FryDayApp: App {
         if UserDefaults.standard.string(forKey: "userID") == nil {
             let userId: String = "\(UUID())"
             UserDefaults.standard.set(userId, forKey: "userID")
+            UserDefaults.standard.set(1, forKey: "householdCount")
         }
         
         let storage = RecipeManager(managedObjectContext: DataController.shared.context)

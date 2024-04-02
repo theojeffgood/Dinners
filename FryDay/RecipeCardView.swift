@@ -9,25 +9,25 @@ import SwiftUI
 
 struct RecipeCardView: View{
     var recipe: Recipe
-    var popRecipeStack: ((Bool) -> Void)
+    //    var popRecipeStack: ((Bool) -> Void)
     
-    @State private var isVisible = true
-    @State private var offset = CGSize.zero
+    //    @State private var isVisible = true
+    //    @State private var offset = CGSize.zero
     
     var body: some View{
         ZStack(alignment: Alignment(horizontal: .center, vertical: .bottom), content: {
             
-//            Image Sizing: www.hackingwithswift.com/books/ios-swiftui/resizing-images-to-fit-the-screen-using-geometryreader
+            //            Image Sizing: www.hackingwithswift.com/books/ios-swiftui/resizing-images-to-fit-the-screen-using-geometryreader
             GeometryReader { geo in
                 AsyncImage(url: URL(string: recipe.imageUrl!)) { image in
                     image
                         .resizable()
                         .scaledToFill()
-//                        .scaledToFit()
+                    //                        .scaledToFit()
                         .frame(width: geo.size.width)
                         .clipped()
-//                        .opacity(isVisible ? (2.0 - Double(abs(offset.width / 50) )) : 0 )
-                        .background(colorForOffset(offset))
+                    //                        .opacity(isVisible ? (2.0 - Double(abs(offset.width / 50) )) : 0 )
+                    //                        .background(colorForOffset(offset))
                 } placeholder: {
                     ProgressView()
                 }
@@ -35,7 +35,7 @@ struct RecipeCardView: View{
             
             Text(recipe.title!)
                 .multilineTextAlignment(.leading)
-//                .opacity(isVisible ? (2.0 - Double(abs(offset.width / 50) )) : 0 )
+            //                .opacity(isVisible ? (2.0 - Double(abs(offset.width / 50) )) : 0 )
                 .foregroundColor(.white)
                 .padding(.leading)
                 .frame(maxWidth: .infinity,
@@ -46,89 +46,86 @@ struct RecipeCardView: View{
         })
         .cornerRadius(10, corners: .allCorners)
         .shadow(radius: 5)
+    }
+}
+//        .rotationEffect(.degrees(Double(offset.width / 30)))
+//        .offset(x: offset.width * 0.8, y: offset.height * 0.4)
+//        .opacity(isVisible ? (2.0 - Double(abs(offset.width / 50) )) : 0 )
         
-        .rotationEffect(.degrees(Double(offset.width / 30)))
-        .offset(x: offset.width * 0.8, y: offset.height * 0.4)
-        .opacity(isVisible ? (2.0 - Double(abs(offset.width / 50) )) : 0 )
+//        .transition(.opacity) // 1 of 2
+//        .animation(.easeInOut(duration: 0.65), value: recipe) // 2 of 2
         
-        .transition(.opacity) // 1 of 2
-        .animation(.easeInOut(duration: 0.65), value: recipe) // 2 of 2
+//        .gesture(
+//            DragGesture()
+//                .onChanged({ gesture in
+//                    offset = gesture.translation
+//                })
+//                .onEnded({ gesture in
+//                    if offset.width < -100{ //left swipe
+//                        popRecipeStack(false)
+//                        resetOffset()
+//                        
+//                    } else if offset.width > 100{ //right swipe
+//                        popRecipeStack(true)
+//                        resetOffset()
+//                        
+//                    } else{ //no swipe
+//                        withAnimation { offset = .zero }
+//                    }
+//                })
+//        )
         
-        .gesture(
-            DragGesture()
-                .onChanged({ gesture in
-                    offset = gesture.translation
-                })
-                .onEnded({ gesture in
-                    if offset.width < -100{ //left swipe
-                        popRecipeStack(false)
-                        resetOffset()
-                        
-                    } else if offset.width > 100{ //right swipe
-                        popRecipeStack(true)
-                        resetOffset()
-                        
-                    } else{ //no swipe
-                        withAnimation { offset = .zero }
-                    }
-                })
-        )
         // like + dislike via Buttons. No swipe.
-        .onReceive(NotificationCenter.default.publisher(for: Notification.Name.showSwipe)) { object in
-            guard let swipeInfo = object.userInfo as? [String: Bool],
-                  let swipeRight = swipeInfo["swipeRight"] else { return }
-            setOffset(swipeRight: swipeRight)
-        }
-//        .onChange(of: recipe, perform: { _ in
-//            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-//                if offset != .zero {
-//                    offset = .zero
-//                }a
+//        .onReceive(NotificationCenter.default.publisher(for: Notification.Name.showSwipe)) { object in
+//            guard let swipeInfo = object.userInfo as? [String: Bool],
+//                  let swipeRight = swipeInfo["swipeRight"] else { return }
+//            setOffset(swipeRight: swipeRight)
+//        }
+//    }
+    
+//    func setOffset(swipeRight: Bool){
+//        if #available(iOS 17.0, *) {
+//            withAnimation(.easeInOut(duration: 0.5)) {
+//                let width = swipeRight ? 200 : -200
+//                offset = CGSize(width: width, height: 0)
+//                print("###Animating swipe")
+//            } completion: {
+//                print("###Completion handler for swipe animation")
+//                resetOffset()
 //            }
-//            .buttonStyle(FlatLinkStyle()) //disable tap-opacity https://stackoverflow.com/a/62311089
-    }
+//        }
+//    }
     
-    func setOffset(swipeRight: Bool){
-        if #available(iOS 17.0, *) {
-            withAnimation {
-                let width = swipeRight ? 200 : -200
-                offset = CGSize(width: width, height: 0)
-            } completion: {
-                resetOffset()
-            }
-        }
-    }
+//    func resetOffset(){
+//        print("###Resetting offset")
+//        isVisible = false
+//        offset = .zero
+//        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+//            print("###Animating visibility")
+//            withAnimation(.easeInOut(duration: 0.375)) {
+//                isVisible = true
+//            }
+//        }
+//    }
     
-    func resetOffset(){
-        print("###Resetting offset")
-        isVisible = false
-        offset = .zero
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-            print("###Animating visibility")
-            withAnimation(.easeInOut(duration: 0.375)) {
-                isVisible = true
-            }
-        }
-    }
-    
-    func colorForOffset(_ offset: CGSize) -> Color{
-        switch offset.width{
-        case 0:
-            return .clear
-        case 0.1 ..< 1000:
-            return .green
-        case -1000 ..< 0.1:
-            return .red
-        default:
-            return .clear
-        }
-    }
-}
+//    func colorForOffset(_ offset: CGSize) -> Color{
+//        switch offset.width{
+//        case 0:
+//            return .clear
+//        case 0.1 ..< 1000:
+//            return .green
+//        case -1000 ..< 0.1:
+//            return .red
+//        default:
+//            return .clear
+//        }
+//    }
+//}
 
-extension Notification.Name {
-    static let showSwipe = Notification.Name("showSwipe")
-    //    static let resetOffset       = Notification.Name("resetOffset")
-}
+//extension Notification.Name {
+//    static let showSwipe = Notification.Name("showSwipe")
+//    //    static let resetOffset       = Notification.Name("resetOffset")
+//}
 
 import CoreData
 
@@ -140,14 +137,13 @@ struct RecipeCardView_Previews: PreviewProvider {
         recipeOne.title = "Chicken Parm"
         recipeOne.imageUrl = "https://halflemons-media.s3.amazonaws.com/786.jpg"
         
-        return RecipeCardView(recipe: recipeOne,
-                              popRecipeStack: { _ in }).previewLayout(.sizeThatFits)
+        return RecipeCardView(recipe: recipeOne).previewLayout(.sizeThatFits)
     }
     
 }
 
-struct FlatLinkStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-    }
-}
+//struct FlatLinkStyle: ButtonStyle {
+//    func makeBody(configuration: Configuration) -> some View {
+//        configuration.label
+//    }
+//}

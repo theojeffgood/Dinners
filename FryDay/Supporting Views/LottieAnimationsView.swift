@@ -17,7 +17,7 @@ struct CelebrationView: UIViewRepresentable {
     
     let animationView: LottieAnimationView
     
-    init(name: String,
+    init(_ name: String,
          loopMode: LottieLoopMode = .playOnce,
          animationSpeed: CGFloat = 1,
          contentMode: UIView.ContentMode = .scaleAspectFill,

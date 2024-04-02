@@ -12,7 +12,13 @@ import CoreData
 @MainActor
 final class ShareCoordinator: ObservableObject {
     
-    @Published var existingShare: CKShare?
+    @Published var existingShare: CKShare?{
+        didSet{
+            let householdMembers = existingShare?.participants.filter({ $0.acceptanceStatus == .accepted })
+            guard let householdCount = householdMembers?.count else { return }
+            UserDefaults.standard.set(householdCount, forKey: "householdCount")
+        }
+    }
     
     static let shared = ShareCoordinator()
     let stack = DataController.shared
@@ -99,7 +105,7 @@ extension ShareCoordinator{
         } catch{ Logger.sharing.warning("Failed to save share: \(error, privacy: .public)") }
     }
     
-    func shareIfNeeded(_ voteOrPurchase: NSManagedObject) {
+    func shareIfNeeded(_ voteOrPurchase: NSManagedObject) async {
         guard UserDefaults.standard.bool(forKey: "inAHousehold"),
               !UserDefaults.standard.bool(forKey: "isHouseholdOwner") else { return }
         
@@ -109,12 +115,6 @@ extension ShareCoordinator{
         Task{
             do{
                 try await stack.persistentContainer.share([voteOrPurchase], to: existingShare)
-//                if voteOrPurchase.entity == Vote.self{
-//                    Logger.sharing.info("Sharing vote for recipeId: \(vote.recipeId)")
-//                } voteOrPurchase.entity == Purchase{
-//                    Logger.sharing.info("Sharing vote for recipeId: \(vote.recipeId)")
-//                }
-                
             } catch{ Logger.sharing.warning("Failed to share vote: \(error, privacy: .public)") }
         }
     }

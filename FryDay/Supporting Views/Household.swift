@@ -19,6 +19,7 @@ struct Household: View {
         
     @State private var currentPresentationDetent: PresentationDetent = .height(225)
     let presentationDetents: [PresentationDetent] = [.height(225), .height(325)]
+    let threeColumns = Array(repeating: GridItem(.flexible()), count: 3)
     
     var body: some View {
         VStack(spacing: 30){
@@ -31,16 +32,14 @@ struct Household: View {
                 Spacer()
             }
             
-            if let share = shareCoordinator.existingShare{
-                LazyVGrid(columns: [GridItem(.flexible()),
-                                    GridItem(.flexible()),
-                                    GridItem(.flexible())]) {
-                    ForEach(share.participants) { participant in
+            LazyVGrid(columns: threeColumns) {
+                if let share = shareCoordinator.existingShare{
+                    let participants = share.participants.sorted { $0.acceptanceStatus != .pending && $1.acceptanceStatus == .pending }
+                    ForEach(participants) { participant in
                         
                         VStack(spacing: 0){
                             ZStack{
-                                Circle().frame(width: 80, height: 80)
-                                Text("😎").font(.system(size: 45))
+                                UserCard(status: participant.acceptanceStatus)
                                 
                                 let userIsShareOnwer  = (share.currentUserParticipant == share.owner)
                                 let userIsParticipant = (share.currentUserParticipant == participant)
@@ -53,10 +52,9 @@ struct Household: View {
                                     }) {
                                         Image(systemName: "minus.circle.fill")
                                             .resizable()
+                                            .frame(width: 25, height: 25)
                                             .foregroundColor(.red)
-                                    }
-                                    .offset(x: 32, y: -32)
-                                    .frame(width: 25, height: 25)
+                                    }.offset(x: 32, y: -32)
                                 }
                             }
                             if participant == share.currentUserParticipant{
@@ -68,30 +66,18 @@ struct Household: View {
                             }
                         }
                     }
-                    
-                    if !UserDefaults.standard.bool(forKey: "inAHousehold") ||
-                        UserDefaults.standard.bool(forKey: "isHouseholdOwner"){
-                        VStack(spacing: 0){
-                            Button(action: {
-                                if shareCoordinator.existingShare == nil{
-                                    Task {
-                                        do {
-                                            try await shareCoordinator.getShare()
-                                            showShareSheet = true
-                                        } catch { /*showShareError()*/ }
-                                    }
-                                } else{ showShareSheet = true }
-                                UserDefaults.standard.set(true, forKey: "inAHousehold")
-                                UserDefaults.standard.set(true, forKey: "isHouseholdOwner")
-                            }) {
-                                Image(systemName: "plus.circle.fill")
-                                    .resizable()
-                                    .frame(width: 80, height: 80)
-                                    .foregroundColor(.gray)
-                            }
-                            Text("Add peeps")
-                        }
+                } else{
+                    VStack(spacing: 0){
+                        UserCard(status: .accepted)
+                        Text("You")
                     }
+                }
+                
+                if !UserDefaults.standard.bool(forKey: "inAHousehold") ||
+                    UserDefaults.standard.bool(forKey: "isHouseholdOwner"){
+                    ShareButton(getShare: shareCoordinator.getShare,
+                                shareExists: (shareCoordinator.existingShare != nil),
+                                showShareSheet: { showShareSheet = true })
                 }
             }
         }
@@ -99,10 +85,9 @@ struct Household: View {
 
         .onAppear(){ shareCoordinator.fetchExistingShare() }
         .sheet(isPresented: $showShareSheet, content: {
-            if let share = shareCoordinator.existingShare,
-               share.currentUserParticipant?.role == .owner{
-                CloudSharingView(share: share)
-                    .onDisappear { shareCoordinator.fetchExistingShare() }
+            if let share = shareCoordinator.existingShare{
+//               share.currentUserParticipant?.role == .owner{
+                CloudSharingView(share: share).onDisappear { shareCoordinator.fetchExistingShare() }
             }
         })
 
@@ -123,10 +108,67 @@ struct Household_Previews: PreviewProvider {
     }
 }
 
+struct UserCard: View {
+    
+    private let color: Color
+    private let symbol: String
+    
+    init(status: CKShare.ParticipantAcceptanceStatus) {
+        color  = (status == .pending) ? .white : .black
+        symbol = (status == .pending) ? "✉️" : "😎"
+    }
+    
+    var body: some View{
+        ZStack{
+            Circle()
+                .strokeBorder(.black,lineWidth: 2)
+                .background(Circle().foregroundColor(color))
+                .frame(width: 80, height: 80)
+            Text(symbol)
+                .font(.system(size: 45))
+        }
+    }
+}
+
+struct ShareButton: View {
+    private var getShare: () async throws -> Void
+    private var shareExists: Bool
+    private var showShareSheet: () -> Void
+    
+    init(getShare: @escaping () async throws -> Void, shareExists: Bool, showShareSheet: @escaping () -> Void) {
+        self.getShare = getShare
+        self.shareExists = shareExists
+        self.showShareSheet = showShareSheet
+    }
+    
+    var body: some View{
+        VStack(spacing: 0){
+            Button(action: {
+                if !shareExists{
+                    Task {
+                        do {
+                            try await getShare()
+//                            try await shareCoordinator.getShare()
+                            showShareSheet()
+                        } catch { /*showShareError()*/ }
+                    }
+                } else{ showShareSheet() }
+                UserDefaults.standard.set(true, forKey: "inAHousehold")
+                UserDefaults.standard.set(true, forKey: "isHouseholdOwner")
+            }) {
+                Image(systemName: "plus.circle.fill")
+                    .resizable()
+                    .frame(width: 80, height: 80)
+                    .foregroundColor(.gray)
+            }
+            Text("Add peeps")
+        }
+    }
+}
+
 
 
 ////MARK: -- // SEND AN INVITATION //
-//                case .addMember:
 //                    VStack(spacing: 15){
 //                        Text("Send invitation")
 //                            .font(.system(size: 22, weight: .medium))
