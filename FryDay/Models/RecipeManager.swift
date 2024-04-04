@@ -11,8 +11,7 @@ import CloudKit
 
 class RecipeManager: NSObject, ObservableObject {
     
-    @Published 
-    var recipe: Recipe?
+    @Published var recipe: Recipe?
     
     private var allRecipes: [Recipe]
     private var recipeIndex: Int
@@ -98,20 +97,18 @@ extension RecipeManager: NSFetchedResultsControllerDelegate {
             }
         }
         
-        Task{
-            if case let votes = controller.fetchedObjects as? [Vote],
-               votes?.isEmpty == false{
-                
-    //            let newVotes = votes!.difference(from: allVotes)
-
-                allVotes = votes!
-                let recipes = allRecipes
-                allRecipes = filterRecipes(recipes)
-                
-                if allRecipes.indices.contains(recipeIndex),
-                   recipe == nil{
-                    recipe = allRecipes[recipeIndex]
-                }
+        if case let votes = controller.fetchedObjects as? [Vote],
+           votes?.isEmpty == false{
+            
+//            let newVotes = votes!.difference(from: allVotes)
+            
+            allVotes = votes!
+            let recipes = allRecipes
+            allRecipes = filterRecipes(recipes)
+            
+            if allRecipes.indices.contains(recipeIndex),
+               recipe == nil{
+                recipe = allRecipes[recipeIndex]
             }
         }
     }

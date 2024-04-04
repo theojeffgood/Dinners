@@ -19,6 +19,7 @@
 		E4512F6D2B5587E3003F9B44 /* Vote.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4512F6C2B5587E3003F9B44 /* Vote.swift */; };
 		E465A711298307D30058B564 /* RecipeCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E465A710298307D30058B564 /* RecipeCardView.swift */; };
 		E47071EE2B62F53400683E68 /* TabBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E47071ED2B62F53400683E68 /* TabBarView.swift */; };
+		E4721EE92BBE052D0081ED36 /* FiltersBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4721EE82BBE052D0081ED36 /* FiltersBar.swift */; };
 		E4875D802B192CFA00A192CE /* AppStoreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4875D7F2B192CFA00A192CE /* AppStoreManager.swift */; };
 		E48CE0AC2B18F47700C296C1 /* Filters.swift in Sources */ = {isa = PBXBuildFile; fileRef = E48CE0AB2B18F47700C296C1 /* Filters.swift */; };
 		E4985E5D2AE6F69800495720 /* User DELETE.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4985E5B2AE6F69800495720 /* User DELETE.swift */; };
@@ -28,6 +29,7 @@
 		E49E8415299EB02C003E4E77 /* DataController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E49E8414299EB02C003E4E77 /* DataController.swift */; };
 		E4A2D0842B616CA2006DA764 /* ShareController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4A2D0832B616CA2006DA764 /* ShareController.swift */; };
 		E4AB01C12BB5FB65004B115A /* MatchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4AB01C02BB5FB65004B115A /* MatchView.swift */; };
+		E4AB01C32BBDE27B004B115A /* HapticsHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4AB01C22BBDE27B004B115A /* HapticsHelper.swift */; };
 		E4B2236B2B926BD900F9766C /* Purchase.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B2236A2B926BD800F9766C /* Purchase.swift */; };
 		E4B2236D2B927CDD00F9766C /* FilterManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B2236C2B927CDD00F9766C /* FilterManager.swift */; };
 		E4CB2C80297893CC00A829AE /* RecipesList.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4CB2C7F297893CC00A829AE /* RecipesList.swift */; };
@@ -56,6 +58,7 @@
 		E4512F6C2B5587E3003F9B44 /* Vote.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vote.swift; sourceTree = "<group>"; };
 		E465A710298307D30058B564 /* RecipeCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeCardView.swift; sourceTree = "<group>"; };
 		E47071ED2B62F53400683E68 /* TabBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarView.swift; sourceTree = "<group>"; };
+		E4721EE82BBE052D0081ED36 /* FiltersBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FiltersBar.swift; sourceTree = "<group>"; };
 		E4875D7F2B192CFA00A192CE /* AppStoreManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStoreManager.swift; sourceTree = "<group>"; };
 		E4875D842B1FB6EC00A192CE /* FridayStorekitConfig.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = FridayStorekitConfig.storekit; sourceTree = "<group>"; };
 		E48CE0AB2B18F47700C296C1 /* Filters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Filters.swift; sourceTree = "<group>"; };
@@ -66,6 +69,7 @@
 		E49E8414299EB02C003E4E77 /* DataController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataController.swift; sourceTree = "<group>"; };
 		E4A2D0832B616CA2006DA764 /* ShareController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareController.swift; sourceTree = "<group>"; };
 		E4AB01C02BB5FB65004B115A /* MatchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchView.swift; sourceTree = "<group>"; };
+		E4AB01C22BBDE27B004B115A /* HapticsHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticsHelper.swift; sourceTree = "<group>"; };
 		E4B2236A2B926BD800F9766C /* Purchase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Purchase.swift; sourceTree = "<group>"; };
 		E4B2236C2B927CDD00F9766C /* FilterManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterManager.swift; sourceTree = "<group>"; };
 		E4CB2C7F297893CC00A829AE /* RecipesList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipesList.swift; sourceTree = "<group>"; };
@@ -128,6 +132,7 @@
 				E49E8414299EB02C003E4E77 /* DataController.swift */,
 				E41D5074297DE372003CD008 /* Webservice.swift */,
 				E439226F29772E8200CC9E53 /* ContentView.swift */,
+				E4721EE82BBE052D0081ED36 /* FiltersBar.swift */,
 				E4AB01C02BB5FB65004B115A /* MatchView.swift */,
 				E47071ED2B62F53400683E68 /* TabBarView.swift */,
 				E40BCEE42B27F7AB00E43CDB /* Supporting Views */,
@@ -168,6 +173,7 @@
 				E4985E5B2AE6F69800495720 /* User DELETE.swift */,
 				E4985E5C2AE6F69800495720 /* User.swift */,
 				E49E8411299E88DB003E4E77 /* MealSwipe.xcdatamodeld */,
+				E4AB01C22BBDE27B004B115A /* HapticsHelper.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -270,11 +276,13 @@
 				E4AB01C12BB5FB65004B115A /* MatchView.swift in Sources */,
 				E4B2236D2B927CDD00F9766C /* FilterManager.swift in Sources */,
 				E40BCEE32B27F6E300E43CDB /* Extensions.swift in Sources */,
+				E4721EE92BBE052D0081ED36 /* FiltersBar.swift in Sources */,
 				E43634FA2AD5E9BF007F238F /* CloudSharingController.swift in Sources */,
 				E47071EE2B62F53400683E68 /* TabBarView.swift in Sources */,
 				E48CE0AC2B18F47700C296C1 /* Filters.swift in Sources */,
 				E4F7ECA32989DF6000996CB3 /* Recipe OLD.swift in Sources */,
 				E43634FC2AD6EFCB007F238F /* ShareHelper.swift in Sources */,
+				E4AB01C32BBDE27B004B115A /* HapticsHelper.swift in Sources */,
 				E4B2236B2B926BD900F9766C /* Purchase.swift in Sources */,
 				E4E305D02B68420F00BA09B6 /* LottieAnimationsView.swift in Sources */,
 			);
@@ -399,7 +407,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = FryDay/FryDay.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 17;
+				CURRENT_PROJECT_VERSION = 18;
 				DEVELOPMENT_ASSET_PATHS = "\"FryDay/Preview Content\"";
 				DEVELOPMENT_TEAM = 78U3X38B3F;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -441,7 +449,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = FryDay/FryDay.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 17;
+				CURRENT_PROJECT_VERSION = 18;
 				DEVELOPMENT_ASSET_PATHS = "\"FryDay/Preview Content\"";
 				DEVELOPMENT_TEAM = 78U3X38B3F;
 				ENABLE_HARDENED_RUNTIME = YES;

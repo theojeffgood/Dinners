@@ -18,17 +18,7 @@ struct RecipesList: View {
     
     @State private var showTabbar: Bool = true
     @State private var showHousehold: Bool = false
-    var emptyStateMessage: String{
-        if recipesType == "Matches"{
-            let message = UserDefaults.standard.bool(forKey: "inAHousehold") ?
-            "No matches, yet. \n Like recipes to get matches." :
-            "No matches, yet. \n Add friends to get matches."
-            return message
-        } else if recipesType == "Likes"{
-            return "No likes yet."
-        }
-        return "There are no results" // this should never happen
-    }
+    var emptyStateMessage = "No matches, yet. \n\n Start liking recipes!"
     
     var body: some View {
         NavigationStack{
@@ -61,50 +51,14 @@ struct RecipesList: View {
                     
                     Text(emptyStateMessage)
                         .multilineTextAlignment(.center)
-                        .font(.title3)
+                        .font(.title2)
                         .padding(.bottom, 55)
-                    
-                    if recipesType == "Matches"{
-                        Button("See your Household"){
-                            withAnimation {
-                                showTabbar = false
-                                showHousehold = true
-                            }
-                        }
-                        .font(.title)
-                        .padding(20)
-                        .foregroundColor(.black)
-                        .background(.orange)
-                        .cornerRadius(25, corners: .allCorners)
-                        .shadow(radius: 25)
-                    }
                     
                 }).navigationTitle(recipesType)
             }
         }
         .toolbar(showTabbar ? .visible : .hidden, for: .tabBar)
-        .overlay(alignment: .bottom) {
-            if showHousehold{
-//                Household(share: nil, onDismiss: {
-                Household(onDismiss: {
-                    withAnimation {
-                        showTabbar = true
-                        showHousehold = false
-                    }
-                })
-            }
-        }
-        .onAppear(perform: {
-            switch recipesType {
-            case "Matches":
-                recipes = recipeManager.getMatches()
-            case "Likes":
-                let votedRecipeIds = allVotes.filter({ $0.isLiked && $0.isCurrentUser }).map({ $0.recipeId })
-                recipes = recipeManager.getRecipesById(ids: votedRecipeIds) ?? []
-            default:
-                fatalError("###Unrecognized list of recipes.")
-            }
-        })
+        .onAppear(perform: { recipes = recipeManager.getMatches() })
     }
 }
 

@@ -7,7 +7,6 @@
 
 import SwiftUI
 import CloudKit
-import CoreHaptics
 
 struct ContentView: View {
     
@@ -15,7 +14,7 @@ struct ContentView: View {
     @ObservedObject var recipeManager: RecipeManager
     @ObservedObject var filterManager: FilterManager
     
-    @State private var engine: CHHapticEngine?
+    @State private var hapticsHelper = HapticsHelper()
     @State private var playConfetti = false
     @State private var showFilters: Bool = false
     @State private var showTabbar: Bool = true
@@ -35,60 +34,38 @@ struct ContentView: View {
                     })
                 }
             } label: {
-                VStack {
-                    if !filterManager.appliedFilters.isEmpty{
-                        HStack {
-                            Text("Filters: ")
-                            
-                            ScrollView(.horizontal){
-                                HStack {
-                                    ForEach(filterManager.appliedFilters.sorted(by: { $0.id > $1.id })){ item in
-                                        Button {
-                                            withAnimation{
-                                                filterManager.toggleFilter(item)
-                                                filterManager.filterIsActive ? 
-                                                recipeManager.applyFilter(item) : recipeManager.cancelFilter()
-                                            }
-                                        } label: {
-                                            Text(item.title + (filterManager.filterIsActive ? "  X" : ""))
-                                                .frame(height: 40)
-                                                .padding([.leading, .trailing])
-                                                .overlay( RoundedRectangle(cornerRadius: 5).stroke(.black, lineWidth: 1) )
-                                                .padding([.top, .bottom], 1)
-                                        }
-                                    }
-                                    Spacer()
-                                }.padding(.leading, 1)
-                            }.scrollIndicators(.never)
-                        }
-                        .padding(.leading, 10)
-                        .padding([.top, .bottom], 5)
+                VStack{
+                    FiltersBar(filterIsActive: $filterManager.filterIsActive,
+                               showFilters: $showFilters,
+                               items: $filterManager.appliedFilters){ item in
+                        filterManager.toggleFilter(item)
+                        filterManager.filterIsActive ?
+                        recipeManager.applyFilter(item) : recipeManager.cancelFilter()
                     }
                     
                     if let recipe = recipeManager.recipe{
                         ZStack(alignment: .center) {
                             RecipeCardView(recipe: recipe)
-                            .opacity(recipeCardOpacity)
-//                            .offset(x: offset.width, y: 0)
-                            .offset(x: offset.width, y: offset.height)
-                            .gesture(
-                                DragGesture()
-                                    .onChanged { gesture in
-                                        offset = gesture.translation
-                                    }
-                                    .onEnded { _ in
-                                        if abs(offset.width) > 100 {
-                                            // Swipe detected
-                                            animateCardAway(recipe, offset: offset.width)
-                                        } else {
-                                            // Reset position if not swiped far enough
-                                            withAnimation(.spring) {
-                                                offset = .zero
+                                .opacity(recipeCardOpacity)
+                                .offset(x: offset.width, y: offset.height * 0.85)
+                                .gesture(
+                                    DragGesture()
+                                        .onChanged { gesture in
+                                            offset = gesture.translation
+                                        }
+                                        .onEnded { _ in
+                                            if abs(offset.width) > 100 {
+                                                // Swipe detected
+                                                animateCardAway(recipe, offset: offset.width)
+                                            } else {
+                                                // Reset position if not swiped far enough
+                                                withAnimation(.spring) {
+                                                    offset = .zero
+                                                }
                                             }
                                         }
-                                    }
-                            )
-//                            .animation(.spring(), value: offset)
+                                )
+                            //                            .animation(.spring(), value: offset)
                             
                             if showModal{
                                 MatchView()
@@ -109,30 +86,16 @@ struct ContentView: View {
                                     animateCardAway(recipe, offset: 300)
                                 case false:
                                     animateCardAway(recipe, offset: -300)
-
+                                    
                                 }
                             }
                         }
                     }
                 }.padding([.leading, .bottom, .trailing], 5)
                 
-                .toolbar(showTabbar ? .visible : .hidden, for: .tabBar)
-                .navigationTitle("Dinners")
-                .navigationBarItems(
-                    trailing:
-                        Button{ withAnimation { showFilters = true }
-                        } label: {
-                            HStack {
-                                Image(systemName: "slider.horizontal.3")
-                                Text("Filters").font(.title3)
-                            }.tint(.black)
-                                .padding(7)
-                                .overlay(content: {
-                                    RoundedRectangle(cornerRadius: 7.5)
-                                        .stroke(.black, lineWidth: 1)
-                                })
-                        }
-                )
+                    .toolbar(showTabbar ? .visible : .hidden, for: .tabBar)
+                    .navigationTitle("DINNERS")
+                    .navigationBarTitleDisplayMode(.inline)
             }
             .sheet(isPresented: $showFilters, content: {
                 Filters(allCategories: filterManager.allFilters)
@@ -141,7 +104,7 @@ struct ContentView: View {
                 loadRecipes()
                 showTabbar = true
                 recipeCardOpacity = 1.0
-                prepareHaptics()
+                hapticsHelper.prepareHaptics()
             }
         }
     }
@@ -156,45 +119,45 @@ extension ContentView{
         withAnimation(.linear(duration: 0.25)) {
             offset = CGSize(width: direction * 5, height: 0)
             recipeCardOpacity = 0.001 // does this help / prevent smooth transition of recipes?
-            timeCheck(startTime: start, "Animated off screen & faded recipe")
+//            timeCheck(startTime: start, "Animated off screen & faded recipe")
         }
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
             offset = .zero
-            timeCheck(startTime: start, "Reset offset")
+//            timeCheck(startTime: start, "Reset offset")
             
             recipeManager.nextRecipe() //SHOULD THIS COME LATER?
             print("###Recipe is: \(self.recipeManager.recipe?.title ?? "Nothing")")
-            timeCheck(startTime: start, "Loaded next recipe")
+//            timeCheck(startTime: start, "Loaded next recipe")
             
             Task {
                 await castVote(recipe, was: liked)
-                timeCheck(startTime: start, "Vote cast")
+//                timeCheck(startTime: start, "Vote cast")
             }
             
             var isMatch = false
             if liked{
                 isMatch = recipe.isAMatch()
                 if isMatch{
-                    timeCheck(startTime: start, "Recipe is a match")
+//                    timeCheck(startTime: start, "Recipe is a match")
                     celebrate()
-                    timeCheck(startTime: start, "Celebrated")
+//                    timeCheck(startTime: start, "Celebrated")
                 }
             }
             
-            DispatchQueue.main.asyncAfter(deadline: .now() + (isMatch ? 2.0 : 0.675)) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + (isMatch ? 1.75 : 0.675)) {
                 withAnimation(.linear(duration: 0.2)) {
                     recipeCardOpacity = 1.0
-                    timeCheck(startTime: start, "Next recipe faded in")
+//                    timeCheck(startTime: start, "Next recipe faded in")
                 }
             }
         }
     }
     
-    func timeCheck(startTime: CFAbsoluteTime, _ string: String){
-        let later = CFAbsoluteTimeGetCurrent() - startTime
-        print("###\(string): \(later).")
-    }
+//    func timeCheck(startTime: CFAbsoluteTime, _ string: String){
+//        let later = CFAbsoluteTimeGetCurrent() - startTime
+//        print("###\(string): \(later).")
+//    }
     
     func castVote(_ recipe: Recipe, was liked: Bool) async{
         Task{
@@ -207,7 +170,7 @@ extension ContentView{
     
     func celebrate() {
         print("###Starting celebration")
-        complexSuccess()
+        hapticsHelper.complexSuccess()
         playConfetti = true
         showModal = true
         print("###Celebration over")
@@ -221,42 +184,6 @@ extension ContentView{
                 try! moc.save()
             }
             UserDefaults.standard.set(true, forKey: "appOpenedBefore")
-        }
-    }
-}
-
-//MARK: -- HAPTICS
-
-extension ContentView{
-    func prepareHaptics() {
-        guard CHHapticEngine.capabilitiesForHardware().supportsHaptics else { return }
-
-        do {
-            engine = try CHHapticEngine()
-            try engine?.start()
-        } catch {
-            print("There was an error creating the engine: \(error.localizedDescription)")
-        }
-    }
-    
-    func complexSuccess() {
-        // make sure that the device supports haptics
-        guard CHHapticEngine.capabilitiesForHardware().supportsHaptics else { return }
-        var events = [CHHapticEvent]()
-
-        // create one intense, sharp tap
-        let intensity = CHHapticEventParameter(parameterID: .hapticIntensity, value: 1)
-        let sharpness = CHHapticEventParameter(parameterID: .hapticSharpness, value: 1)
-        let event = CHHapticEvent(eventType: .hapticTransient, parameters: [intensity, sharpness], relativeTime: 0)
-        events.append(event)
-
-        // convert those events into a pattern and play it immediately
-        do {
-            let pattern = try CHHapticPattern(events: events, parameters: [])
-            let player = try engine?.makePlayer(with: pattern)
-            try player?.start(atTime: 0)
-        } catch {
-            print("Failed to play pattern: \(error.localizedDescription).")
         }
     }
 }
@@ -280,3 +207,4 @@ struct ContentView_Previews: PreviewProvider {
         return ContentView(recipeManager: recipeManager, filterManager: filterManager)
     }
 }
+
