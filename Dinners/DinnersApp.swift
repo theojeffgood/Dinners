@@ -1,6 +1,6 @@
 //
-//  FryDayApp.swift
-//  FryDay
+//  DinnersApp.swift
+//  Dinners
 //
 //  Created by Theo Goodman on 1/17/23.
 //
@@ -10,7 +10,7 @@ import CloudKit
 import CoreData
 
 @main
-struct FryDayApp: App {
+struct DinnersApp: App {
     
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate // call appDelegate to handle cloudkit shares.
 //    @Environment(\.scenePhase) var scenePhase // "scene phase" i.e. app goes to background

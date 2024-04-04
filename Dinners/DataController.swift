@@ -39,7 +39,7 @@ final class DataController: ObservableObject {
     }
     
     lazy var persistentContainer: NSPersistentCloudKitContainer = {
-        let container = NSPersistentCloudKitContainer(name: "MealSwipe")
+        let container = NSPersistentCloudKitContainer(name: "Dinners")
         
         guard let privateStoreDescription = container.persistentStoreDescriptions.first,
               let sharedStoreDescription = privateStoreDescription.copy() as? NSPersistentStoreDescription 

@@ -15,8 +15,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "E439226929772E8200CC9E53"
-               BuildableName = "FryDay.app"
-               BlueprintName = "FryDay"
+               BuildableName = "Dinners.app"
+               BlueprintName = "Dinners"
                ReferencedContainer = "container:FryDay.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -44,8 +44,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "E439226929772E8200CC9E53"
-            BuildableName = "FryDay.app"
-            BlueprintName = "FryDay"
+            BuildableName = "Dinners.app"
+            BlueprintName = "Dinners"
             ReferencedContainer = "container:FryDay.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -64,8 +64,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "E439226929772E8200CC9E53"
-            BuildableName = "FryDay.app"
-            BlueprintName = "FryDay"
+            BuildableName = "Dinners.app"
+            BlueprintName = "Dinners"
             ReferencedContainer = "container:FryDay.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
