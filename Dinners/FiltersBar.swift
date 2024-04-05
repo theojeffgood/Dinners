@@ -27,15 +27,15 @@ struct FiltersBar: View {
             } label: {
                 Label("filters", systemImage: "slider.horizontal.3")
                     .labelStyle(.titleAndIcon) // .titleAndIcon crashes app
-            }.font(.title3)
-            
-                .foregroundColor(.black)
-                .padding(.vertical, 8)
-                .padding(.horizontal)
-                .cornerRadius(20, corners: .allCorners)
-                .overlay(content: {
-                    RoundedRectangle(cornerRadius: 20).stroke(Color.init(hex: 0xE8EAEA), lineWidth: 1)
-                })
+            }
+            .font(.custom("Solway-Light", size: 16))
+            .foregroundColor(.black)
+            .padding(.vertical, 10)
+            .padding(.horizontal)
+            .cornerRadius(20, corners: .allCorners)
+            .overlay(content: {
+                RoundedRectangle(cornerRadius: 20).stroke(Color.init(hex: 0xE8EAEA), lineWidth: 1)
+            })
             if !items.isEmpty{
                 ScrollView(.horizontal){
                     HStack {
@@ -50,8 +50,8 @@ struct FiltersBar: View {
                                 let backgroundColor: Color = filterIsActive ? .black : .white
                                 
                                 Text(item.title + (filterIsActive ? "  X" : ""))
-                                    .font(.title3)
-                                    .frame(height: 40)
+                                    .font(.custom("Solway-Light", size: 16))
+                                    .frame(height: 42)
                                     .padding(.horizontal)
                                     .foregroundStyle(textColor)
                                     .background(backgroundColor)
@@ -64,7 +64,7 @@ struct FiltersBar: View {
                 }.scrollIndicators(.never)
             }
             Spacer()
-        }.padding(.vertical, 10)
+        }
     }
 }
 

@@ -28,6 +28,7 @@ struct Filters: View {
                             ForEach(categories, id: \.self){ category in
                                 HStack{
                                     Text(category.appStoreProduct?.displayName ?? "")
+                                        .font(.custom("Solway-Light", size: 16))
                                     Spacer()
                                     if purchaseManager.purchasedProductIDs.contains(category.appStoreProductId){
                                         Image(systemName: "checkmark.circle.fill")
@@ -73,25 +74,7 @@ struct Filters: View {
                                 }
                             }
                         }
-                    header: {
-                        Text(verbatim: categoryTitle)
-                    }
-                        //                footer: {
-                        //                    let isLastSection = (categoryTitle == sortedCategoryList.last?.key)
-                        //                    if isLastSection{
-                        //                        HStack{
-                        //                            Text("Want to see a new filter?")
-                        //                                .font(.subheadline)
-                        //                            Button {
-                        //                                print("penis")
-                        //                            } label: {
-                        //                                Text("Let us know!")
-                        //                                    .foregroundStyle(.blue)
-                        //                                    .font(.subheadline)
-                        //                            }
-                        //                        }
-                        //                    }
-                        //                }
+                    header: { Text(verbatim: categoryTitle).font(.custom("Solway-Bold", size: 18)) }
                     }
                 }
                 .navigationTitle("Filters")

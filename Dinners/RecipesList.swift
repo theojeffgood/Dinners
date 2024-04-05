@@ -51,7 +51,7 @@ struct RecipesList: View {
                     
                     Text(emptyStateMessage)
                         .multilineTextAlignment(.center)
-                        .font(.title2)
+                        .font(.custom("Solway-Light", size: 30))
                         .padding(.bottom, 55)
                     
                 }).navigationTitle(recipesType)
@@ -85,7 +85,7 @@ struct RecipeCell: View {
                        maxHeight: 100,
                        alignment: .leading)
                 .background(.white)
-                .font(.system(size: 18, weight: .regular))
+                .font(.custom("Solway-Light", size: 18))
                 .foregroundColor(.black)
         }
         .frame(height: 290)

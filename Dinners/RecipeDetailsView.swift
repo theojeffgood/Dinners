@@ -28,14 +28,14 @@ struct RecipeDetailsView: View {
             Section(header: Text("Ingredients")
                 .frame(width: 500, height: 55)
                 .foregroundColor(.black)
-                .font(.system(size: 25, weight: .regular))
+                .font(.custom("Solway-Regular", size: 30))
             ) {
                 ForEach(recipeDetails?.ingredients ?? [], id: \.self) { ingredient in
                     HStack(){
                         Text(" \u{2022}   ")
-                            .font(.system(size: 21))
+                            .font(.custom("Solway-Extrabold", size: 19))
                         Text("\(ingredient.ingredientText)")
-                            .font(.system(size: 21))
+                            .font(.custom("Solway-Light", size: 19))
                     }
                     .padding([.top, .bottom], 6)
                 }
@@ -44,16 +44,16 @@ struct RecipeDetailsView: View {
             Section(header: Text("Steps")
                 .frame(width: 500, height: 55)
                 .foregroundColor(.black)
-                .font(.system(size: 25, weight: .regular))
+                .font(.custom("Solway-Regular", size: 30))
             ) {
                 ForEach(recipeDetails?.steps ?? [], id: \.self) { step in
                     let backgroundColor = step.stepNumber.isMultiple(of: 2) ? Color.gray.opacity(0.1) : Color.white
                     
                     VStack(alignment: .leading, spacing: 20){
                         Text("Step \(step.stepNumber)")
-                            .font(.system(size: 21, weight: .heavy))
+                            .font(.custom("Solway-Extrabold", size: 18))
                         Text("\(step.stepText)")
-                            .font(.system(size: 21))
+                            .font(.custom("Solway-Light", size: 18))
                     }
                     .listRowBackground(backgroundColor)
                     .padding([.top,.bottom])
@@ -109,7 +109,7 @@ struct TitleAndFacts: View {
     var body: some View {
         VStack(alignment: .leading){
             Text((recipe.title!))
-                .font(.system(size: 30, weight: .medium))
+                .font(.custom("Solway-Regular", size: 35))
                 .padding(.top)
             
             Spacer()
@@ -121,13 +121,13 @@ struct TitleAndFacts: View {
                     switch fact.factType{
                     case 1, 2: //recipe source & servings
                         Text("\(fact.factText)")
-                            .font(.system(size: 18, weight: .medium))
+                            .font(.custom("Solway-Regular", size: 18))
                             .frame(width: width, alignment: .leading)
                             .multilineTextAlignment(.center)
                         
                     case 3: //recipe cooktime
                         Text("\(fact.factText) Mins")
-                            .font(.system(size: 18, weight: .medium))
+                            .font(.custom("Solway-Regular", size: 18))
                             .frame(width: width, alignment: .leading)
                             .multilineTextAlignment(.center)
                         

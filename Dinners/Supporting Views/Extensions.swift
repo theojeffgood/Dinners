@@ -37,13 +37,13 @@ struct ActionButtons: View {
             VStack(alignment: .trailing) {
                 Button(action: { action(false) }) {
                     VStack {
-                        Image(systemName: "arrow.turn.up.left")
+                        Image(.voteNay)
                             .resizable()
                             .tint(.white)
                             .frame(width: 75, height: 75)
                         Text("Nay!")
                             .foregroundColor(.white)
-                            .font(.title)
+                            .font(.custom("Solway-Bold", size: 36))
                     }
                 }
             }
@@ -51,13 +51,13 @@ struct ActionButtons: View {
             VStack(alignment: .leading) {
                 Button(action: { action(true) }) {
                     VStack {
-                        Image(systemName: "arrow.turn.up.right")
+                        Image(.voteYay)
                             .resizable()
                             .tint(.white)
                             .frame(width: 75, height: 75)
                         Text("Yay!")
                             .foregroundColor(.white)
-                            .font(.title)
+                            .font(.custom("Solway-Bold", size: 36))
                     }
                 }
             }

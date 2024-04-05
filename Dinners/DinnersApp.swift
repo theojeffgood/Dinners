@@ -20,6 +20,8 @@ struct DinnersApp: App {
     @StateObject private var appStoreManager: AppStoreManager
     
     init() {
+        UINavigationBar.appearance().largeTitleTextAttributes = [.font : UIFont(name: "Solway-Regular", size: 30)!]
+        
         let appStoreManager = AppStoreManager()
         self._appStoreManager = StateObject(wrappedValue: appStoreManager)
         

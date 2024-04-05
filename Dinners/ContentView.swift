@@ -41,7 +41,7 @@ struct ContentView: View {
                         filterManager.toggleFilter(item)
                         filterManager.filterIsActive ?
                         recipeManager.applyFilter(item) : recipeManager.cancelFilter()
-                    }
+                    }.padding(.bottom, 15)
                     
                     if let recipe = recipeManager.recipe{
                         ZStack(alignment: .center) {
@@ -56,7 +56,7 @@ struct ContentView: View {
                                         .onEnded { _ in
                                             if abs(offset.width) > 100 {
                                                 // Swipe detected
-                                                animateCardAway(recipe, offset: offset.width)
+                                                animateCardAway(recipe, offset: offset)
                                             } else {
                                                 // Reset position if not swiped far enough
                                                 withAnimation(.spring) {
@@ -83,18 +83,23 @@ struct ContentView: View {
                             ActionButtons() { liked in
                                 switch liked{
                                 case true:
-                                    animateCardAway(recipe, offset: 300)
+                                    animateCardAway(recipe, offset: CGSize(width: 300, height: 0))
                                 case false:
-                                    animateCardAway(recipe, offset: -300)
+                                    animateCardAway(recipe, offset: CGSize(width: -300, height: 0))
                                     
                                 }
                             }
                         }
                     }
-                }.padding([.leading, .bottom, .trailing], 5)
+                }.padding(10)
                 
                     .toolbar(showTabbar ? .visible : .hidden, for: .tabBar)
-                    .navigationTitle("DINNERS")
+                    .toolbar {
+                        ToolbarItem(placement: .principal) {
+                            Text("DINNERS").font(.custom("Solway-Regular", size: 24))
+                                .foregroundStyle(.black)
+                        }
+                    }
                     .navigationBarTitleDisplayMode(.inline)
             }
             .sheet(isPresented: $showFilters, content: {
@@ -112,68 +117,50 @@ struct ContentView: View {
 
 extension ContentView{
     
-    func animateCardAway(_ recipe: Recipe, offset direction: CGFloat) {
-        let liked = (direction > 0)
-        let start = CFAbsoluteTimeGetCurrent()
+    func animateCardAway(_ recipe: Recipe, offset direction: CGSize) {
+        let liked = (direction.width > 0)
 
         withAnimation(.linear(duration: 0.25)) {
-            offset = CGSize(width: direction * 5, height: 0)
-            recipeCardOpacity = 0.001 // does this help / prevent smooth transition of recipes?
-//            timeCheck(startTime: start, "Animated off screen & faded recipe")
+            offset = CGSize(width: direction.width * 5, height: direction.height * 5)
+            recipeCardOpacity = 0.0001 // does this help / prevent smooth transition of recipes?
         }
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
             offset = .zero
-//            timeCheck(startTime: start, "Reset offset")
-            
             recipeManager.nextRecipe() //SHOULD THIS COME LATER?
-            print("###Recipe is: \(self.recipeManager.recipe?.title ?? "Nothing")")
-//            timeCheck(startTime: start, "Loaded next recipe")
             
             Task {
                 await castVote(recipe, was: liked)
-//                timeCheck(startTime: start, "Vote cast")
             }
             
             var isMatch = false
             if liked{
                 isMatch = recipe.isAMatch()
                 if isMatch{
-//                    timeCheck(startTime: start, "Recipe is a match")
                     celebrate()
-//                    timeCheck(startTime: start, "Celebrated")
                 }
             }
             
             DispatchQueue.main.asyncAfter(deadline: .now() + (isMatch ? 1.75 : 0.675)) {
                 withAnimation(.linear(duration: 0.2)) {
                     recipeCardOpacity = 1.0
-//                    timeCheck(startTime: start, "Next recipe faded in")
                 }
             }
         }
     }
-    
-//    func timeCheck(startTime: CFAbsoluteTime, _ string: String){
-//        let later = CFAbsoluteTimeGetCurrent() - startTime
-//        print("###\(string): \(later).")
-//    }
     
     func castVote(_ recipe: Recipe, was liked: Bool) async{
         Task{
             let newVote = Vote(forRecipeId: recipe.recipeId, like: liked, in: moc)
             await ShareCoordinator.shared.shareIfNeeded(newVote) //1 of 2 (before moc.save)
             try! moc.save() //2 of 2 (after ck.share)
-            print("###Vote moc saved")
         }
     }
     
     func celebrate() {
-        print("###Starting celebration")
         hapticsHelper.complexSuccess()
         playConfetti = true
         showModal = true
-        print("###Celebration over")
     }
     
     func loadRecipes(){

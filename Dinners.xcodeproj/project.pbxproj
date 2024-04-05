@@ -40,6 +40,11 @@
 		E4E305D92B69926600BA09B6 /* Category.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E305D82B69926600BA09B6 /* Category.swift */; };
 		E4EA57AA2AF2F04700F5E130 /* RecipeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4EA57A82AF2F04700F5E130 /* RecipeManager.swift */; };
 		E4EA57AB2AF2F04700F5E130 /* Recipe.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4EA57A92AF2F04700F5E130 /* Recipe.swift */; };
+		E4F176342BBF3FDB0095332E /* Solway-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E4F1762F2BBF3FDB0095332E /* Solway-Bold.ttf */; };
+		E4F176352BBF3FDB0095332E /* Solway-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E4F176302BBF3FDB0095332E /* Solway-Regular.ttf */; };
+		E4F176362BBF3FDB0095332E /* Solway-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E4F176312BBF3FDB0095332E /* Solway-Medium.ttf */; };
+		E4F176372BBF3FDB0095332E /* Solway-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E4F176322BBF3FDB0095332E /* Solway-ExtraBold.ttf */; };
+		E4F176382BBF3FDB0095332E /* Solway-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E4F176332BBF3FDB0095332E /* Solway-Light.ttf */; };
 		E4F7ECA32989DF6000996CB3 /* Recipe OLD.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4F7ECA22989DF6000996CB3 /* Recipe OLD.swift */; };
 /* End PBXBuildFile section */
 
@@ -79,6 +84,11 @@
 		E4E305D82B69926600BA09B6 /* Category.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Category.swift; sourceTree = "<group>"; };
 		E4EA57A82AF2F04700F5E130 /* RecipeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeManager.swift; sourceTree = "<group>"; };
 		E4EA57A92AF2F04700F5E130 /* Recipe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Recipe.swift; sourceTree = "<group>"; };
+		E4F1762F2BBF3FDB0095332E /* Solway-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Solway-Bold.ttf"; sourceTree = "<group>"; };
+		E4F176302BBF3FDB0095332E /* Solway-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Solway-Regular.ttf"; sourceTree = "<group>"; };
+		E4F176312BBF3FDB0095332E /* Solway-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Solway-Medium.ttf"; sourceTree = "<group>"; };
+		E4F176322BBF3FDB0095332E /* Solway-ExtraBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Solway-ExtraBold.ttf"; sourceTree = "<group>"; };
+		E4F176332BBF3FDB0095332E /* Solway-Light.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Solway-Light.ttf"; sourceTree = "<group>"; };
 		E4F7ECA22989DF6000996CB3 /* Recipe OLD.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Recipe OLD.swift"; sourceTree = "<group>"; };
 		E4F7ECAD2995B89000996CB3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -142,6 +152,7 @@
 				E4875D842B1FB6EC00A192CE /* DinnersStorekitConfig.storekit */,
 				E4985E5F2AE6FD8900495720 /* Models */,
 				E43634FB2AD6EFCB007F238F /* ShareHelper.swift */,
+				E4807FA32BBF408F00C6202C /* Fonts */,
 				E439227129772E8300CC9E53 /* Assets.xcassets */,
 				E439227329772E8300CC9E53 /* Dinners.entitlements */,
 				E4F7ECAD2995B89000996CB3 /* Info.plist */,
@@ -156,6 +167,18 @@
 				E439227529772E8300CC9E53 /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		E4807FA32BBF408F00C6202C /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				E4F1762F2BBF3FDB0095332E /* Solway-Bold.ttf */,
+				E4F176322BBF3FDB0095332E /* Solway-ExtraBold.ttf */,
+				E4F176332BBF3FDB0095332E /* Solway-Light.ttf */,
+				E4F176312BBF3FDB0095332E /* Solway-Medium.ttf */,
+				E4F176302BBF3FDB0095332E /* Solway-Regular.ttf */,
+			);
+			path = Fonts;
 			sourceTree = "<group>";
 		};
 		E4985E5F2AE6FD8900495720 /* Models */ = {
@@ -242,6 +265,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E4F176382BBF3FDB0095332E /* Solway-Light.ttf in Resources */,
+				E4F176342BBF3FDB0095332E /* Solway-Bold.ttf in Resources */,
+				E4F176352BBF3FDB0095332E /* Solway-Regular.ttf in Resources */,
+				E4F176362BBF3FDB0095332E /* Solway-Medium.ttf in Resources */,
+				E4F176372BBF3FDB0095332E /* Solway-ExtraBold.ttf in Resources */,
 				E4E305D72B684E2800BA09B6 /* Confetti.json in Resources */,
 				E439227629772E8300CC9E53 /* Preview Assets.xcassets in Resources */,
 				E439227229772E8300CC9E53 /* Assets.xcassets in Resources */,

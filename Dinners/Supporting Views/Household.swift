@@ -28,7 +28,7 @@ struct Household: View {
                     .resizable()
                     .frame(width: 25, height: 25)
                 Text("Household")
-                    .font(.system(size: 30, weight: .bold))
+                    .font(.custom("Solway-Regular", size: 30))
                 Spacer()
             }
             

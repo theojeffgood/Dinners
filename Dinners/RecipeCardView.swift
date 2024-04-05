@@ -41,8 +41,9 @@ struct RecipeCardView: View{
                 .frame(maxWidth: .infinity,
                        maxHeight: 75,
                        alignment: .leading)
-                .background(.black.opacity(0.5))
-                .font(.title3)
+//                .background(.black.opacity(0.4))
+                .background(LinearGradient(gradient: Gradient(colors: [.clear, .black]), startPoint: .top, endPoint: .bottom).opacity(0.8))
+                .font(.custom("Solway-Regular", size: 20))
         })
         .cornerRadius(10, corners: .allCorners)
         .shadow(radius: 5)

@@ -21,17 +21,21 @@ struct TabBarView: View {
         TabView(selection: $selectedItem) {
             ContentView(recipeManager: recipeManager, filterManager: filterManager)
             .tabItem {
-                Label("Menu", systemImage: "frying.pan")
+                Image(.fryingpan)
+                Text("Menu    ")
             }.tag(1)
             
             RecipesList(recipeManager: recipeManager, recipesType: "Matches")
             .tabItem {
-                Label("Matches", systemImage: "link")
+                Label("Matches", systemImage: "heart")
             }.tag(2)
             
             Text("")
             .tabItem {
-                Label("Household", systemImage: "person.2")
+                let householdImage = (selectedItem == 3) ? "person.2" : "person.2.fill"
+
+                Label("Household", systemImage: householdImage)
+//                Label("household", image: householdImage)
             }.tag(3)
         }
         
