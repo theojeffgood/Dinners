@@ -7,6 +7,8 @@
 
 import CoreHaptics
 
+//Methods taken from: https://www.hackingwithswift.com/books/ios-swiftui/adding-haptic-effects
+
 struct HapticsHelper {
     
     private var engine: CHHapticEngine?

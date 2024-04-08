@@ -20,6 +20,9 @@ struct RecipesList: View {
     @State private var showHousehold: Bool = false
     var emptyStateMessage = "No matches, yet. \n\n Start liking recipes!"
     
+//    var pickerOptions: [String] = ["Matches","Likes"]
+//    @State var selectedOption = "Matches"
+
     var body: some View {
         NavigationStack{
             if !recipes.isEmpty{
@@ -41,6 +44,21 @@ struct RecipesList: View {
                 }
                 .onAppear(){ showTabbar = true }
                 .navigationTitle(recipesType)
+//                .toolbar {
+//                    let dropdown = Image(systemName: "chevron.down")
+//                    ToolbarItem(placement: .topBarLeading) {
+//                        Menu {
+//                            Picker("", selection: $selectedOption) {
+//                                ForEach(pickerOptions, id: \.self) { option in
+//                                    Text(option)
+//                                }
+//                            }
+//                        } label: {
+//                            Text("\(selectedOption)\(dropdown)")
+//                                .font(.custom("Solway-Regular", size: 14))
+//                        }
+//                    }
+//                }
             } else{
                 VStack(spacing: 20, content: {
                     Image(systemName: "person.badge.plus")
@@ -58,6 +76,7 @@ struct RecipesList: View {
             }
         }
         .toolbar(showTabbar ? .visible : .hidden, for: .tabBar)
+        
         .onAppear(perform: { recipes = recipeManager.getMatches() })
     }
 }
