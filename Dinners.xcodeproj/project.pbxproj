@@ -30,6 +30,7 @@
 		E4A2D0842B616CA2006DA764 /* ShareController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4A2D0832B616CA2006DA764 /* ShareController.swift */; };
 		E4AB01C12BB5FB65004B115A /* MatchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4AB01C02BB5FB65004B115A /* MatchView.swift */; };
 		E4AB01C32BBDE27B004B115A /* HapticsHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4AB01C22BBDE27B004B115A /* HapticsHelper.swift */; };
+		E4B13FA82BC04B1F00527B38 /* ShareErrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B13FA72BC04B1F00527B38 /* ShareErrorView.swift */; };
 		E4B2236B2B926BD900F9766C /* Purchase.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B2236A2B926BD800F9766C /* Purchase.swift */; };
 		E4B2236D2B927CDD00F9766C /* FilterManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B2236C2B927CDD00F9766C /* FilterManager.swift */; };
 		E4CB2C80297893CC00A829AE /* RecipesList.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4CB2C7F297893CC00A829AE /* RecipesList.swift */; };
@@ -75,6 +76,7 @@
 		E4A2D0832B616CA2006DA764 /* ShareController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareController.swift; sourceTree = "<group>"; };
 		E4AB01C02BB5FB65004B115A /* MatchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchView.swift; sourceTree = "<group>"; };
 		E4AB01C22BBDE27B004B115A /* HapticsHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticsHelper.swift; sourceTree = "<group>"; };
+		E4B13FA72BC04B1F00527B38 /* ShareErrorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareErrorView.swift; sourceTree = "<group>"; };
 		E4B2236A2B926BD800F9766C /* Purchase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Purchase.swift; sourceTree = "<group>"; };
 		E4B2236C2B927CDD00F9766C /* FilterManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterManager.swift; sourceTree = "<group>"; };
 		E4CB2C7F297893CC00A829AE /* RecipesList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipesList.swift; sourceTree = "<group>"; };
@@ -105,18 +107,19 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		E40BCEE42B27F7AB00E43CDB /* Supporting Views */ = {
+		E40BCEE42B27F7AB00E43CDB /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
+				E43634FB2AD6EFCB007F238F /* ShareHelper.swift */,
+				E4B2236C2B927CDD00F9766C /* FilterManager.swift */,
+				E4EA57A82AF2F04700F5E130 /* RecipeManager.swift */,
+				E4875D7F2B192CFA00A192CE /* AppStoreManager.swift */,
+				E4AB01C22BBDE27B004B115A /* HapticsHelper.swift */,
 				E40BCEE22B27F6E300E43CDB /* Extensions.swift */,
-				E43634F92AD5E9BF007F238F /* CloudSharingController.swift */,
-				E4A2D0832B616CA2006DA764 /* ShareController.swift */,
-				E41D5076297DE959003CD008 /* Household.swift */,
-				E48CE0AB2B18F47700C296C1 /* Filters.swift */,
 				E4E305CF2B68420F00BA09B6 /* LottieAnimationsView.swift */,
 				E4E305D62B684E2800BA09B6 /* Confetti.json */,
 			);
-			path = "Supporting Views";
+			path = Helpers;
 			sourceTree = "<group>";
 		};
 		E439226129772E8200CC9E53 = {
@@ -141,17 +144,14 @@
 				E439226D29772E8200CC9E53 /* DinnersApp.swift */,
 				E49E8414299EB02C003E4E77 /* DataController.swift */,
 				E41D5074297DE372003CD008 /* Webservice.swift */,
-				E439226F29772E8200CC9E53 /* ContentView.swift */,
-				E4721EE82BBE052D0081ED36 /* FiltersBar.swift */,
-				E4AB01C02BB5FB65004B115A /* MatchView.swift */,
+				E4B13FA92BC0509400527B38 /* Menu Tab */,
 				E47071ED2B62F53400683E68 /* TabBarView.swift */,
-				E40BCEE42B27F7AB00E43CDB /* Supporting Views */,
-				E465A710298307D30058B564 /* RecipeCardView.swift */,
+				E4B13FAA2BC050DF00527B38 /* Household Tab */,
+				E40BCEE42B27F7AB00E43CDB /* Helpers */,
 				E4CB2C7F297893CC00A829AE /* RecipesList.swift */,
 				E4CB2C812979C28700A829AE /* RecipeDetailsView.swift */,
 				E4875D842B1FB6EC00A192CE /* DinnersStorekitConfig.storekit */,
 				E4985E5F2AE6FD8900495720 /* Models */,
-				E43634FB2AD6EFCB007F238F /* ShareHelper.swift */,
 				E4807FA32BBF408F00C6202C /* Fonts */,
 				E439227129772E8300CC9E53 /* Assets.xcassets */,
 				E439227329772E8300CC9E53 /* Dinners.entitlements */,
@@ -184,9 +184,6 @@
 		E4985E5F2AE6FD8900495720 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				E4875D7F2B192CFA00A192CE /* AppStoreManager.swift */,
-				E4EA57A82AF2F04700F5E130 /* RecipeManager.swift */,
-				E4B2236C2B927CDD00F9766C /* FilterManager.swift */,
 				E4EA57A92AF2F04700F5E130 /* Recipe.swift */,
 				E4E305D82B69926600BA09B6 /* Category.swift */,
 				E4B2236A2B926BD800F9766C /* Purchase.swift */,
@@ -196,9 +193,31 @@
 				E4985E5B2AE6F69800495720 /* User DELETE.swift */,
 				E4985E5C2AE6F69800495720 /* User.swift */,
 				E40B9F2B2BBF33EF0089B500 /* Dinners.xcdatamodeld */,
-				E4AB01C22BBDE27B004B115A /* HapticsHelper.swift */,
 			);
 			path = Models;
+			sourceTree = "<group>";
+		};
+		E4B13FA92BC0509400527B38 /* Menu Tab */ = {
+			isa = PBXGroup;
+			children = (
+				E439226F29772E8200CC9E53 /* ContentView.swift */,
+				E4721EE82BBE052D0081ED36 /* FiltersBar.swift */,
+				E48CE0AB2B18F47700C296C1 /* Filters.swift */,
+				E4AB01C02BB5FB65004B115A /* MatchView.swift */,
+				E465A710298307D30058B564 /* RecipeCardView.swift */,
+			);
+			path = "Menu Tab";
+			sourceTree = "<group>";
+		};
+		E4B13FAA2BC050DF00527B38 /* Household Tab */ = {
+			isa = PBXGroup;
+			children = (
+				E41D5076297DE959003CD008 /* Household.swift */,
+				E4B13FA72BC04B1F00527B38 /* ShareErrorView.swift */,
+				E4A2D0832B616CA2006DA764 /* ShareController.swift */,
+				E43634F92AD5E9BF007F238F /* CloudSharingController.swift */,
+			);
+			path = "Household Tab";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -290,6 +309,7 @@
 				E439226E29772E8200CC9E53 /* DinnersApp.swift in Sources */,
 				E4EA57AB2AF2F04700F5E130 /* Recipe.swift in Sources */,
 				E41D5077297DE959003CD008 /* Household.swift in Sources */,
+				E4B13FA82BC04B1F00527B38 /* ShareErrorView.swift in Sources */,
 				E49E8415299EB02C003E4E77 /* DataController.swift in Sources */,
 				E4985E5D2AE6F69800495720 /* User DELETE.swift in Sources */,
 				E4985E5E2AE6F69800495720 /* User.swift in Sources */,
@@ -436,7 +456,7 @@
 				CODE_SIGN_ENTITLEMENTS = Dinners/Dinners.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 18;
+				CURRENT_PROJECT_VERSION = 19;
 				DEVELOPMENT_ASSET_PATHS = "\"Dinners/Preview Content\"";
 				DEVELOPMENT_TEAM = 78U3X38B3F;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -479,7 +499,7 @@
 				CODE_SIGN_ENTITLEMENTS = Dinners/Dinners.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 18;
+				CURRENT_PROJECT_VERSION = 19;
 				DEVELOPMENT_ASSET_PATHS = "\"Dinners/Preview Content\"";
 				DEVELOPMENT_TEAM = 78U3X38B3F;
 				ENABLE_HARDENED_RUNTIME = YES;

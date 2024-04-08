@@ -13,9 +13,7 @@ struct TabBarView: View {
     @ObservedObject var recipeManager: RecipeManager
     @ObservedObject var filterManager: FilterManager
     
-    @State var isPresenting = false
     @State private var selectedItem = 1
-    @State private var oldSelectedItem = 1
     
     var body: some View {
         TabView(selection: $selectedItem) {
@@ -30,26 +28,10 @@ struct TabBarView: View {
                 Label("Matches", systemImage: "heart")
             }.tag(2)
             
-            Text("")
-            .tabItem {
-                let householdImage = (selectedItem == 3) ? "person.2" : "person.2.fill"
-
-                Label("Household", systemImage: householdImage)
-//                Label("household", image: householdImage)
-            }.tag(3)
-        }
-        
-        //adapted sheet mechanism from: https://stackoverflow.com/a/64104181/13551385
-        .sheet(isPresented: $isPresenting) {
             Household(onDismiss: { print("Household") })
-        }
-        .onChange(of: selectedItem) {
-            if 3 == selectedItem {
-                self.isPresenting = true
-                self.selectedItem = self.oldSelectedItem
-            } else if (isPresenting == false) {
-                self.oldSelectedItem = $0
-            }
+            .tabItem {
+                Label("Household", systemImage: "person.2.fill")
+            }.tag(3)
         }
         .accentColor(.black)
     }

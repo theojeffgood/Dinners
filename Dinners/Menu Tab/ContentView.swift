@@ -55,7 +55,6 @@ struct ContentView: View {
                                         }
                                         .onEnded { _ in
                                             if abs(offset.width) > 100 {
-                                                // Swipe detected
                                                 animateCardAway(recipe, offset: offset)
                                             } else {
                                                 // Reset position if not swiped far enough
@@ -65,7 +64,6 @@ struct ContentView: View {
                                             }
                                         }
                                 )
-                            //                            .animation(.spring(), value: offset)
                             
                             if showModal{
                                 MatchView()
@@ -77,7 +75,7 @@ struct ContentView: View {
                             }
                             if playConfetti{
                                 CelebrationView("Confetti", play: $playConfetti)
-                                    .id(1) // swiftui unique-ness thing
+                                    .id(recipe.recipeId) // swiftui unique-ness thing
                                     .allowsHitTesting(false)
                             }
                             ActionButtons() { liked in
@@ -120,14 +118,14 @@ extension ContentView{
     func animateCardAway(_ recipe: Recipe, offset direction: CGSize) {
         let liked = (direction.width > 0)
 
-        withAnimation(.linear(duration: 0.25)) {
-            offset = CGSize(width: direction.width * 5, height: direction.height * 5)
+        withAnimation(.linear(duration: 0.20)) {
+            offset = CGSize(width: direction.width * 4, height: direction.height * 4)
             recipeCardOpacity = 0.0001 // does this help / prevent smooth transition of recipes?
         }
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
             offset = .zero
-            recipeManager.nextRecipe() //SHOULD THIS COME LATER?
+            recipeManager.nextRecipe()
             
             Task {
                 await castVote(recipe, was: liked)
@@ -136,9 +134,7 @@ extension ContentView{
             var isMatch = false
             if liked{
                 isMatch = recipe.isAMatch()
-                if isMatch{
-                    celebrate()
-                }
+                if isMatch{ celebrate() }
             }
             
             DispatchQueue.main.asyncAfter(deadline: .now() + (isMatch ? 1.75 : 0.675)) {
