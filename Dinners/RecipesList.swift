@@ -59,6 +59,9 @@ struct RecipesList: View {
 //                        }
 //                    }
 //                }
+//                .onChange(of: selectedOption) { newOption in
+//                    updateRecipes()
+//                }
             } else{
                 VStack(spacing: 20, content: {
                     Image(systemName: "person.badge.plus")
@@ -76,7 +79,6 @@ struct RecipesList: View {
             }
         }
         .toolbar(showTabbar ? .visible : .hidden, for: .tabBar)
-        
         .onAppear(perform: { recipes = recipeManager.getMatches() })
     }
 }

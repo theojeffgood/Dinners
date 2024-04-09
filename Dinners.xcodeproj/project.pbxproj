@@ -19,6 +19,7 @@
 		E439227629772E8300CC9E53 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E439227529772E8300CC9E53 /* Preview Assets.xcassets */; };
 		E4512F6D2B5587E3003F9B44 /* Vote.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4512F6C2B5587E3003F9B44 /* Vote.swift */; };
 		E465A711298307D30058B564 /* RecipeCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E465A710298307D30058B564 /* RecipeCardView.swift */; };
+		E46CFA552BC59D9100CB8995 /* SharePermissionsErrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46CFA542BC59D9100CB8995 /* SharePermissionsErrorView.swift */; };
 		E47071EE2B62F53400683E68 /* TabBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E47071ED2B62F53400683E68 /* TabBarView.swift */; };
 		E4721EE92BBE052D0081ED36 /* FiltersBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4721EE82BBE052D0081ED36 /* FiltersBar.swift */; };
 		E4875D802B192CFA00A192CE /* AppStoreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4875D7F2B192CFA00A192CE /* AppStoreManager.swift */; };
@@ -64,6 +65,7 @@
 		E439227529772E8300CC9E53 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		E4512F6C2B5587E3003F9B44 /* Vote.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vote.swift; sourceTree = "<group>"; };
 		E465A710298307D30058B564 /* RecipeCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeCardView.swift; sourceTree = "<group>"; };
+		E46CFA542BC59D9100CB8995 /* SharePermissionsErrorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharePermissionsErrorView.swift; sourceTree = "<group>"; };
 		E47071ED2B62F53400683E68 /* TabBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarView.swift; sourceTree = "<group>"; };
 		E4721EE82BBE052D0081ED36 /* FiltersBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FiltersBar.swift; sourceTree = "<group>"; };
 		E4875D7F2B192CFA00A192CE /* AppStoreManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStoreManager.swift; sourceTree = "<group>"; };
@@ -213,6 +215,7 @@
 			isa = PBXGroup;
 			children = (
 				E41D5076297DE959003CD008 /* Household.swift */,
+				E46CFA542BC59D9100CB8995 /* SharePermissionsErrorView.swift */,
 				E4B13FA72BC04B1F00527B38 /* ShareErrorView.swift */,
 				E4A2D0832B616CA2006DA764 /* ShareController.swift */,
 				E43634F92AD5E9BF007F238F /* CloudSharingController.swift */,
@@ -316,6 +319,7 @@
 				E49E8410299D88BC003E4E77 /* User OLD.swift in Sources */,
 				E41D5075297DE372003CD008 /* Webservice.swift in Sources */,
 				E4875D802B192CFA00A192CE /* AppStoreManager.swift in Sources */,
+				E46CFA552BC59D9100CB8995 /* SharePermissionsErrorView.swift in Sources */,
 				E40B9F2D2BBF33EF0089B500 /* Dinners.xcdatamodeld in Sources */,
 				E4CB2C80297893CC00A829AE /* RecipesList.swift in Sources */,
 				E4A2D0842B616CA2006DA764 /* ShareController.swift in Sources */,

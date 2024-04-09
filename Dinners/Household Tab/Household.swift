@@ -16,6 +16,7 @@ struct Household: View {
     @ObservedObject var shareCoordinator: ShareCoordinator = ShareCoordinator.shared
     
     @State private var showShareSheet = false
+    @State private var showSharePermissionsError = false
     var onDismiss: () -> Void
     var userCanShare: Bool{
         return (!UserDefaults.standard.bool(forKey: "inAHousehold") ||
@@ -39,47 +40,49 @@ struct Household: View {
                             UserCard(name: name, status: participant.acceptanceStatus)
                                 .listRowSeparator(.hidden)
                                 .listRowBackground(Color.white)
-                                .swipeActions(allowsFullSwipe: false) {
-                                    Button(role: .destructive) {
-                                        let userIsShareOnwer = (share.currentUserParticipant == share.owner)
-                                        if  userIsShareOnwer   {share.removeParticipant(participant) }
-                                    } label: { Label("Remove from household", systemImage: "trash.fill") }
+                                .if(share.currentUserParticipant == share.owner && name != "You"){ view in
+                                    view.swipeActions(allowsFullSwipe: false) {
+                                        Button(role: .destructive) { share.removeParticipant(participant) }
+                                    label: { Label("Remove from household", systemImage: "trash.fill") }
+                                    }
                                 }
                         }
                     } else { ZStack{ UserCard(name: "You", status: .accepted) } }
                     
-                    if userCanShare{
-                        ForEach(0..<2){ i in
-                            ShareButton(getShare: shareCoordinator.getShare,
-                                        shareExists: (shareCoordinator.existingShare != nil),
-                                        showShareSheet: $showShareSheet )
+                    ForEach(0..<2){ i in
+                        ShareButton(getShare: shareCoordinator.getShare,
+                                    shareExists: shareCoordinator.existingShare != nil){
+                            if userCanShare{ showShareSheet = true }
+                            else{ showSharePermissionsError.toggle() }
                         }
-                        .listRowSeparator(.hidden)
-                        .listRowBackground(Color.white)
                     }
+                    .listRowSeparator(.hidden)
+                    .listRowBackground(Color.white)
                 }
                 .scrollContentBackground(.hidden)
                     
-//                if userIsShareMember{
-                Button(action: {
-                    Task{ await shareCoordinator.removeSelf() } //animate?
-                }) {
-                    Text("Leave household")
-                        .foregroundStyle(.blue)
-                        .padding(.bottom, 30)
+                if userIsShareMember{
+                    Button(action: {
+                        Task{ await shareCoordinator.removeSelf() } //animate?
+                    }) {
+                        Text("Leave household")
+                            .foregroundStyle(.blue)
+                            .padding(.bottom, 30)
+                    }
                 }
             }
             .navigationTitle("Household")
         }
         
         .onAppear{ shareCoordinator.fetchExistingShare() }
-        .sheet(isPresented: $showShareSheet, content: {
+        .sheet(isPresented: $showShareSheet, onDismiss: { shareCoordinator.fetchExistingShare() }) {
             if let share = shareCoordinator.existingShare{
-//                share.currentUserParticipant?.role == .owner{
-                CloudSharingView(share: share).onDisappear { shareCoordinator.fetchExistingShare() }
-                
+                CloudSharingView(share: share)
             } else{ ShareErrorView() }
-        })
+        }
+        .sheet(isPresented: $showSharePermissionsError) {
+            SharePermissionsErrorView()
+        }
     }
 }
 
@@ -139,28 +142,30 @@ struct UserCard: View {
 struct ShareButton: View {
     private var getShare: () async throws -> Void
     private var shareExists: Bool
-    @Binding var showShareSheet: Bool
+    private var showShareSheet: () -> Void
+//    @Binding var showShareSheet: Bool
     
-    init(getShare: @escaping () async throws -> Void, shareExists: Bool, showShareSheet: Binding<Bool>) {
+    init(getShare: @escaping () async throws -> Void, shareExists: Bool, showShareSheet: @escaping () -> Void) {
         self.getShare = getShare
         self.shareExists = shareExists
-        self._showShareSheet = showShareSheet
+        self.showShareSheet = showShareSheet
+//        self._showShareSheet = showShareSheet
     }
     
     var body: some View{
         VStack(spacing: 0){
             Button(action: {
-                if shareExists{ showShareSheet = true }
+                if shareExists{ showShareSheet() }
                 else{
                     Task {
                         do {
                             try await getShare()
-                            showShareSheet = true
+                            showShareSheet()
                         } catch { Logger.sharing.error("Household failed to get share.") }
                     }
+                    UserDefaults.standard.set(true, forKey: "inAHousehold")
+                    UserDefaults.standard.set(true, forKey: "isHouseholdOwner")
                 }
-                UserDefaults.standard.set(true, forKey: "inAHousehold")
-                UserDefaults.standard.set(true, forKey: "isHouseholdOwner")
             }) {
                 ZStack{
                     RoundedRectangle(cornerRadius: 15)
@@ -222,3 +227,4 @@ struct ShareButton: View {
 //                        }
 //                        .padding([.bottom])
 //                    }
+
