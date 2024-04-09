@@ -18,12 +18,12 @@ struct Household: View {
     @State private var showShareSheet = false
     @State private var showSharePermissionsError = false
     var onDismiss: () -> Void
-    var userCanShare: Bool{
+    var userOwnsShare: Bool{
         return (!UserDefaults.standard.bool(forKey: "inAHousehold") ||
                 UserDefaults.standard.bool(forKey: "isHouseholdOwner"))
     }
     
-    var userIsShareMember: Bool{
+    var userIsParticipant: Bool{
         return (UserDefaults.standard.bool(forKey: "inAHousehold") &&
                 !UserDefaults.standard.bool(forKey: "isHouseholdOwner"))
     }
@@ -36,11 +36,12 @@ struct Household: View {
                         let participants = share.participants.sorted { $0.acceptanceStatus != .pending && $1.acceptanceStatus == .pending }
                         
                         ForEach(participants) { participant in
-                            let name = getName(for: participant, in: share)
-                            UserCard(name: name, status: participant.acceptanceStatus)
+                            UserCard(name: participant.name(in: share), status: participant.acceptanceStatus)
                                 .listRowSeparator(.hidden)
                                 .listRowBackground(Color.white)
-                                .if(share.currentUserParticipant == share.owner && name != "You"){ view in
+                            
+                                .if(share.currentUserParticipant == share.owner &&
+                                    share.currentUserParticipant != participant){ view in
                                     view.swipeActions(allowsFullSwipe: false) {
                                         Button(role: .destructive) { share.removeParticipant(participant) }
                                     label: { Label("Remove from household", systemImage: "trash.fill") }
@@ -50,10 +51,9 @@ struct Household: View {
                     } else { ZStack{ UserCard(name: "You", status: .accepted) } }
                     
                     ForEach(0..<2){ i in
-                        ShareButton(getShare: shareCoordinator.getShare,
-                                    shareExists: shareCoordinator.existingShare != nil){
-                            if userCanShare{ showShareSheet = true }
-                            else{ showSharePermissionsError.toggle() }
+                        ShareButton(){
+                            if userOwnsShare{ share() }
+                            else { showSharePermissionsError.toggle() }
                         }
                     }
                     .listRowSeparator(.hidden)
@@ -61,14 +61,11 @@ struct Household: View {
                 }
                 .scrollContentBackground(.hidden)
                     
-                if userIsShareMember{
-                    Button(action: {
+                if userIsParticipant{
+                    Button("Leave household") {
                         Task{ await shareCoordinator.removeSelf() } //animate?
-                    }) {
-                        Text("Leave household")
-                            .foregroundStyle(.blue)
-                            .padding(.bottom, 30)
-                    }
+                    }.padding(.bottom, 30)
+                     .foregroundStyle(.blue)
                 }
             }
             .navigationTitle("Household")
@@ -87,14 +84,36 @@ struct Household: View {
 }
 
 extension Household{
-    
-    func getName(for participant: CKShare.Participant,
-                 in share: CKShare) -> String{
-        if participant == share.currentUserParticipant{
+    func share(){
+        if let share = shareCoordinator.existingShare{
+            if share.currentUserParticipant == share.owner{
+                showShareSheet = true
+            }
+            
+        } else{
+            Task {
+                do {
+                    try await shareCoordinator.getShare()
+                    showShareSheet = true
+                    
+                    UserDefaults.standard.set(true, forKey: "inAHousehold")
+                    UserDefaults.standard.set(true, forKey: "isHouseholdOwner")
+                } catch {
+                    showShareSheet = true // This will show friendly user error. Not share sheet.
+                    Logger.sharing.error("Household failed to get share.")
+                }
+            }
+        }
+    }
+}
+
+extension CKShare.Participant{
+    func name(in share: CKShare) -> String{
+        if self == share.currentUserParticipant{
             return "You"
-        } else if participant.acceptanceStatus == .pending{
+        } else if self.acceptanceStatus == .pending{
             return "Invite sent"
-        } else if let name = participant.userIdentity.nameComponents?.givenName{
+        } else if let name = self.userIdentity.nameComponents?.givenName{
             return name
         }
         return "Chef"
@@ -140,32 +159,16 @@ struct UserCard: View {
 }
 
 struct ShareButton: View {
-    private var getShare: () async throws -> Void
-    private var shareExists: Bool
     private var showShareSheet: () -> Void
-//    @Binding var showShareSheet: Bool
     
-    init(getShare: @escaping () async throws -> Void, shareExists: Bool, showShareSheet: @escaping () -> Void) {
-        self.getShare = getShare
-        self.shareExists = shareExists
+    init(showShareSheet: @escaping () -> Void) {
         self.showShareSheet = showShareSheet
-//        self._showShareSheet = showShareSheet
     }
     
     var body: some View{
         VStack(spacing: 0){
             Button(action: {
-                if shareExists{ showShareSheet() }
-                else{
-                    Task {
-                        do {
-                            try await getShare()
-                            showShareSheet()
-                        } catch { Logger.sharing.error("Household failed to get share.") }
-                    }
-                    UserDefaults.standard.set(true, forKey: "inAHousehold")
-                    UserDefaults.standard.set(true, forKey: "isHouseholdOwner")
-                }
+                showShareSheet()
             }) {
                 ZStack{
                     RoundedRectangle(cornerRadius: 15)
