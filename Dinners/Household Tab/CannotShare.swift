@@ -1,5 +1,5 @@
 //
-//  SharePermissionsErrorView.swift
+//  CannotShare.swift
 //  Dinners
 //
 //  Created by Theo Goodman on 4/9/24.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct SharePermissionsErrorView: View {
+struct CannotShare: View {
     
     var body: some View {
         VStack{
@@ -23,5 +23,5 @@ struct SharePermissionsErrorView: View {
 }
 
 #Preview {
-    SharePermissionsErrorView()
+    CannotShare()
 }

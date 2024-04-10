@@ -13,10 +13,10 @@ import OSLog
 struct Household: View {
     
     @Environment(\.managedObjectContext) var moc
-    @ObservedObject var shareCoordinator: ShareCoordinator = ShareCoordinator.shared
+    @ObservedObject var shareTools: ShareCoordinator = ShareCoordinator.shared
     
     @State private var showShareSheet = false
-    @State private var showSharePermissionsError = false
+    @State private var cannotShare = false
     var onDismiss: () -> Void
     var userOwnsShare: Bool{
         return (!UserDefaults.standard.bool(forKey: "inAHousehold") ||
@@ -32,7 +32,7 @@ struct Household: View {
         NavigationStack{
             VStack{
                 List{
-                    if let share = shareCoordinator.existingShare{
+                    if let share = shareTools.activeShare{
                         let participants = share.participants.sorted { $0.acceptanceStatus != .pending && $1.acceptanceStatus == .pending }
                         
                         ForEach(participants) { participant in
@@ -51,9 +51,10 @@ struct Household: View {
                     } else { ZStack{ UserCard(name: "You", status: .accepted) } }
                     
                     ForEach(0..<2){ i in
-                        ShareButton(){
+                        let numOfParticipants = (shareTools.activeShare?.participants.count ?? 1)
+                        ShareButton(memberNumber: numOfParticipants + i + 1){
                             if userOwnsShare{ share() }
-                            else { showSharePermissionsError.toggle() }
+                            else { cannotShare.toggle() }
                         }
                     }
                     .listRowSeparator(.hidden)
@@ -63,7 +64,7 @@ struct Household: View {
                     
                 if userIsParticipant{
                     Button("Leave household") {
-                        Task{ await shareCoordinator.removeSelf() } //animate?
+                        Task{ await shareTools.leaveShare() } //animate?
                     }.padding(.bottom, 30)
                      .foregroundStyle(.blue)
                 }
@@ -71,36 +72,36 @@ struct Household: View {
             .navigationTitle("Household")
         }
         
-        .onAppear{ shareCoordinator.fetchExistingShare() }
-        .sheet(isPresented: $showShareSheet, onDismiss: { shareCoordinator.fetchExistingShare() }) {
-            if let share = shareCoordinator.existingShare{
+        .onAppear{ shareTools.fetchActiveShare() }
+        .sheet(isPresented: $showShareSheet, onDismiss: { shareTools.fetchActiveShare() }) {
+            if let share = shareTools.activeShare{
                 CloudSharingView(share: share)
-            } else{ ShareErrorView() }
+            } else{ ShareFailed() }
         }
-        .sheet(isPresented: $showSharePermissionsError) {
-            SharePermissionsErrorView()
+        .sheet(isPresented: $cannotShare) {
+            CannotShare()
         }
     }
 }
 
 extension Household{
     func share(){
-        if let share = shareCoordinator.existingShare{
+        if let share = shareTools.activeShare{
             if share.currentUserParticipant == share.owner{
                 showShareSheet = true
             }
             
-        } else{
+        } else{ //** Share doesn't exist **//
             Task {
                 do {
-                    try await shareCoordinator.getShare()
+                    try await shareTools.getShare()
                     showShareSheet = true
                     
                     UserDefaults.standard.set(true, forKey: "inAHousehold")
                     UserDefaults.standard.set(true, forKey: "isHouseholdOwner")
                 } catch {
-                    showShareSheet = true // This will show friendly user error. Not share sheet.
-                    Logger.sharing.error("Household failed to get share.")
+                    showShareSheet = true // Shows friendly error. Not share sheet.
+                    Logger.sharing.error("Household failed to get share: \(error, privacy: .public).")
                 }
             }
         }
@@ -159,9 +160,11 @@ struct UserCard: View {
 }
 
 struct ShareButton: View {
+    private var memberNumber: Int
     private var showShareSheet: () -> Void
     
-    init(showShareSheet: @escaping () -> Void) {
+    init(memberNumber: Int, showShareSheet: @escaping () -> Void) {
+        self.memberNumber   = memberNumber
         self.showShareSheet = showShareSheet
     }
     
@@ -179,7 +182,7 @@ struct ShareButton: View {
                         Image(systemName: "plus.circle.fill")
                             .resizable()
                             .frame(width: 40, height: 40)
-                        Text("Add a member")
+                        Text("Add member \(memberNumber)")
                             .font(.custom("Solway-regular", size: 24))
                         Spacer()
                     }.foregroundStyle(.gray)

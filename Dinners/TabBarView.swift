@@ -20,7 +20,7 @@ struct TabBarView: View {
             ContentView(recipeManager: recipeManager, filterManager: filterManager)
             .tabItem {
                 Image(.fryingpan)
-                Text("Menu    ")
+                Text("Dinners   ")
             }.tag(1)
             
             RecipesList(recipeManager: recipeManager, recipesType: "Matches")

@@ -1,5 +1,5 @@
 //
-//  ShareErrorView.swift
+//  ShareFailed.swift
 //  Dinners
 //
 //  Created by Theo Goodman on 4/5/24.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct ShareErrorView: View {
+struct ShareFailed: View {
     var body: some View {
         VStack{
             Image(systemName: "person.crop.circle.badge.exclamationmark")
@@ -25,5 +25,5 @@ struct ShareErrorView: View {
 }
 
 #Preview {
-    ShareErrorView()
+    ShareFailed()
 }

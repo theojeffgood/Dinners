@@ -38,7 +38,7 @@ struct DinnersApp: App {
         self._recipeManager = StateObject(wrappedValue: storage)
         
         if UserDefaults.standard.bool(forKey: "inAHousehold"){
-            ShareCoordinator.shared.fetchExistingShare()
+            ShareCoordinator.shared.fetchActiveShare()
         }
     }
     

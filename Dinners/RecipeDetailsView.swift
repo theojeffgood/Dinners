@@ -16,54 +16,56 @@ struct RecipeDetailsView: View {
     @State var recipeDetails: RecipeDetails? = nil
     
     var body: some View {
-        List {
-            Section(header: RecipeImage(recipe: recipe),
-                    footer: TitleAndFacts(recipe: recipe, recipeFacts: recipeDetails?.facts ?? [])
-                .padding()
-                .frame(width: 395, height: 200, alignment: .leading)
-                .multilineTextAlignment(.leading)
-                .background(.yellow)
-                .foregroundColor(.black)) { } //EMPTY
-            
-            Section(header: Text("Ingredients")
-                .frame(width: 500, height: 55)
-                .foregroundColor(.black)
-                .font(.custom("Solway-Regular", size: 30))
-            ) {
-                ForEach(recipeDetails?.ingredients ?? [], id: \.self) { ingredient in
-                    HStack(){
-                        Text(" \u{2022}   ")
-                            .font(.custom("Solway-Extrabold", size: 19))
-                        Text("\(ingredient.ingredientText)")
-                            .font(.custom("Solway-Light", size: 19))
+        GeometryReader { geo in
+            List {
+                Section(header: RecipeImage(recipe: recipe),
+                        footer: TitleAndFacts(recipe: recipe, recipeFacts: recipeDetails?.facts ?? [])
+                    .frame(width: geo.size.width, height: 215, alignment: .leading)
+                    .multilineTextAlignment(.leading)
+                    .background(.yellow)
+                    .foregroundColor(.black)) { } //EMPTY
+                
+                Section(header: Text("Ingredients")
+                    .frame(width: geo.size.width, height: 55)
+                    .foregroundColor(.black)
+                    .font(.custom("Solway-Regular", size: 30))
+                ) {
+                    ForEach(recipeDetails?.ingredients ?? [], id: \.self) { ingredient in
+                        HStack(){
+                            Text(" \u{2022}   ")
+                                .font(.custom("Solway-Extrabold", size: 19))
+                            Text("\(ingredient.ingredientText)")
+                                .font(.custom("Solway-Light", size: 19))
+                        }
+                        .padding([.top, .bottom], 6)
                     }
-                    .padding([.top, .bottom], 6)
+                }
+                
+                Section(header: Text("Steps")
+                    .frame(width: geo.size.width, height: 55)
+                    .foregroundColor(.black)
+                    .font(.custom("Solway-Regular", size: 30))
+                ) {
+                    ForEach(recipeDetails?.steps ?? [], id: \.self) { step in
+                        let backgroundColor = step.stepNumber.isMultiple(of: 2) ? Color.gray.opacity(0.1) : Color.white
+                        
+                        VStack(alignment: .leading, spacing: 20){
+                            Text("Step \(step.stepNumber)")
+                                .font(.custom("Solway-Extrabold", size: 18))
+                            Text("\(step.stepText)")
+                                .font(.custom("Solway-Light", size: 18))
+                        }
+                        .listRowBackground(backgroundColor)
+                        .padding([.top,.bottom])
+                    }
                 }
             }
-            
-            Section(header: Text("Steps")
-                .frame(width: 500, height: 55)
-                .foregroundColor(.black)
-                .font(.custom("Solway-Regular", size: 30))
-            ) {
-                ForEach(recipeDetails?.steps ?? [], id: \.self) { step in
-                    let backgroundColor = step.stepNumber.isMultiple(of: 2) ? Color.gray.opacity(0.1) : Color.white
-                    
-                    VStack(alignment: .leading, spacing: 20){
-                        Text("Step \(step.stepNumber)")
-                            .font(.custom("Solway-Extrabold", size: 18))
-                        Text("\(step.stepText)")
-                            .font(.custom("Solway-Light", size: 18))
-                    }
-                    .listRowBackground(backgroundColor)
-                    .padding([.top,.bottom])
-                }
+            .scrollContentBackground(.hidden)
+            .ignoresSafeArea()
+            .listStyle(.grouped)
+            .onAppear(){
+                loadDetails(for: recipe)
             }
-        }
-        .ignoresSafeArea()
-        .listStyle(.grouped)
-        .onAppear(){
-            loadDetails(for: recipe)
         }
 //        .navigationTitle(recipeTitle)
     }
@@ -75,13 +77,21 @@ struct RecipeDetailsView: View {
     }
 }
 
-//struct RecipeDetails_Previews: PreviewProvider {
-//    static var previews: some View {
-//        RecipeDetailsView(recipe:
-//                        Recipe(recipeId: 1,
-//                               title: "Chicken Soup"))
-//    }
-//}
+import CoreData
+
+struct RecipeDetails_Previews: PreviewProvider {
+    static let entity = NSManagedObjectModel
+        .mergedModel(from: nil)?
+        .entitiesByName["Recipe"]
+    
+    static var previews: some View {
+        let recipeOne = Recipe(entity: entity!, insertInto: nil)
+        recipeOne.title = "Chicken Parm"
+        recipeOne.imageUrl = "https://halflemons-media.s3.amazonaws.com/786.jpg"
+        
+        return RecipeDetailsView(recipe: recipeOne)
+    }
+}
 
 struct RecipeImage: View {
     var recipe: Recipe
@@ -110,7 +120,7 @@ struct TitleAndFacts: View {
         VStack(alignment: .leading){
             Text((recipe.title!))
                 .font(.custom("Solway-Regular", size: 35))
-                .padding(.top)
+                .padding([.leading, .top, .trailing])
             
             Spacer()
             
@@ -135,8 +145,7 @@ struct TitleAndFacts: View {
                         Text("Unrecognized recipe facts found.")
                     }
                 }
-            }
-            .padding(.bottom)
+            }.padding()
         }
     }
 }

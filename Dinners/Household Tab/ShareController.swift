@@ -12,9 +12,9 @@ import CoreData
 @MainActor
 final class ShareCoordinator: ObservableObject {
     
-    @Published var existingShare: CKShare?{
+    @Published var activeShare: CKShare?{
         didSet{
-            let householdMembers = existingShare?.participants.filter({ $0.acceptanceStatus == .accepted })
+            let householdMembers = activeShare?.participants.filter({ $0.acceptanceStatus == .accepted })
             guard let householdCount = householdMembers?.count else { return }
             UserDefaults.standard.set(householdCount, forKey: "householdCount")
         }
@@ -23,7 +23,7 @@ final class ShareCoordinator: ObservableObject {
     static let shared = ShareCoordinator()
     let stack = DataController.shared
     
-    func fetchExistingShare(in localStore: NSPersistentStore? = nil) {
+    func fetchActiveShare(in localStore: NSPersistentStore? = nil) {
         guard UserDefaults.standard.bool(forKey: "inAHousehold") else { return }
         var persistentStore = localStore
         
@@ -34,8 +34,8 @@ final class ShareCoordinator: ObservableObject {
         
         do {
             let shares = try stack.persistentContainer.fetchShares(in: persistentStore)
-            if let existingShare = shares.filter({ $0.recordID.recordName == CKRecordNameZoneWideShare }).first{
-                self.existingShare = existingShare
+            if let activeShare = shares.filter({ $0.recordID.recordName == CKRecordNameZoneWideShare }).first{
+                self.activeShare = activeShare
             }
             
         } catch { Logger.sharing.warning("Error fetching share from persistent store: \(error, privacy: .public)") }
@@ -44,14 +44,14 @@ final class ShareCoordinator: ObservableObject {
     /* TO DO: Get rid of Throws? or throw error. */
     func getShare() async throws {
         guard !UserDefaults.standard.bool(forKey: "inAHousehold") || UserDefaults.standard.bool(forKey: "isHouseholdOwner") else { return }
-        fetchExistingShare(in: stack.privatePersistentStore)
-        if existingShare != nil { return }
+        fetchActiveShare(in: stack.privatePersistentStore)
+        if activeShare != nil { return }
         
         let defaultZone = "com.apple.coredata.cloudkit.zone"
         do { /* Step 1: Existing zone. Share. */
             let allZones = try await stack.ckContainer.privateCloudDatabase.allRecordZones()
             if let defaultZone = allZones.filter({ $0.zoneID.zoneName == defaultZone }).first{
-//                if let share = fetchShareFromZone(_ zone: defaultZone){ self.existingShare = share; return } - OR ->
+//                if let share = fetchShareFromZone(_ zone: defaultZone){ self.activeShare = share; return } - OR ->
                 if await getShareFromZone(defaultZone){ return }
                     
                 Logger.sharing.info("Default zone found. Not yet shared. Attempting to sharing it.")
@@ -59,7 +59,7 @@ final class ShareCoordinator: ObservableObject {
                 return
                 
             } else { Logger.sharing.warning("The defaultZone doesn't exist.") }
-        } catch { Logger.sharing.warning("Failed to fetch CloudKit zones: \(error, privacy: .public)") }
+        } catch { Logger.sharing.warning("Failed to fetch CloudKit zones: \(error, privacy: .public)"); throw error }
 
         do{ /* Step 2: New zone. Create & Share. */
             let newDefaultZone = CKRecordZone(zoneName: defaultZone)
@@ -69,7 +69,7 @@ final class ShareCoordinator: ObservableObject {
             await shareZone(newDefaultZone)
             return
             
-        } catch{ Logger.sharing.warning("Failed to create new defaultZone: \(error, privacy: .public)") }
+        } catch{ Logger.sharing.warning("Failed to create new defaultZone: \(error, privacy: .public)"); throw error }
     }
     
     func getShareFromZone(_ zone: CKRecordZone) async -> Bool{
@@ -79,7 +79,7 @@ final class ShareCoordinator: ObservableObject {
         
         do {
             let share = try await stack.ckContainer.privateCloudDatabase.record(for: shareReference.recordID) as? CKShare
-            self.existingShare = share
+            self.activeShare = share
             return true
             
         } catch {
@@ -100,7 +100,7 @@ extension ShareCoordinator{
         
         do{
             let result = try await stack.ckContainer.privateCloudDatabase.save(share)
-            self.existingShare = (result as! CKShare)
+            self.activeShare = (result as! CKShare)
             
         } catch{ Logger.sharing.warning("Failed to save share: \(error, privacy: .public)") }
     }
@@ -109,12 +109,12 @@ extension ShareCoordinator{
         guard UserDefaults.standard.bool(forKey: "inAHousehold"),
               !UserDefaults.standard.bool(forKey: "isHouseholdOwner") else { return }
         
-        if existingShare == nil{ fetchExistingShare() }
-        if existingShare == nil{ return }
+        if activeShare == nil{ fetchActiveShare() }
+        if activeShare == nil{ return }
             
         Task{
             do{
-                try await stack.persistentContainer.share([voteOrPurchase], to: existingShare)
+                try await stack.persistentContainer.share([voteOrPurchase], to: activeShare)
             } catch{ Logger.sharing.warning("Failed to share vote: \(error, privacy: .public)") }
         }
     }
@@ -144,12 +144,12 @@ extension ShareCoordinator{
 }
 
 extension ShareCoordinator{
-    func removeSelf() async{
-        if existingShare == nil{
-            fetchExistingShare(in: stack.sharedPersistentStore)
+    func leaveShare() async{
+        if activeShare == nil{
+            fetchActiveShare(in: stack.sharedPersistentStore)
         }
         
-        guard let shareRecordId = existingShare?.recordID else { return}
+        guard let shareRecordId = activeShare?.recordID else { return }
         do {
             try await stack.ckContainer.sharedCloudDatabase.deleteRecord(withID: shareRecordId)
         } catch {

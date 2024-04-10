@@ -18,11 +18,10 @@ struct CloudSharingView: UIViewControllerRepresentable {
     }
     
     func makeUIViewController(context: Context) -> UICloudSharingController {
-        share[CKShare.SystemFieldKey.title] = "Great Recipes"
-        
-//        if let cover = UIImage(named: "PLACEHOLDER FOR ICON FROM JULIE"), let data = cover.pngData() {
-//            share[CKShare.SystemFieldKey.thumbnailImageData] = data
-//        }
+        share[CKShare.SystemFieldKey.title] = "Join my Dinners Crew"
+        if let appIcon = UIImage(named: "AppIcon"), let data = appIcon.pngData() {
+            share[CKShare.SystemFieldKey.thumbnailImageData] = data
+        }
         
         let controller = UICloudSharingController(share: share, container: container)
         controller.modalPresentationStyle = .formSheet
@@ -30,10 +29,10 @@ struct CloudSharingView: UIViewControllerRepresentable {
 //        controller.availablePermissions = [.allowPublic] //TO DO: MAYBE make the share public? instead of private..
         controller.delegate = context.coordinator
         
-        let asdf = controller.share!.publicPermission.rawValue.description
-        Logger.sharing.info("Share's public permissions are: \(asdf, privacy: .public)")
+        let publicPermissions = controller.share!.publicPermission.rawValue.description
+        Logger.sharing.info("Share's public permissions are: \(publicPermissions, privacy: .public)")
         
-//         Needed to avoid crash on iPad
+        //** Avoid crash on iPad **//
 //        if let popover = controller.popoverPresentationController {
 //            popover.barButtonItem = barButtonItem
 //          }
@@ -47,7 +46,7 @@ struct CloudSharingView: UIViewControllerRepresentable {
 final class CloudSharingCoordinator: NSObject, UICloudSharingControllerDelegate {
     
     func itemTitle(for csc: UICloudSharingController) -> String? {
-        "Great Recipes"
+        "Join my Dinners Crew"
     }
     
 //    func itemThumbnailData(for csc: UICloudSharingController) -> Data? {
