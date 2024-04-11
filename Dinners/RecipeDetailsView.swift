@@ -146,6 +146,6 @@ struct TitleAndFacts: View {
                     }
                 }
             }.padding()
-        }
+        }.padding(.bottom)
     }
 }

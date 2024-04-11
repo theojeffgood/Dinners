@@ -39,7 +39,6 @@ struct Household: View {
                             UserCard(name: participant.name(in: share), status: participant.acceptanceStatus)
                                 .listRowSeparator(.hidden)
                                 .listRowBackground(Color.white)
-                            
                                 .if(share.currentUserParticipant == share.owner &&
                                     share.currentUserParticipant != participant){ view in
                                     view.swipeActions(allowsFullSwipe: false) {

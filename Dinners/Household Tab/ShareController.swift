@@ -19,9 +19,12 @@ final class ShareCoordinator: ObservableObject {
             UserDefaults.standard.set(householdCount, forKey: "householdCount")
         }
     }
-    
     static let shared = ShareCoordinator()
     let stack = DataController.shared
+    
+    init() {
+        fetchActiveShare(in: stack.sharedPersistentStore)
+    }
     
     func fetchActiveShare(in localStore: NSPersistentStore? = nil) {
         guard UserDefaults.standard.bool(forKey: "inAHousehold") else { return }
@@ -34,45 +37,42 @@ final class ShareCoordinator: ObservableObject {
         
         do {
             let shares = try stack.persistentContainer.fetchShares(in: persistentStore)
-            if let activeShare = shares.filter({ $0.recordID.recordName == CKRecordNameZoneWideShare }).first{
-                self.activeShare = activeShare
-            }
+            let activeShare = shares.filter({ $0.recordID.recordName == CKRecordNameZoneWideShare }).first
+            self.activeShare = activeShare
             
         } catch { Logger.sharing.warning("Error fetching share from persistent store: \(error, privacy: .public)") }
     }
     
-    /* TO DO: Get rid of Throws? or throw error. */
     func getShare() async throws {
         guard !UserDefaults.standard.bool(forKey: "inAHousehold") || UserDefaults.standard.bool(forKey: "isHouseholdOwner") else { return }
         fetchActiveShare(in: stack.privatePersistentStore)
         if activeShare != nil { return }
         
-        let defaultZone = "com.apple.coredata.cloudkit.zone"
+        let zoneName = "com.apple.coredata.cloudkit.zone"
         do { /* Step 1: Existing zone. Share. */
             let allZones = try await stack.ckContainer.privateCloudDatabase.allRecordZones()
-            if let defaultZone = allZones.filter({ $0.zoneID.zoneName == defaultZone }).first{
-//                if let share = fetchShareFromZone(_ zone: defaultZone){ self.activeShare = share; return } - OR ->
-                if await getShareFromZone(defaultZone){ return }
+            if let mainZone = allZones.filter({ $0.zoneID.zoneName == zoneName }).first{
+                if await getShare(from: mainZone){ return }
                     
                 Logger.sharing.info("Default zone found. Not yet shared. Attempting to sharing it.")
-                await shareZone(defaultZone)
+                await shareZone(mainZone)
                 return
                 
             } else { Logger.sharing.warning("The defaultZone doesn't exist.") }
         } catch { Logger.sharing.warning("Failed to fetch CloudKit zones: \(error, privacy: .public)"); throw error }
 
         do{ /* Step 2: New zone. Create & Share. */
-            let newDefaultZone = CKRecordZone(zoneName: defaultZone)
+            let mainZone = CKRecordZone(zoneName: zoneName)
             let results = try await stack.ckContainer.privateCloudDatabase.modifyRecordZones(
-                saving: [newDefaultZone], deleting: [] )
+                saving: [mainZone], deleting: [] )
             Logger.sharing.info("Created new defaultZone: \(results.saveResults)")
-            await shareZone(newDefaultZone)
+            await shareZone(mainZone)
             return
             
         } catch{ Logger.sharing.warning("Failed to create new defaultZone: \(error, privacy: .public)"); throw error }
     }
     
-    func getShareFromZone(_ zone: CKRecordZone) async -> Bool{
+    func getShare(from zone: CKRecordZone) async -> Bool{
         guard zone.capabilities.contains(.zoneWideSharing),
               let shareReference = zone.share else { return false }
         Logger.sharing.info("DefaultZone is shared. Fetching its CKShare record.")
@@ -109,7 +109,7 @@ extension ShareCoordinator{
         guard UserDefaults.standard.bool(forKey: "inAHousehold"),
               !UserDefaults.standard.bool(forKey: "isHouseholdOwner") else { return }
         
-        if activeShare == nil{ fetchActiveShare() }
+        if activeShare == nil{ fetchActiveShare(in: stack.sharedPersistentStore) }
         if activeShare == nil{ return }
             
         Task{
@@ -119,6 +119,7 @@ extension ShareCoordinator{
         }
     }
     
+    //ALTERNATIVE METHOD FOR GETSHARE. 
     //    func fetchShareFromZone(_ zone: CKRecordZone,
     //                            completion: @escaping (Result<CKShare, Error>) -> Void) {
     //        let database = CKContainer.default().privateCloudDatabase
@@ -152,6 +153,8 @@ extension ShareCoordinator{
         guard let shareRecordId = activeShare?.recordID else { return }
         do {
             try await stack.ckContainer.sharedCloudDatabase.deleteRecord(withID: shareRecordId)
+            activeShare = nil
+            Logger.sharing.info("Removed self from share.")
         } catch {
             Logger.sharing.warning("Failed to delete share: \(error, privacy: .public)")
         }
