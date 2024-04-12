@@ -34,9 +34,9 @@ struct ActionButtons: View {
     
     var body: some View{
         HStack() {
-            VStack(alignment: .trailing) {
+//            VStack(alignment: .trailing) {
                 Button(action: { action(false) }) {
-                    VStack {
+                    VStack(alignment: .leading, spacing: 0) {
                         Image(.voteNay)
                             .resizable()
                             .tint(.white)
@@ -44,13 +44,14 @@ struct ActionButtons: View {
                         Text("Nay!")
                             .foregroundColor(.white)
                             .font(.custom("Solway-Bold", size: 36))
+                            .padding(.leading, 7)
                     }
                 }
-            }
+//            }
             Spacer()
-            VStack(alignment: .leading) {
+//            VStack(alignment: .leading) {
                 Button(action: { action(true) }) {
-                    VStack {
+                    VStack(alignment: .trailing, spacing: 0) {
                         Image(.voteYay)
                             .resizable()
                             .tint(.white)
@@ -58,11 +59,12 @@ struct ActionButtons: View {
                         Text("Yay!")
                             .foregroundColor(.white)
                             .font(.custom("Solway-Bold", size: 36))
+                            .padding(.trailing, 5)
                     }
                 }
-            }
+//            }
         }
-        .padding([.leading, .trailing], 3)
+//        .padding([.leading, .trailing], 1)
      }
  }
 

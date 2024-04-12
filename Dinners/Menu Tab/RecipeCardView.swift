@@ -19,18 +19,19 @@ struct RecipeCardView: View{
             
             //            Image Sizing: www.hackingwithswift.com/books/ios-swiftui/resizing-images-to-fit-the-screen-using-geometryreader
             GeometryReader { geo in
-                AsyncImage(url: URL(string: recipe.imageUrl!)) { image in
-                    image
-                        .resizable()
-                        .scaledToFill()
-                    //                        .scaledToFit()
-                        .frame(width: geo.size.width)
-                        .clipped()
-                    //                        .opacity(isVisible ? (2.0 - Double(abs(offset.width / 50) )) : 0 )
-                    //                        .background(colorForOffset(offset))
-                } placeholder: {
-                    ProgressView()
+                AsyncImage(url: URL(string: recipe.imageUrl!)) { phase in
+                    if let image = phase.image {
+                        image
+                            .resizable()
+                            .scaledToFill()
+                            .clipped()
+                    } else if phase.error != nil {
+                        Color.red
+                    } else {
+                        ProgressView()
+                    }
                 }
+                .frame(width: geo.size.width, height: geo.size.height)
             }
             
             Text(recipe.title!)

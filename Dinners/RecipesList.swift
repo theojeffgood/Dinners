@@ -89,14 +89,17 @@ struct RecipeCell: View {
     var body: some View {
         VStack(alignment: .center){
             GeometryReader { geo in
-                AsyncImage(url: URL(string: recipe.imageUrl!)) { image in
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(width: geo.size.width, height: 200)
-                } placeholder: {
-                    ProgressView()
-                }
+                AsyncImage(url: URL(string: recipe.imageUrl!)) { phase in
+                    if let image = phase.image {
+                        image
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                    } else if phase.error != nil {
+                        Color.red
+                    } else {
+                        ProgressView()
+                    }
+                }.frame(width: geo.size.width, height: 200)
             }
             
             Text(recipe.title!)

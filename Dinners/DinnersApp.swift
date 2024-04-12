@@ -8,6 +8,9 @@
 import SwiftUI
 import CloudKit
 import CoreData
+import Bugsnag
+import BugsnagPerformance
+import FirebaseCore
 
 @main
 struct DinnersApp: App {
@@ -20,7 +23,8 @@ struct DinnersApp: App {
     @StateObject private var appStoreManager: AppStoreManager
     
     init() {
-        UINavigationBar.appearance().largeTitleTextAttributes = [.font : UIFont(name: "Solway-Regular", size: 30)!]
+        Bugsnag.start()
+        BugsnagPerformance.start()
         
         let appStoreManager = AppStoreManager()
         self._appStoreManager = StateObject(wrappedValue: appStoreManager)
@@ -36,10 +40,6 @@ struct DinnersApp: App {
         
         let storage = RecipeManager(managedObjectContext: DataController.shared.context)
         self._recipeManager = StateObject(wrappedValue: storage)
-        
-//        if UserDefaults.standard.bool(forKey: "inAHousehold"){
-//            ShareCoordinator.shared.fetchActiveShare()
-//        }
     }
     
     var body: some Scene {
@@ -48,7 +48,6 @@ struct DinnersApp: App {
             TabBarView(recipeManager: recipeManager, filterManager: filterManager)
                 .environment(\.managedObjectContext, DataController.shared.context)
                 .environmentObject(appStoreManager)
-//                .environmentObject(ShareCoordinator.shared)
                 .task {
                     await appStoreManager.updatePurchasedProducts()
                 }
@@ -57,6 +56,8 @@ struct DinnersApp: App {
 //        .onChange(of: scenePhase) { _ in try? moc.save() } /* Fires when app goes to background */
     }
 }
+
+//** MARK: -- APP DELEGATE **//
 
 final class AppDelegate: NSObject, UIApplicationDelegate {
     func application(_ application: UIApplication, configurationForConnecting 
@@ -67,8 +68,15 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
         sceneConfig.delegateClass = SceneDelegate.self
         return sceneConfig
     }
+    
+    func application(_ application: UIApplication,
+                     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
+        FirebaseApp.configure()
+        return true
+    }
 }
 
+//** MARK: -- SCENE DELEGATE **//
 
 import OSLog
 final class SceneDelegate: NSObject, UIWindowSceneDelegate {
@@ -86,15 +94,12 @@ final class SceneDelegate: NSObject, UIWindowSceneDelegate {
         Logger.sharing.debug("Handling share invitation via Scene.userDidAcceptCloudKitShareWith.")
         joinHouseholdUsing(cloudKitShareMetadata)
     }
-}
-
-extension SceneDelegate{
     
     func joinHouseholdUsing(_ cloudKitShareMetadata: CKShare.Metadata){
-        let shareStore = DataController.shared.sharedPersistentStore
+        let sharedStore         = DataController.shared.sharedPersistentStore
         let persistentContainer = DataController.shared.persistentContainer
         
-        persistentContainer.acceptShareInvitations(from: [cloudKitShareMetadata], into: shareStore) { shareMetaData, error in
+        persistentContainer.acceptShareInvitations(from: [cloudKitShareMetadata], into: sharedStore) { shareMetaData, error in
             if let error = error {
                 Logger.sharing.warning("Failed to accept share invitation: \(error)")
                 return
@@ -108,6 +113,8 @@ extension SceneDelegate{
 //            }
             
             UserDefaults.standard.set(true, forKey: "inAHousehold")
+            let incomingShare = cloudKitShareMetadata.share
+            ShareCoordinator.shared.activeShare = incomingShare
             
             Logger.sharing.debug("New participant's share status: \(cloudKitShareMetadata.participantStatus.description, privacy: .public)")
         }

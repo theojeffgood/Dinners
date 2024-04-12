@@ -50,21 +50,16 @@ struct ContentView: View {
                                 .offset(x: offset.width, y: offset.height * 0.85)
                                 .gesture(
                                     DragGesture()
-                                        .onChanged { gesture in
-                                            offset = gesture.translation
-                                        }
+                                        .onChanged { gesture in offset = gesture.translation }
                                         .onEnded { _ in
                                             if abs(offset.width) > 100 {
                                                 animateCardAway(recipe, offset: offset)
-                                            } else {
-                                                // Reset position if not swiped far enough
-                                                withAnimation(.spring) {
-                                                    offset = .zero
-                                                }
+                                                
+                                            } else { /* Swipe abandoned. Reset offset */
+                                                withAnimation(.spring) { offset = .zero }
                                             }
                                         }
                                 )
-                            
                             if showModal{
                                 MatchView()
                                     .onAppear {
@@ -79,18 +74,12 @@ struct ContentView: View {
                                     .allowsHitTesting(false)
                             }
                             ActionButtons() { liked in
-                                switch liked{
-                                case true:
-                                    animateCardAway(recipe, offset: CGSize(width: 300, height: 0))
-                                case false:
-                                    animateCardAway(recipe, offset: CGSize(width: -300, height: 0))
-                                    
-                                }
+                                if liked{       animateCardAway(recipe, offset: CGSize(width:  300, height: 0)) }
+                                else if !liked{ animateCardAway(recipe, offset: CGSize(width: -300, height: 0)) }
                             }
                         }
                     }
                 }.padding(10)
-                
                     .toolbar(showTabbar ? .visible : .hidden, for: .tabBar)
                     .toolbar {
                         ToolbarItem(placement: .principal) {
@@ -103,7 +92,7 @@ struct ContentView: View {
             .sheet(isPresented: $showFilters, content: {
                 Filters(allCategories: filterManager.allFilters)
             })
-            .onAppear(){
+            .onAppear{
                 loadRecipes()
                 showTabbar = true
                 recipeCardOpacity = 1.0
@@ -118,7 +107,7 @@ extension ContentView{
     func animateCardAway(_ recipe: Recipe, offset direction: CGSize) {
         let liked = (direction.width > 0)
 
-        withAnimation(.linear(duration: 0.20)) {
+        withAnimation(.linear(duration: 0.2)) {
             offset = CGSize(width: direction.width * 4, height: direction.height * 4)
             recipeCardOpacity = 0.0001 // does this help / prevent smooth transition of recipes?
         }
@@ -127,15 +116,10 @@ extension ContentView{
             offset = .zero
             recipeManager.nextRecipe()
             
-            Task {
-                await castVote(recipe, was: liked)
-            }
-            
+            Task { await castVote(recipe, was: liked) }
             var isMatch = false
-            if liked{
-                isMatch = recipe.isAMatch()
-                if isMatch{ celebrate() }
-            }
+            if liked{ isMatch = recipe.isAMatch() }
+            if isMatch{ celebrate() }
             
             DispatchQueue.main.asyncAfter(deadline: .now() + (isMatch ? 1.75 : 0.675)) {
                 withAnimation(.linear(duration: 0.2)) {

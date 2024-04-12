@@ -150,10 +150,11 @@ extension ShareCoordinator{
             fetchActiveShare(in: stack.sharedPersistentStore)
         }
         
-        guard let shareRecordId = activeShare?.recordID else { return }
+        guard let shareRecordId = activeShare?.recordID else { Logger.sharing.info("No share exists to leave."); return }
         do {
             try await stack.ckContainer.sharedCloudDatabase.deleteRecord(withID: shareRecordId)
             activeShare = nil
+            UserDefaults.standard.set(false, forKey: "inAHousehold")
             Logger.sharing.info("Removed self from share.")
         } catch {
             Logger.sharing.warning("Failed to delete share: \(error, privacy: .public)")
