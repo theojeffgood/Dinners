@@ -72,7 +72,7 @@ extension Category{
         
 //        if UserDefaults.standard.bool(forKey: "inAHousehold") &&
 //           !UserDefaults.standard.bool(forKey: "isHouseholdOwner"){
-            fetchRequest.affectedStores = [DataController.shared.privatePersistentStore]
+            fetchRequest.affectedStores = [DataController.shared.privateStore]
 //        }
         
         return fetchRequest

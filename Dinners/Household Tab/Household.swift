@@ -63,7 +63,7 @@ struct Household: View {
                     
                 if userIsParticipant{
                     Button("Leave household") {
-                        Task{ await shareTools.leaveShare() } //animate?
+                        Task{ await shareTools.exitShare() } //animate?
                     }.padding(.bottom, 30)
                      .foregroundStyle(.blue)
                 }
@@ -93,7 +93,7 @@ extension Household{
         } else{ //** Share doesn't exist **//
             Task {
                 do {
-                    try await shareTools.getShare()
+                    try await shareTools.createShare()
                     showShareSheet = true
                     
                     UserDefaults.standard.set(true, forKey: "inAHousehold")

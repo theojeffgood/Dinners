@@ -94,8 +94,6 @@ struct RecipeCell: View {
                         image
                             .resizable()
                             .aspectRatio(contentMode: .fill)
-                    } else if phase.error != nil {
-                        Color.red
                     } else {
                         ProgressView()
                     }

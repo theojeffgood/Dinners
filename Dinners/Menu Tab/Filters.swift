@@ -48,8 +48,9 @@ struct Filters: View {
                                                             category.isPurchased = true
                                                             let purchase = Purchase(categoryId: category.id, in: moc)
                                                             Task{
-                                                                await ShareCoordinator.shared.shareIfNeeded(purchase) //1 of 2 (before moc.save)
-                                                                try! moc.save() //2 of 2 (after ck.share)
+                                                                await ShareCoordinator.shared.shareIfNeeded(purchase){ //1 of 2 (before moc.save)
+                                                                    try! moc.save() //2 of 2 (after ck.share)
+                                                                }
                                                             }
                                                             
                                                         case .pending, .userCancelled:

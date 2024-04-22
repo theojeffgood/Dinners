@@ -57,7 +57,7 @@ extension Purchase{
         
 //        if UserDefaults.standard.bool(forKey: "inAHousehold") &&
 //           !UserDefaults.standard.bool(forKey: "isHouseholdOwner"){
-//            fetchRequest.affectedStores = [DataController.shared.sharedPersistentStore]
+//            fetchRequest.affectedStores = [DataController.shared.sharedStore]
 //        }
         
         return fetchRequest

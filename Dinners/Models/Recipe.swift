@@ -17,7 +17,7 @@ extension Recipe {
         let fetchRequest = NSFetchRequest<Recipe>(entityName: String(describing: Recipe.self))
         fetchRequest.predicate = predicate
         fetchRequest.sortDescriptors = sort
-        fetchRequest.affectedStores = [DataController.shared.privatePersistentStore] // <<--THIS BREAKS LOAD OF RECIPES?? WTF
+        fetchRequest.affectedStores = [DataController.shared.privateStore] // <<--THIS BREAKS LOAD OF RECIPES?? WTF
         return fetchRequest
     }
         

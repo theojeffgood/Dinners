@@ -13,7 +13,7 @@ final class DataController: ObservableObject {
     static let shared = DataController()
     
     var ckContainer: CKContainer {
-        let storeDescription = persistentContainer.persistentStoreDescriptions.first
+        let storeDescription = localContainer.persistentStoreDescriptions.first
         guard let identifier = storeDescription?.cloudKitContainerOptions?.containerIdentifier else {
             fatalError("Unable to get container identifier")
         }
@@ -21,24 +21,24 @@ final class DataController: ObservableObject {
     }
     
     var context: NSManagedObjectContext {
-        persistentContainer.viewContext
+        localContainer.viewContext
     }
     
-    var privatePersistentStore: NSPersistentStore {
+    var privateStore: NSPersistentStore {
         guard let privateStore = _privatePersistentStore else {
             fatalError("Private store is not set")
         }
         return privateStore
     }
     
-    var sharedPersistentStore: NSPersistentStore {
+    var sharedStore: NSPersistentStore {
         guard let sharedStore = _sharedPersistentStore else {
             fatalError("Shared store is not set")
         }
         return sharedStore
     }
     
-    lazy var persistentContainer: NSPersistentCloudKitContainer = {
+    lazy var localContainer: NSPersistentCloudKitContainer = {
         let container = NSPersistentCloudKitContainer(name: "Dinners")
         
         guard let privateStoreDescription = container.persistentStoreDescriptions.first,
@@ -123,12 +123,12 @@ extension NSManagedObject{
     func assignToCorrectStore(){
         let stack = DataController.shared
         let store = (UserDefaults.standard.bool(forKey: "inAHousehold") && !UserDefaults.standard.bool(forKey: "isHouseholdOwner")) ?
-        stack.sharedPersistentStore : stack.privatePersistentStore
-        stack.persistentContainer.viewContext.assign(self, to: store)
+        stack.sharedStore : stack.privateStore
+        stack.localContainer.viewContext.assign(self, to: store)
     }
     
     func assignToPrivateStore(){
         let stack = DataController.shared
-        stack.persistentContainer.viewContext.assign(self, to: stack.privatePersistentStore)
+        stack.localContainer.viewContext.assign(self, to: stack.privateStore)
     }
 }

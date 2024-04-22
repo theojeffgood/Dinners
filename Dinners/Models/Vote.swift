@@ -20,7 +20,7 @@ public class Vote: NSManagedObject {
         return ownerId == UserDefaults.standard.string(forKey: "userID")!
     }
     
-    convenience init(forRecipeId recipeId: Int64,
+    convenience init(for recipeId: Int64,
                      like: Bool,
                      in context: NSManagedObjectContext) {
         self.init(context: context)

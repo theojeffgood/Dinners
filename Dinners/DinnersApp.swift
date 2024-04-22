@@ -96,8 +96,8 @@ final class SceneDelegate: NSObject, UIWindowSceneDelegate {
     }
     
     func joinHouseholdUsing(_ cloudKitShareMetadata: CKShare.Metadata){
-        let sharedStore         = DataController.shared.sharedPersistentStore
-        let persistentContainer = DataController.shared.persistentContainer
+        let sharedStore         = DataController.shared.sharedStore
+        let persistentContainer = DataController.shared.localContainer
         
         persistentContainer.acceptShareInvitations(from: [cloudKitShareMetadata], into: sharedStore) { shareMetaData, error in
             if let error = error {
@@ -107,14 +107,13 @@ final class SceneDelegate: NSObject, UIWindowSceneDelegate {
             
 //            if UserDefaults.standard.bool(forKey: "inAHousehold"){
 //                ShareCoordinator.shared.leaveOtherShares()
-//                if UserDefaults.standard.bool(forKey: "isHouseholdOwner"){
-//                    UserDefaults.standard.set(false, forKey: "isHouseholdOwner")
-//                }
+//                UserDefaults.standard.set(false, forKey: "isHouseholdOwner")
 //            }
             
-            UserDefaults.standard.set(true, forKey: "inAHousehold")
+            UserDefaults.standard.set(false, forKey: "isHouseholdOwner")
+            UserDefaults.standard.set(true,  forKey: "inAHousehold")
             let incomingShare = cloudKitShareMetadata.share
-            ShareCoordinator.shared.activeShare = incomingShare
+            ShareCoordinator.shared.setActiveShare(incomingShare)
             
             Logger.sharing.debug("New participant's share status: \(cloudKitShareMetadata.participantStatus.description, privacy: .public)")
         }

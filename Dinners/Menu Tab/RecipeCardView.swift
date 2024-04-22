@@ -25,8 +25,6 @@ struct RecipeCardView: View{
                             .resizable()
                             .scaledToFill()
                             .clipped()
-                    } else if phase.error != nil {
-                        Color.red
                     } else {
                         ProgressView()
                     }
