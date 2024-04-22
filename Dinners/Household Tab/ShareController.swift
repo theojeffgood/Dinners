@@ -113,28 +113,38 @@ extension ShareCoordinator{
         Logger.sharing.info("DefaultZone is shared. Fetching its CKShare record.")
         
         do {
-            if let share = try await stack.ckContainer.privateCloudDatabase.record(for: shareReference.recordID) as? CKShare{
-                setActiveShare(share)
-                return true
-            } else{
-                return false
-            }
+            guard let share = try await stack.ckContainer.privateCloudDatabase.record(for: shareReference.recordID) as? CKShare else { return false }
+            setActiveShare(share)
+            return true
             
         } catch { Logger.sharing.warning("DefaultZone is shared. But couldn't get its CKShare: \(error, privacy: .public)"); throw error }
     }
     
-    func shareIfNeeded(_ voteOrPurchase: NSManagedObject) async {
-        guard UserDefaults.standard.bool(forKey: "inAHousehold"),
-              !UserDefaults.standard.bool(forKey: "isHouseholdOwner") else { return }
+    func shareIfNeeded(_ voteOrPurchase: NSManagedObject, completion: @escaping () -> Void) async {
+        guard inAHousehold, !ownsHousehold else { return }
         
-        if activeShare == nil{ fetchActiveShare(in: stack.sharedPersistentStore) }
+        if activeShare == nil{ fetchActiveShare(in: stack.sharedStore) }
         if activeShare == nil{ return }
-            
-        Task{
+        
+        Task.detached(operation: {
             do{
-            } catch{ Logger.sharing.warning("Failed to share vote: \(error, privacy: .public)") }
-                                                to: self.activeShare) { ids, share, container, error in
-                try await stack.persistentContainer.share([voteOrPurchase], to: activeShare)
+                self.stack.localContainer.share([voteOrPurchase], to: self.activeShare) { objectIds, share, container, error in
+                    if let error{ Logger.sharing.warning("Failed to share vote: \(error, privacy: .public)") }
+                    
+                    else{
+                        switch voteOrPurchase {
+                        case is Vote:
+                            Logger.sharing.info("Successfully shareed vote: \((voteOrPurchase as! Vote).recipeId)")
+                        case is Purchase:
+                            Logger.sharing.info("Successfully shareed purchase: \((voteOrPurchase as! Purchase).categoryId)")
+                        default:
+                            fatalError("Expected Vote or Purchase. Unrecognized object type")
+                        }
+                    }
+                    completion()
+                }
+            }
+        })
     }
 }
 

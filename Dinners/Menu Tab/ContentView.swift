@@ -131,9 +131,10 @@ extension ContentView{
     
     func castVote(_ recipe: Recipe, was liked: Bool) async{
         Task{
-            let newVote = Vote(forRecipeId: recipe.recipeId, like: liked, in: moc)
-            await ShareCoordinator.shared.shareIfNeeded(newVote) //1 of 2 (before moc.save)
-            try! moc.save() //2 of 2 (after ck.share)
+            let newVote = Vote(for: recipe.recipeId, like: liked, in: moc)
+            await ShareCoordinator.shared.shareIfNeeded(newVote){ //1 of 2 (before moc.save)
+                try! moc.save() //2 of 2 (after ck.share)
+            }
         }
     }
     

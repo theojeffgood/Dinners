@@ -159,11 +159,18 @@ extension RecipeManager{
         return getRecipesById(ids: matches)
     }
     
-    func getRecipesById(ids: [Int64]) -> [Recipe]?{
+    func getRecipesById(ids: [Int64]) -> [Recipe]{
         let likesPredicate = NSPredicate(format: "recipeId IN %@", ids)
         let request = Recipe.fetchRequest(predicate: likesPredicate)
-        let recipes = try? context.fetch(request)
-        return recipes
+        let recipes = try! context.fetch(request)
+        
+        var dedupedRecipes: [Recipe] = []
+        for recipe in recipes {
+            guard !dedupedRecipes.contains(where: { $0.recipeId == recipe.recipeId }) else { continue }
+            dedupedRecipes.append(recipe)
+        }
+            
+        return dedupedRecipes
     }
 }
 
