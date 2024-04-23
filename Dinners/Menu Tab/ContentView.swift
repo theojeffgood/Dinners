@@ -109,14 +109,13 @@ extension ContentView{
 
         withAnimation(.linear(duration: 0.2)) {
             offset = CGSize(width: direction.width * 4, height: direction.height * 4)
-            recipeCardOpacity = 0.0001 // does this help / prevent smooth transition of recipes?
+            recipeCardOpacity = 0.0001 // does this help the recipe animation? ie fades.
         }
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
             offset = .zero
             recipeManager.nextRecipe()
             
-            Task { await castVote(recipe, was: liked) }
             var isMatch = false
             if liked{ isMatch = recipe.isAMatch() }
             if isMatch{ celebrate() }
@@ -125,17 +124,15 @@ extension ContentView{
                 withAnimation(.linear(duration: 0.2)) {
                     recipeCardOpacity = 1.0
                 }
+                castVote(recipe, was: liked)
             }
         }
     }
     
-    func castVote(_ recipe: Recipe, was liked: Bool) async{
-        Task{
-            let newVote = Vote(for: recipe.recipeId, like: liked, in: moc)
-            await ShareCoordinator.shared.shareIfNeeded(newVote){ //1 of 2 (before moc.save)
-                try! moc.save() //2 of 2 (after ck.share)
-            }
-        }
+    func castVote(_ recipe: Recipe, was liked: Bool){
+        let voteManager = VoteManager()
+        let householdShare = ShareCoordinator.shared.activeShare
+        voteManager.createVote(for: recipe.recipeId, like: liked, share: householdShare)
     }
     
     func celebrate() {

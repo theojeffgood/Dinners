@@ -45,6 +45,9 @@
 		E4B13FA82BC04B1F00527B38 /* ShareFailed.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B13FA72BC04B1F00527B38 /* ShareFailed.swift */; };
 		E4B2236B2B926BD900F9766C /* Purchase.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B2236A2B926BD800F9766C /* Purchase.swift */; };
 		E4B2236D2B927CDD00F9766C /* FilterManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B2236C2B927CDD00F9766C /* FilterManager.swift */; };
+		E4BA1B232BD8019A002ADDB7 /* VoteManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4BA1B222BD8019A002ADDB7 /* VoteManager.swift */; };
+		E4BA1B252BD8110D002ADDB7 /* PurchaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4BA1B242BD8110D002ADDB7 /* PurchaseManager.swift */; };
+		E4BA1B272BD8133C002ADDB7 /* PurchaseFailed.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4BA1B262BD8133C002ADDB7 /* PurchaseFailed.swift */; };
 		E4CB2C80297893CC00A829AE /* RecipesList.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4CB2C7F297893CC00A829AE /* RecipesList.swift */; };
 		E4CB2C822979C28700A829AE /* RecipeDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4CB2C812979C28700A829AE /* RecipeDetailsView.swift */; };
 		E4E305D02B68420F00BA09B6 /* LottieAnimationsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E305CF2B68420F00BA09B6 /* LottieAnimationsView.swift */; };
@@ -93,6 +96,9 @@
 		E4B13FA72BC04B1F00527B38 /* ShareFailed.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareFailed.swift; sourceTree = "<group>"; };
 		E4B2236A2B926BD800F9766C /* Purchase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Purchase.swift; sourceTree = "<group>"; };
 		E4B2236C2B927CDD00F9766C /* FilterManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterManager.swift; sourceTree = "<group>"; };
+		E4BA1B222BD8019A002ADDB7 /* VoteManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoteManager.swift; sourceTree = "<group>"; };
+		E4BA1B242BD8110D002ADDB7 /* PurchaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PurchaseManager.swift; sourceTree = "<group>"; };
+		E4BA1B262BD8133C002ADDB7 /* PurchaseFailed.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PurchaseFailed.swift; sourceTree = "<group>"; };
 		E4CB2C7F297893CC00A829AE /* RecipesList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipesList.swift; sourceTree = "<group>"; };
 		E4CB2C812979C28700A829AE /* RecipeDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeDetailsView.swift; sourceTree = "<group>"; };
 		E4E305CF2B68420F00BA09B6 /* LottieAnimationsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LottieAnimationsView.swift; sourceTree = "<group>"; };
@@ -136,6 +142,8 @@
 			children = (
 				E43634FB2AD6EFCB007F238F /* ShareHelper OLD.swift */,
 				E4B2236C2B927CDD00F9766C /* FilterManager.swift */,
+				E4BA1B222BD8019A002ADDB7 /* VoteManager.swift */,
+				E4BA1B242BD8110D002ADDB7 /* PurchaseManager.swift */,
 				E4EA57A82AF2F04700F5E130 /* RecipeManager.swift */,
 				E4875D7F2B192CFA00A192CE /* AppStoreManager.swift */,
 				E4AB01C22BBDE27B004B115A /* HapticsHelper.swift */,
@@ -226,6 +234,7 @@
 			isa = PBXGroup;
 			children = (
 				E439226F29772E8200CC9E53 /* ContentView.swift */,
+				E4BA1B262BD8133C002ADDB7 /* PurchaseFailed.swift */,
 				E4721EE82BBE052D0081ED36 /* FiltersBar.swift */,
 				E48CE0AB2B18F47700C296C1 /* Filters.swift */,
 				E4AB01C02BB5FB65004B115A /* MatchView.swift */,
@@ -342,7 +351,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E4BA1B272BD8133C002ADDB7 /* PurchaseFailed.swift in Sources */,
 				E465A711298307D30058B564 /* RecipeCardView.swift in Sources */,
+				E4BA1B232BD8019A002ADDB7 /* VoteManager.swift in Sources */,
 				E4EA57AA2AF2F04700F5E130 /* RecipeManager.swift in Sources */,
 				E4CB2C822979C28700A829AE /* RecipeDetailsView.swift in Sources */,
 				E439227029772E8200CC9E53 /* ContentView.swift in Sources */,
@@ -365,6 +376,7 @@
 				E4AB01C12BB5FB65004B115A /* MatchView.swift in Sources */,
 				E4B2236D2B927CDD00F9766C /* FilterManager.swift in Sources */,
 				E40BCEE32B27F6E300E43CDB /* Extensions.swift in Sources */,
+				E4BA1B252BD8110D002ADDB7 /* PurchaseManager.swift in Sources */,
 				E4721EE92BBE052D0081ED36 /* FiltersBar.swift in Sources */,
 				E43634FA2AD5E9BF007F238F /* CloudSharingController.swift in Sources */,
 				E47071EE2B62F53400683E68 /* TabBarView.swift in Sources */,
@@ -497,7 +509,7 @@
 				CODE_SIGN_ENTITLEMENTS = Dinners/Dinners.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 26;
+				CURRENT_PROJECT_VERSION = 27;
 				DEVELOPMENT_ASSET_PATHS = "\"Dinners/Preview Content\"";
 				DEVELOPMENT_TEAM = 78U3X38B3F;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -540,7 +552,7 @@
 				CODE_SIGN_ENTITLEMENTS = Dinners/Dinners.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 26;
+				CURRENT_PROJECT_VERSION = 27;
 				DEVELOPMENT_ASSET_PATHS = "\"Dinners/Preview Content\"";
 				DEVELOPMENT_TEAM = 78U3X38B3F;
 				ENABLE_HARDENED_RUNTIME = YES;

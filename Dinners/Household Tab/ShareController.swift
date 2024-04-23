@@ -11,6 +11,9 @@ import CoreData
 
 final class ShareCoordinator: ObservableObject {
     
+    static let shared = ShareCoordinator()
+    let stack = DataController.shared
+    
     @Published var activeShare: CKShare?{
         didSet{
             let householdMembers = activeShare?.participants.filter({ $0.acceptanceStatus == .accepted })
@@ -18,10 +21,9 @@ final class ShareCoordinator: ObservableObject {
             UserDefaults.standard.set(householdCount, forKey: "householdCount")
         }
     }
-    static let shared = ShareCoordinator()
-    let stack = DataController.shared
-    private var  inAHousehold: Bool{ get{ UserDefaults.standard.bool(forKey: "inAHousehold")     } }
+    
     private var ownsHousehold: Bool{ get{ UserDefaults.standard.bool(forKey: "isHouseholdOwner") } }
+    private var  inAHousehold: Bool{ get{ UserDefaults.standard.bool(forKey: "inAHousehold")     } }
     
     init() {
         fetchActiveShare(in: stack.sharedStore)
@@ -43,9 +45,9 @@ final class ShareCoordinator: ObservableObject {
         do {
             let shares = try stack.localContainer.fetchShares(in: dataStore)
             let existingShare = shares.filter({ $0.recordID.recordName == CKRecordNameZoneWideShare }).first // Can this falsely be nil
-            self.activeShare = existingShare // this isn't async. doesn't need setActiveShare(in:)
+            self.activeShare = existingShare // no async. so don't use setActiveShare()
             
-        } catch { Logger.sharing.warning("Error fetching share from persistent store: \(error, privacy: .public)") }
+        } catch { Logger.sharing.warning("Couldn't get share from local store: \(error, privacy: .public)") }
     }
     
     func createShare() async throws {
@@ -65,20 +67,23 @@ final class ShareCoordinator: ObservableObject {
             
         } catch{ Logger.sharing.warning("Failed to create share: \(error, privacy: .public)"); throw error }
     }
+}
+
+//MARK: -- ZONE Methods
+
+extension ShareCoordinator{
     
-    func getDefaultZone(titled zoneName: String) async throws -> CKRecordZone?{ // should this be optional? 1 of 2
+    func getDefaultZone(titled zoneName: String) async throws -> CKRecordZone?{
         do{
             let allZones = try await stack.ckContainer.privateCloudDatabase.allRecordZones()
-            if let mainZone = allZones.filter({ $0.zoneID.zoneName == zoneName }).first{
-                Logger.sharing.info("Default zone found. Trying to share.")
-                return mainZone
+            guard let mainZone = allZones.filter({ $0.zoneID.zoneName == zoneName }).first else { return nil }
+            Logger.sharing.info("DefaultZone found. Trying to share.")
+            return mainZone
                 
-            } else { Logger.sharing.warning("The defaultZone doesn't exist.") }
-        } catch{ Logger.sharing.warning("The defaultZone doesn't exist."); throw error }
-        return nil
+        } catch{ Logger.sharing.warning("DefaultZone doesn't exist."); throw error }
     }
     
-    func createZone(titled zoneName: String) async throws -> CKRecordZone?{ // should this be optional? 2 of 2
+    func createZone(titled zoneName: String) async throws -> CKRecordZone?{
         do{
             let mainZone = CKRecordZone(zoneName: zoneName)
             let results = try await stack.ckContainer.privateCloudDatabase.modifyRecordZones(
@@ -86,8 +91,7 @@ final class ShareCoordinator: ObservableObject {
             Logger.sharing.info("Created new defaultZone: \(results.saveResults)")
             return mainZone
             
-        } catch{ Logger.sharing.warning("Failed to create new defaultZone: \(error, privacy: .public)"); throw error }
-//        return nil
+        } catch{ Logger.sharing.warning("New zone creation failure: \(error, privacy: .public)"); throw error }
     }
     
     func shareZone(_ recipeZone: CKRecordZone) async throws{
@@ -97,74 +101,43 @@ final class ShareCoordinator: ObservableObject {
         
         do{
             let result = try await stack.ckContainer.privateCloudDatabase.save(share)
-            setActiveShare((result as! CKShare))
+            guard let activeShare = result as? CKShare else { return }
+            setActiveShare(activeShare)
             
-        } catch{ Logger.sharing.warning("Failed to save share: \(error, privacy: .public)") }
+        } catch{ Logger.sharing.warning("Failed to save share: \(error, privacy: .public)"); throw error }
     }
 }
 
-//MARK: -- SHARE Vote, Category, or Zone METHODS
+//MARK: -- SHARE Methods
 
 extension ShareCoordinator{
     
     func getShare(from zone: CKRecordZone) async throws -> Bool{
         guard zone.capabilities.contains(.zoneWideSharing),
-              let shareReference = zone.share else { return false }
-        Logger.sharing.info("DefaultZone is shared. Fetching its CKShare record.")
+              let shareRef = zone.share else { return false }
+        Logger.sharing.info("ZoneShare is active. Fetching the CKShare.")
         
         do {
-            guard let share = try await stack.ckContainer.privateCloudDatabase.record(for: shareReference.recordID) as? CKShare else { return false }
+            guard let share = try await stack.ckContainer.privateCloudDatabase.record(for: shareRef.recordID) as? CKShare else { return false }
             setActiveShare(share)
             return true
             
-        } catch { Logger.sharing.warning("DefaultZone is shared. But couldn't get its CKShare: \(error, privacy: .public)"); throw error }
+        } catch { Logger.sharing.warning("Zone is shared. Failed to get its CKShare: \(error, privacy: .public)"); throw error }
     }
-    
-    func shareIfNeeded(_ voteOrPurchase: NSManagedObject, completion: @escaping () -> Void) async {
-        guard inAHousehold, !ownsHousehold else { return }
-        
-        if activeShare == nil{ fetchActiveShare(in: stack.sharedStore) }
-        if activeShare == nil{ return }
-        
-        Task.detached(operation: {
-            do{
-                self.stack.localContainer.share([voteOrPurchase], to: self.activeShare) { objectIds, share, container, error in
-                    if let error{ Logger.sharing.warning("Failed to share vote: \(error, privacy: .public)") }
-                    
-                    else{
-                        switch voteOrPurchase {
-                        case is Vote:
-                            Logger.sharing.info("Successfully shareed vote: \((voteOrPurchase as! Vote).recipeId)")
-                        case is Purchase:
-                            Logger.sharing.info("Successfully shareed purchase: \((voteOrPurchase as! Purchase).categoryId)")
-                        default:
-                            fatalError("Expected Vote or Purchase. Unrecognized object type")
-                        }
-                    }
-                    completion()
-                }
-            }
-        })
-    }
-}
 
-
-
-extension ShareCoordinator{
     func exitShare() async{
         if activeShare == nil{
             fetchActiveShare(in: stack.sharedStore)
         }
         
-        guard let shareRecordId = activeShare?.recordID else { Logger.sharing.info("No share exists to leave."); return }
+        guard let shareRecordId = activeShare?.recordID else { Logger.sharing.info("No share found."); return }
         do {
             try await stack.ckContainer.sharedCloudDatabase.deleteRecord(withID: shareRecordId)
-            setActiveShare(nil)
             UserDefaults.standard.set(false, forKey: "inAHousehold")
             Logger.sharing.info("Removed self from share.")
-        } catch {
-            Logger.sharing.warning("Failed to delete share: \(error, privacy: .public)")
-        }
+            setActiveShare(nil)
+            
+        } catch { Logger.sharing.warning("Failed to delete share: \(error, privacy: .public)") }
     }
 }
 

@@ -64,7 +64,7 @@ class AppStoreManager: NSObject, ObservableObject {
         case let .success(.unverified(_, error)):
             // Successful purchase but transaction/receipt can't be verified
             // Could be a jailbroken phone
-            Logger.store.info("Purchase succeeded: but not verified.")
+            Logger.store.info("Purchase succeeded, but not verified: \(error, privacy: .public)")
             break
         case .pending:
             // Transaction waiting on SCA (Strong Customer Authentication) or

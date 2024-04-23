@@ -17,6 +17,7 @@ struct Filters: View {
     @State var allCategories: [Category]
     @State private var categoryList: [String: [Category]] = [:] /* ["Filter Type": [Filters of the type]] */
     @State private var playConfetti = false
+    @State private var purchaseFailed = false
     
     var body: some View {
         NavigationView{ /* Use NavView. Not NavStack. Hack to show large title. */
@@ -45,13 +46,7 @@ struct Filters: View {
                                                         switch result {
                                                         case .success:
                                                             playConfetti = true
-                                                            category.isPurchased = true
-                                                            let purchase = Purchase(categoryId: category.id, in: moc)
-                                                            Task{
-                                                                await ShareCoordinator.shared.shareIfNeeded(purchase){ //1 of 2 (before moc.save)
-                                                                    try! moc.save() //2 of 2 (after ck.share)
-                                                                }
-                                                            }
+                                                            purchase(category: category)
                                                             
                                                         case .pending, .userCancelled:
                                                             handlePurchaseFail()
@@ -110,14 +105,25 @@ struct Filters: View {
                 }
             }
         }
+        .sheet(isPresented: $purchaseFailed) {
+            PurchaseFailed()
+        }
     }
 }
 
-//#Preview {
-//    Filters()
-//}
+#Preview {
+    Filters(allCategories: [])
+}
 
 extension Filters{
+    func purchase(category: Category){
+        category.isPurchased = true
+        let purchaseManager = PurchaseManager()
+        let share = ShareCoordinator.shared.activeShare
+        purchaseManager.createPurchase(for: category.id, share: share)
+    }
+    
     func handlePurchaseFail(){
+        purchaseFailed.toggle()
     }
 }

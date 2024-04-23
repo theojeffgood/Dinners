@@ -37,15 +37,14 @@ struct Household: View {
                         
                         ForEach(participants) { participant in
                             UserCard(name: participant.name(in: share), status: participant.acceptanceStatus)
-                                .listRowSeparator(.hidden)
-                                .listRowBackground(Color.white)
                                 .if(share.currentUserParticipant == share.owner &&
                                     share.currentUserParticipant != participant){ view in
                                     view.swipeActions(allowsFullSwipe: false) {
                                         Button(role: .destructive) { share.removeParticipant(participant) }
-                                    label: { Label("Remove from household", systemImage: "trash.fill") }
+                                    label: { Label("Exit from household", systemImage: "trash.fill") }
                                     }
-                                }
+                                }.listRowSeparator(.hidden)
+                                .listRowBackground(Color.white)
                         }
                     } else { ZStack{ UserCard(name: "You", status: .accepted) } }
                     
