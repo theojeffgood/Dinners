@@ -13,27 +13,29 @@ import OSLog
 struct Household: View {
     
     @Environment(\.managedObjectContext) var moc
-    @ObservedObject var shareTools: ShareCoordinator = ShareCoordinator.shared
+    @ObservedObject var shareTools = ShareCoordinator.shared
     
     @State private var showShareSheet = false
     @State private var cannotShare = false
+    @State private var shareFailed = false
     var onDismiss: () -> Void
     var userOwnsShare: Bool{
         return (!UserDefaults.standard.bool(forKey: "inAHousehold") ||
-                UserDefaults.standard.bool(forKey: "isHouseholdOwner"))
+                 UserDefaults.standard.bool(forKey: "isHouseholdOwner"))
     }
     
     var userIsParticipant: Bool{
-        return (UserDefaults.standard.bool(forKey: "inAHousehold") &&
+        return ( UserDefaults.standard.bool(forKey: "inAHousehold") &&
                 !UserDefaults.standard.bool(forKey: "isHouseholdOwner"))
     }
+    let defaultSort: ((CKShare.Participant, CKShare.Participant) -> Bool) = { $0.acceptanceStatus != .pending && $1.acceptanceStatus == .pending }
     
     var body: some View {
         NavigationStack{
             VStack{
                 List{
                     if let share = shareTools.activeShare{
-                        let participants = share.participants.sorted { $0.acceptanceStatus != .pending && $1.acceptanceStatus == .pending }
+                        let participants = share.participants.sorted(by: defaultSort)
                         
                         ForEach(participants) { participant in
                             UserCard(name: participant.name(in: share), status: participant.acceptanceStatus)
@@ -51,8 +53,7 @@ struct Household: View {
                     ForEach(0..<2){ i in
                         let numOfParticipants = (shareTools.activeShare?.participants.count ?? 1)
                         ShareButton(memberNumber: numOfParticipants + i + 1){
-                            if userOwnsShare{ share() }
-                            else { cannotShare.toggle() }
+                            userOwnsShare ? share() : cannotShare.toggle()
                         }
                     }
                     .listRowSeparator(.hidden)
@@ -71,36 +72,34 @@ struct Household: View {
         }
         
         .onAppear{ shareTools.fetchActiveShare() }
+        .sheet(isPresented: $shareFailed) { ShareFailed() }
+        .sheet(isPresented: $cannotShare) { CannotShare() }
         .sheet(isPresented: $showShareSheet, onDismiss: { shareTools.fetchActiveShare() }) {
             if let share = shareTools.activeShare{
                 CloudSharingView(share: share)
-            } else{ ShareFailed() }
-        }
-        .sheet(isPresented: $cannotShare) {
-            CannotShare()
+            } 
         }
     }
 }
 
 extension Household{
     func share(){
-        if let share = shareTools.activeShare{
-            if share.currentUserParticipant == share.owner{
-                showShareSheet = true
-            }
+        if let share = shareTools.activeShare,
+           share.currentUserParticipant == share.owner{
+            showShareSheet = true
             
-        } else{ //** Share doesn't exist **//
+        } else{
             Task {
-                do {
+                do { //** Create new share. **//
                     try await shareTools.createShare()
                     showShareSheet = true
                     
                     UserDefaults.standard.set(true, forKey: "inAHousehold")
                     UserDefaults.standard.set(true, forKey: "isHouseholdOwner")
-                } catch {
-                    showShareSheet = true // Shows friendly error. Not share sheet.
-                    Logger.sharing.error("Household failed to get share: \(error, privacy: .public).")
-                }
+                    
+                    shareTools.createShareSubscription()
+                    
+                } catch { shareFailed = true }
             }
         }
     }

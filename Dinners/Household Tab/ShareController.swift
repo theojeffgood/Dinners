@@ -12,7 +12,9 @@ import CoreData
 final class ShareCoordinator: ObservableObject {
     
     static let shared = ShareCoordinator()
+    
     let stack = DataController.shared
+    let defaultZoneName = "com.apple.coredata.cloudkit.zone"
     
     @Published var activeShare: CKShare?{
         didSet{
@@ -54,16 +56,15 @@ final class ShareCoordinator: ObservableObject {
         guard !inAHousehold || ownsHousehold else { return }
         fetchActiveShare(in: stack.privateStore)
         guard activeShare == nil else { return }
-        let zoneName = "com.apple.coredata.cloudkit.zone"
         
         do {
-            if let mainZone = try await getDefaultZone(titled: zoneName){
+            if let mainZone = try await getDefaultZone(){
                            if try await getShare(from: mainZone){ return }
                         else{ try await shareZone(mainZone);      return }
             }
             
-            else if let newZone = try await createZone(titled: zoneName){
-                                  try await shareZone(newZone); return  }
+            else if let newZone = try await createZone(){
+                                  try await shareZone(newZone); return }
             
         } catch{ Logger.sharing.warning("Failed to create share: \(error, privacy: .public)"); throw error }
     }
@@ -73,19 +74,19 @@ final class ShareCoordinator: ObservableObject {
 
 extension ShareCoordinator{
     
-    func getDefaultZone(titled zoneName: String) async throws -> CKRecordZone?{
+    func getDefaultZone() async throws -> CKRecordZone?{
         do{
             let allZones = try await stack.ckContainer.privateCloudDatabase.allRecordZones()
-            guard let mainZone = allZones.filter({ $0.zoneID.zoneName == zoneName }).first else { return nil }
+            guard let mainZone = allZones.filter({ $0.zoneID.zoneName == defaultZoneName }).first else { return nil }
             Logger.sharing.info("DefaultZone found. Trying to share.")
             return mainZone
                 
         } catch{ Logger.sharing.warning("DefaultZone doesn't exist."); throw error }
     }
     
-    func createZone(titled zoneName: String) async throws -> CKRecordZone?{
+    func createZone() async throws -> CKRecordZone?{
         do{
-            let mainZone = CKRecordZone(zoneName: zoneName)
+            let mainZone = CKRecordZone(zoneName: defaultZoneName)
             let results = try await stack.ckContainer.privateCloudDatabase.modifyRecordZones(
                 saving: [mainZone], deleting: [] )
             Logger.sharing.info("Created new defaultZone: \(results.saveResults)")

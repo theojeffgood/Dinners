@@ -89,13 +89,12 @@ struct Filters: View {
                         }
                     }
                     
-                    _ = Task<Void, Never> {
+                    Task {
                         do {
-                            Logger.store.info("Call to load appStoreProducts for: \(allCategories.count, privacy: .public) categories")
+                            Logger.store.info("Fetching appStoreProducts for: \(allCategories.count, privacy: .public) categories")
                             try await purchaseManager.loadAppStoreProducts(for: allCategories)
-                        } catch {
-                            print(error)
-                        }
+                            
+                        } catch { Logger.store.error("Failed to get AppStore products: \(error, privacy: .public)") }
                     }
                 }
                 if playConfetti{

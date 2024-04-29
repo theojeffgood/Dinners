@@ -22,7 +22,7 @@ struct RecipeDetailsView: View {
                         footer: TitleAndFacts(recipe: recipe, recipeFacts: recipeDetails?.facts ?? [])
                     .frame(width: geo.size.width, height: 215, alignment: .leading)
                     .multilineTextAlignment(.leading)
-                    .background(.yellow)
+                    .background(Color.init(hex: 0xE55937))
                     .foregroundColor(.black)) { } //EMPTY
                 
                 Section(header: Text("Ingredients")
