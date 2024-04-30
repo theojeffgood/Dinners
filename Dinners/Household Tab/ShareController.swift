@@ -18,7 +18,8 @@ final class ShareCoordinator: ObservableObject {
     
     @Published var activeShare: CKShare?{
         didSet{
-            let householdMembers = activeShare?.participants.filter({ $0.acceptanceStatus == .accepted })
+//            let householdMembers = activeShare?.participants.filter({ $0.acceptanceStatus == .accepted })
+            let householdMembers = activeShare?.participants
             guard let householdCount = householdMembers?.count else { return }
             UserDefaults.standard.set(householdCount, forKey: "householdCount")
         }

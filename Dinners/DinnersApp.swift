@@ -76,7 +76,7 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
     }
 }
 
-//** MARK: -- SCENE DELEGATE **//
+//** MARK: -- CLOUDKIT - Share - Household - Methods
 
 import OSLog
 final class SceneDelegate: NSObject, UIWindowSceneDelegate {

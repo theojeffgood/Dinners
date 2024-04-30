@@ -113,10 +113,10 @@ extension Logger {
     static let sharing = Logger(subsystem: subsystem, category: "sharing")
 
     /// Logs the events related to in app purchases.
-    static let store = Logger(subsystem: subsystem, category: "store")
+    static let store = Logger(subsystem: subsystem, category: "appstore")
     
-    /// All logs related to tracking and analytics.
-//    static let statistics = Logger(subsystem: subsystem, category: "statistics")
+    /// Logs the events related to in app purchases.
+    static let recipe = Logger(subsystem: subsystem, category: "recipe")
 }
 
 //MARK: -- CONDITIONAL VIEW MODIFIERS: https://www.avanderlee.com/swiftui/conditional-view-modifier/

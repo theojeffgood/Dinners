@@ -38,70 +38,23 @@ extension Recipe {
     @NSManaged public var websiteUrl: String?
 
     @MainActor
-    func isAMatch() -> Bool{
-        let householdCount: Int = UserDefaults.standard.integer(forKey: "householdCount")
-        guard householdCount > 1,
-              let ownerId = UserDefaults.standard.string(forKey: "userID"),
-              let context = self.managedObjectContext else { return false }
-
-        let voteSearch = NSPredicate(format: "recipeId == %d AND ownerId != %@", recipeId, ownerId)
-        let request = Vote.fetchRequest(predicate: voteSearch)
-        let votes = try! context.fetch(request)
+    func isAMatch(with householdLikes: [Int64]) -> Bool{
+        guard UserDefaults.standard.bool(forKey: "inAHousehold") else { return false }
         
-        let likes = votes.filter({ $0.isLiked }).count
-        guard likes != 0 else { return false }
+        let numOfParticipants = UserDefaults.standard.integer(forKey: "householdCount")
+        if  numOfParticipants == 1 { return false }
         
-        let isMatch = likes == (householdCount - 1) /* False positive for households of 3+ where only 2 likes. */
+        let recipeLikes = householdLikes.filter({ $0 == self.recipeId })
+        guard !recipeLikes.isEmpty else { return false }
+        
+        let matchThreadshold = recipeLikes.count + 1
+        let isMatch = (matchThreadshold == numOfParticipants)
+        
         return isMatch
     }
     
-//    func isAMatch(with newVote: Vote) -> Bool{
-//        guard newVote.isLiked,
-//              let context = self.managedObjectContext else { return false }
-//        
-//        let recipePredicate = NSPredicate(format: "recipeId == %d AND ownerId != %@", recipeId, newVote.ownerId!)
-//        let request = Vote.fetchRequest(predicate: recipePredicate)
-//        let votes = try! context.fetch(request)
-//        
-//        let isMatch = !votes.isEmpty && votes.allSatisfy({ $0.isLiked })
-//        return isMatch
-//    }
+    func isCategory(_ category: Category?) -> Bool{
+        guard let category else { return false }
+        return self.categories.contains( Int( category.id ) )
+    }
 }
-
-//// MARK: Generated accessors for user
-//extension Recipe {
-//
-//    @objc(addUserObject:)
-//    @NSManaged public func addToUser(_ value: User)
-//
-//    @objc(removeUserObject:)
-//    @NSManaged public func removeFromUser(_ value: User)
-//
-//    @objc(addUser:)
-//    @NSManaged public func addToUser(_ values: NSSet)
-//
-//    @objc(removeUser:)
-//    @NSManaged public func removeFromUser(_ values: NSSet)
-//
-//}
-//
-//// MARK: Generated accessors for userDislikes
-//extension Recipe {
-//
-//    @objc(addUserDislikesObject:)
-//    @NSManaged public func addToUserDislikes(_ value: User)
-//
-//    @objc(removeUserDislikesObject:)
-//    @NSManaged public func removeFromUserDislikes(_ value: User)
-//
-//    @objc(addUserDislikes:)
-//    @NSManaged public func addToUserDislikes(_ values: NSSet)
-//
-//    @objc(removeUserDislikes:)
-//    @NSManaged public func removeFromUserDislikes(_ values: NSSet)
-//
-//}
-//
-//extension Recipe : Identifiable {
-//
-//}

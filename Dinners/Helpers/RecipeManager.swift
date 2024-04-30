@@ -8,6 +8,7 @@
 
 import CoreData
 import CloudKit
+import OSLog
 
 class RecipeManager: NSObject, ObservableObject {
     
@@ -16,6 +17,7 @@ class RecipeManager: NSObject, ObservableObject {
     private var allRecipes: [Recipe]
     private var recipeIndex: Int
     private var categoryFilter: Category?
+    private var filterIsActive: Bool{ categoryFilter != nil }
     
     var allVotes: [Vote]{
         didSet{
@@ -24,7 +26,7 @@ class RecipeManager: NSObject, ObservableObject {
                 case true:
                     switch vote.isCurrentUser {
                     case true:
-                        currentUserLikes.append(vote.recipeId)
+                        userLikes.append(vote.recipeId)
                     case false:
                         householdLikes.append(vote.recipeId)
                     }
@@ -34,8 +36,8 @@ class RecipeManager: NSObject, ObservableObject {
             }
         }
     }
-    var currentUserLikes: [Int64]
-    var householdLikes: [Int64]
+    var userLikes: [Int64]
+    var householdLikes: [Int64] // important: do not de-dupe. see: recipes match algo.
     var dislikes: [Int64]
     
     private let votesController: NSFetchedResultsController<Vote>
@@ -57,7 +59,7 @@ class RecipeManager: NSObject, ObservableObject {
         
         allVotes = []
         householdLikes = []
-        currentUserLikes = []
+        userLikes = []
         dislikes = []
         super.init()
         
@@ -78,9 +80,7 @@ class RecipeManager: NSObject, ObservableObject {
             allRecipes = filterRecipes(recipes)
             setRecipe(allRecipes.first)
             
-        } catch {
-            print("failed to fetch items!")
-        }
+        } catch { print("failed to fetch items!") }
     }
     
     func setRecipe(_ recipe: Recipe? = nil){
@@ -126,11 +126,10 @@ extension RecipeManager{
         var filteredRecipes: [Recipe] = []
         
         for recipe in recipes {
-            if !dislikes.contains(recipe.recipeId), // remove disliked recipes
-               !currentUserLikes.contains(recipe.recipeId){ // remove already-liked recipes
+            if  !dislikes.contains(recipe.recipeId), // remove disliked recipes
+               !userLikes.contains(recipe.recipeId){ // remove already-liked recipes
                 
-                if let filterId = categoryFilter?.id,
-                   !recipe.categories.contains(Int(filterId)){ continue } // apply category filter, if active
+                if filterIsActive, !recipe.isCategory(categoryFilter){ continue }
                 
                 let index = householdLikes.contains(recipe.recipeId) ? 0 : filteredRecipes.endIndex
                 filteredRecipes.insert(recipe, at: index) // show likes first

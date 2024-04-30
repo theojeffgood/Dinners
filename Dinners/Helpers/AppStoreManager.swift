@@ -47,8 +47,6 @@ class AppStoreManager: NSObject, ObservableObject {
         for category in categories {
             let appStoreProduct = products.first(where: { $0.id == category.appStoreProductId })
             category.appStoreProduct = appStoreProduct
-//            print("### Category: \(category.title) assigned product: \(category.appStoreProduct)")
-            Logger.store.info("Category: \(category.title, privacy: .public) assigned product: \(category.appStoreProduct?.displayName ?? "nil", privacy: .public)")
         }
     }
 

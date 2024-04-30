@@ -117,19 +117,19 @@ extension ContentView{
             recipeManager.nextRecipe()
             
             var isMatch = false
-            if liked{ isMatch = recipe.isAMatch() }
+            if liked{ isMatch = recipe.isAMatch(with: recipeManager.householdLikes) }
             if isMatch{ celebrate() }
             
             DispatchQueue.main.asyncAfter(deadline: .now() + (isMatch ? 1.75 : 0.675)) {
                 withAnimation(.linear(duration: 0.2)) {
                     recipeCardOpacity = 1.0
                 }
-                castVote(recipe, was: liked)
             }
         }
+        castVote(for: recipe, liked)
     }
     
-    func castVote(_ recipe: Recipe, was liked: Bool){
+    func castVote(for recipe: Recipe, _ liked: Bool){
         let voteManager = VoteManager()
         let householdShare = ShareCoordinator.shared.activeShare
         voteManager.createVote(for: recipe.recipeId, like: liked, share: householdShare)
