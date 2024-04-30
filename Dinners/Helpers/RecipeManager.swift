@@ -21,6 +21,8 @@ class RecipeManager: NSObject, ObservableObject {
     
     var allVotes: [Vote]{
         didSet{
+            userLikes.removeAll(); householdLikes.removeAll(); dislikes.removeAll()
+            
             for vote in allVotes{
                 switch vote.isLiked {
                 case true:
@@ -106,7 +108,18 @@ extension RecipeManager: NSFetchedResultsControllerDelegate {
         if case let votes = controller.fetchedObjects as? [Vote],
            votes?.isEmpty == false{
             
-//            let newVotes = votes!.difference(from: allVotes)
+//            guard #available(iOS 9999, *) else { fatalError("Vote count failed. Unexpected iOS version") }
+//            let diff = votes!.difference(from: allVotes)
+//            for change in diff {
+//                switch change {
+//                case .remove(let offset, _, _): // is .remove needed?
+////                    allVotes.remove(at: offset)
+//                    Logger.recipe.log("Nothing to do here")
+//                case .insert(let offset, let vote, _):
+////                    allVotes.insert(vote, at: offset) /* <-- vote object */
+//                    Logger.recipe.log("###New vote received. id: \(vote.recipeId, privacy: .public) userId: \(vote.ownerId ?? "", privacy: .public) isCurrentUser? \(vote.isCurrentUser, privacy: .public)")
+//                }
+//            }
             
             allVotes = votes!
             let recipes = allRecipes

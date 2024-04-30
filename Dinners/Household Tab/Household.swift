@@ -97,8 +97,6 @@ extension Household{
                     UserDefaults.standard.set(true, forKey: "inAHousehold")
                     UserDefaults.standard.set(true, forKey: "isHouseholdOwner")
                     
-                    shareTools.createShareSubscription()
-                    
                 } catch { shareFailed = true }
             }
         }
