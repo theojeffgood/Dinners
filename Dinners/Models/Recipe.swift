@@ -1,30 +1,14 @@
 //
-//  Recipe+CoreDataProperties.swift
+//  Recipe.swift
 //  FryDay
 //
 //  Created by Theo Goodman on 11/2/23.
 //
 //
 
-import Foundation
 import CoreData
 
-
 extension Recipe {
-    
-    @nonobjc 
-    public class func fetchRequest(sort: [NSSortDescriptor] = [], predicate: NSPredicate? = nil) -> NSFetchRequest<Recipe> {
-        let fetchRequest = NSFetchRequest<Recipe>(entityName: String(describing: Recipe.self))
-        fetchRequest.predicate = predicate
-        fetchRequest.sortDescriptors = sort
-        fetchRequest.affectedStores = [DataController.shared.privateStore] // <<--THIS BREAKS LOAD OF RECIPES?? WTF
-        return fetchRequest
-    }
-        
-    static var allRecipesFetchRequest: NSFetchRequest<Recipe> {
-        let request: NSFetchRequest<Recipe> = Recipe.fetchRequest(sort: [])
-        return request
-    }
 
     @NSManaged public var cooktime: String?
     @NSManaged public var id: UUID?
@@ -56,5 +40,22 @@ extension Recipe {
     func isCategory(_ category: Category?) -> Bool{
         guard let category else { return false }
         return self.categories.contains( Int( category.id ) )
+    }
+}
+
+extension Recipe{
+    
+    @nonobjc
+    public class func fetchRequest(sort: [NSSortDescriptor] = [], predicate: NSPredicate? = nil) -> NSFetchRequest<Recipe> {
+        let fetchRequest = NSFetchRequest<Recipe>(entityName: String(describing: Recipe.self))
+        fetchRequest.predicate = predicate
+        fetchRequest.sortDescriptors = sort
+        fetchRequest.affectedStores = [DataController.shared.privateStore] // <<--THIS BREAKS LOAD OF RECIPES?? WTF
+        return fetchRequest
+    }
+        
+    static var allRecipes: NSFetchRequest<Recipe> {
+        let request: NSFetchRequest<Recipe> = Recipe.fetchRequest(sort: [])
+        return request
     }
 }

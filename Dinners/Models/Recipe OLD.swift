@@ -8,21 +8,6 @@
 import Foundation
 import CoreData
 
-//struct Recipe: Hashable, Codable, Identifiable {
-//    var id = UUID()
-//
-//    var recipeId: Int
-//    var title: String
-//    var imageUrl: String = ""
-//    var source: String = ""
-//    var ingredients: Array<Int> = []
-//    var websiteUrl: String = ""
-//    var cooktime: String? = nil
-//    var recipeStatusId: Int = 1
-//
-////    var url: URL = URL(string: "https://www.cnn.com")!
-//}
-
 public class Recipe: NSManagedObject, Codable {
     
     private enum CodingKeys: String, CodingKey {
@@ -116,18 +101,6 @@ struct Step: Hashable, Codable {
     var stepNumber: Int = 0
     var stepText: String = ""
 }
-
-
-// adopted from the tutorial @ https://www.kodeco.com/29934862-sharing-core-data-with-cloudkit-in-swiftui
-
-//// MARK: Fetch request and managed object properties
-//extension Recipe {
-//  @nonobjc
-//  public class func fetchRequest() -> NSFetchRequest<Recipe> {
-//    return NSFetchRequest<Recipe>(entityName: "Recipe")
-//  }
-//
-//}
 
 //// MARK: Identifiable
 //extension Recipe: Identifiable {
