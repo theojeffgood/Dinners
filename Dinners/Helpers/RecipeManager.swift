@@ -14,6 +14,26 @@ class RecipeManager: NSObject, ObservableObject {
     
     @Published var recipe: Recipe?
     
+    @Published var recipes: [Recipe] = []
+    var matches: [Recipe] = []{
+        didSet{
+            if recipeType == .matches {
+                recipes = matches
+            }
+        }
+    }
+    var recipeType: RecipeType = .matches{
+        didSet{
+            switch recipeType {
+            case .matches:
+                getMatches()
+                recipes = matches
+            case .likes:
+                recipes = getRecipesById(ids: userLikes)
+            }
+        }
+    }
+    
     private var allRecipes: [Recipe] = []
     private var recipeIndex: Int = 0
     private var categoryFilter: Category?
@@ -56,30 +76,6 @@ class RecipeManager: NSObject, ObservableObject {
             
         } catch { Logger.recipe.error("Failed to fetch recipes / votes!") }
     }
-    
-    func setRecipe(_ recipe: Recipe? = nil){
-        DispatchQueue.main.async {
-            self.recipe = recipe
-        }
-    }
-    
-    func processNewVotes(_ allVotes: [Vote]){
-        for vote in allVotes{
-            switch vote.isLiked {
-            case true:
-                
-                switch vote.isCurrentUser {
-                case true:
-                    userLikes.append(vote.recipeId)
-                case false:
-                    householdLikes.append(vote.recipeId)
-                }
-                
-            case false:
-                dislikes.append(vote.recipeId)
-            }
-        }
-    }
 }
 
 extension RecipeManager: NSFetchedResultsControllerDelegate {
@@ -97,6 +93,7 @@ extension RecipeManager: NSFetchedResultsControllerDelegate {
         
         if case let votes = controller.fetchedObjects as? [Vote],
            votes?.isEmpty == false{
+            var newLikes = false
             
 //            if #available(iOS 9999, *){
             let diff = votes!.difference(from: allVotes).inferringMoves()
@@ -106,13 +103,19 @@ extension RecipeManager: NSFetchedResultsControllerDelegate {
                 case .insert(_, let vote, let move):
                     guard move == nil else { continue }
                     processNewVotes([vote])
-                    Logger.recipe.log("###New vote received. recipeId: \(vote.recipeId, privacy: .public) userId: \(vote.ownerId ?? "", privacy: .public)")
+                    Logger.recipe.log("###Vote received. recipeId: \(vote.recipeId) userId: \(vote.ownerId!, privacy: .public)")
+                    
+                    if !vote.isCurrentUser && vote.isLiked{
+                        newLikes = true
+                    }
                 }
             }
             
             allVotes = votes!
             let recipes = allRecipes
             allRecipes = filterRecipes(recipes)
+            
+            if newLikes{ getMatches(); Logger.recipe.log("###Like received. Thread.isMain?: \(Thread.isMainThread)") }
             
             if allRecipes.indices.contains(recipeIndex),
                recipe == nil{
@@ -123,6 +126,38 @@ extension RecipeManager: NSFetchedResultsControllerDelegate {
 }
 
 extension RecipeManager{
+
+    func setRecipe(_ recipe: Recipe? = nil){
+        DispatchQueue.main.async {
+            self.recipe = recipe
+        }
+    }
+    
+    @MainActor
+    func nextRecipe(){
+        recipeIndex += 1
+        setRecipe(allRecipes[recipeIndex])
+    }
+}
+
+extension RecipeManager{
+    func processNewVotes(_ allVotes: [Vote]){
+        for vote in allVotes{
+            switch vote.isLiked {
+            case true:
+                
+                switch vote.isCurrentUser {
+                case true:
+                    userLikes.append(vote.recipeId)
+                case false:
+                    householdLikes.append(vote.recipeId)
+                }
+                
+            case false:
+                dislikes.append(vote.recipeId)
+            }
+        }
+    }
     
     func filterRecipes(_ recipes: [Recipe]) -> [Recipe]{
         var filteredRecipes: [Recipe] = []
@@ -141,26 +176,22 @@ extension RecipeManager{
         return filteredRecipes
     }
     
-    @MainActor
-    func nextRecipe(){
-        recipeIndex += 1
-        setRecipe(allRecipes[recipeIndex])
-    }
-    
-    func getMatches() -> [Recipe]{
-        guard UserDefaults.standard.bool(forKey: "inAHousehold") else { return [] }
+    func getMatches(){
+        guard UserDefaults.standard.bool(forKey: "inAHousehold") else { return }
+        let numOfParticipants = UserDefaults.standard.integer(forKey: "householdCount")
+        if  numOfParticipants == 1 { return }
         
-        var matches: [Int64] = []
-        for like in allVotes where like.isLiked{
-            guard !matches.contains(like.recipeId),
-                  allVotes.count(where: { $0.recipeId == like.recipeId }) > 1 /* householdCount */ else { continue }
-            matches.append(like.recipeId)
+        var recipeIds: [Int64] = []
+        let likes = allVotes.filter({ $0.isLiked })
+        for like in likes {
+            let likeCount = likes.count(where: { $0.recipeId == like.recipeId })
+            if likeCount == numOfParticipants{ recipeIds.append(like.recipeId) }
         }
         
-        return getRecipesById(ids: matches)
+        self.matches = getRecipesById(ids: recipeIds)
     }
     
-    func getRecipesById(ids: [Int64]) -> [Recipe]{
+    private func getRecipesById(ids: [Int64]) -> [Recipe]{
         let likesPredicate = NSPredicate(format: "recipeId IN %@", ids)
         let request = Recipe.fetchRequest(predicate: likesPredicate)
         let recipes = try! context.fetch(request)
@@ -172,12 +203,6 @@ extension RecipeManager{
         }
             
         return dedupedRecipes
-    }
-}
-
-extension Collection {
-    func count(where test: (Element) throws -> Bool) rethrows -> Int {
-        return try self.filter(test).count
     }
 }
 

@@ -78,6 +78,12 @@ extension Color {
     }
 }
 
+extension Collection {
+    func count(where test: (Element) throws -> Bool) rethrows -> Int {
+        return try self.filter(test).count
+    }
+}
+
 
 //extension View{
 //    func rejectStyle() -> some View{

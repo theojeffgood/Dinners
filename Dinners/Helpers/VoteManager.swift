@@ -33,12 +33,11 @@ class VoteManager{
     }
     
     func share(_ vote: NSManagedObject, to share: CKShare) {
-        Logger.sharing.log("### Sharing vote. Thread.isMain?: \(Thread.isMainThread)")
 
         do{
             self.stack.localContainer.share([vote], to: share) { objectIds, share, container, error in
-                if let error{ Logger.sharing.warning("Failed to share vote: \(error, privacy: .public)")}
-                else{ Logger.sharing.info("Successfully shareed vote: \((vote as! Vote).recipeId)")}
+                if let error{ Logger.sharing.warning("Failed to share vote: \(error, privacy: .public)"  )}
+                else{         Logger.sharing.info("Successfully shared vote: \((vote as! Vote).recipeId)")}
             }
         }
     }

@@ -12,74 +12,46 @@ struct RecipesList: View {
     
     @ObservedObject var recipeManager: RecipeManager
     @FetchRequest(fetchRequest: Vote.allVotes) var allVotes
-    
-    var recipesType: String
-    @State var recipes: [Recipe] = []
-    
     @State private var showTabbar: Bool = true
-    @State private var showHousehold: Bool = false
-    var emptyStateMessage = "No matches, yet. \n\n Start liking recipes!"
-    
-//    var pickerOptions: [String] = ["Matches","Likes"]
-//    @State var selectedOption = "Matches"
 
     var body: some View {
         NavigationStack{
-            if !recipes.isEmpty{
-                ScrollView{
-                    LazyVGrid(columns: [GridItem(.flexible(), spacing: 0),
-                                        GridItem(.flexible())]) {
-                        ForEach(recipes, id: \.self) { recipe in
-                            
-                            NavigationLink {
-                                RecipeDetailsView(recipe: recipe,
-                                                  recipeTitle: recipe.title!)
-                                .onAppear(perform: {
-                                    withAnimation { showTabbar = false }
-                                })
-                            }
-                        label: { RecipeCell(recipe: recipe) }
-                        }
+            VStack{
+                Picker("Recipes?", selection: $recipeManager.recipeType) {
+                    ForEach(RecipeType.allCases, id: \.self) {
+                        Text($0.rawValue)
                     }
                 }
-                .onAppear(){ showTabbar = true }
-                .navigationTitle(recipesType)
-//                .toolbar {
-//                    let dropdown = Image(systemName: "chevron.down")
-//                    ToolbarItem(placement: .topBarLeading) {
-//                        Menu {
-//                            Picker("", selection: $selectedOption) {
-//                                ForEach(pickerOptions, id: \.self) { option in
-//                                    Text(option)
-//                                }
-//                            }
-//                        } label: {
-//                            Text("\(selectedOption)\(dropdown)")
-//                                .font(.custom("Solway-Regular", size: 14))
-//                        }
-//                    }
-//                }
-//                .onChange(of: selectedOption) { newOption in
-//                    updateRecipes()
-//                }
-            } else{
-                VStack(spacing: 20, content: {
-                    Image(systemName: "person.badge.plus")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 100, height: 100)
-                        .foregroundColor(.gray.opacity(0.6))
-                    
-                    Text(emptyStateMessage)
-                        .multilineTextAlignment(.center)
-                        .font(.custom("Solway-Light", size: 30))
-                        .padding(.bottom, 55)
-                    
-                }).navigationTitle(recipesType)
-            }
-        }
-        .toolbar(showTabbar ? .visible : .hidden, for: .tabBar)
-        .onAppear(perform: { recipes = recipeManager.getMatches() })
+                .pickerStyle(.segmented)
+                .padding(.horizontal, 10)
+                
+                if !recipeManager.recipes.isEmpty{
+                    ScrollView{
+                        LazyVGrid(columns: [GridItem(.flexible(), spacing: 0),
+                                            GridItem(.flexible())]) {
+                            ForEach(recipeManager.recipes, id: \.self) { recipe in
+                                
+                                NavigationLink {
+                                    RecipeDetailsView(recipe: recipe,
+                                                      recipeTitle: recipe.title!)
+                                    .onAppear(perform: {
+                                        withAnimation { showTabbar = false }
+                                    })
+                                }
+                            label: { RecipeCell(recipe: recipe) }
+                            }
+                        }
+                    }
+                } else{
+                    let emptyStateMessage = recipeManager.recipeType.emptyState
+                    EmptyState(message: emptyStateMessage)
+                }
+            }.navigationTitle("Matches")
+                .onAppear{
+                    showTabbar = true
+                    recipeManager.getMatches()
+                }
+        }.toolbar(showTabbar ? .visible : .hidden, for: .tabBar)
     }
 }
 
@@ -112,12 +84,48 @@ struct RecipeCell: View {
         }
         .frame(height: 290)
         .cornerRadius(10, corners: .allCorners)
-        .padding([.leading, .trailing, .bottom], 10)
+        .padding(10)
         .background(
             RoundedRectangle(cornerRadius: 10, style: .continuous)
                 .fill(Color.clear)
         )
-        .shadow(radius: 20)
+        .shadow(radius: 10)
+    }
+}
+
+struct EmptyState: View {
+    var message: String
+    
+    var body: some View {
+        Spacer()
+        VStack(spacing: 20, content: {
+            Image(systemName: "person.badge.plus")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 100, height: 100)
+                .foregroundColor(.gray.opacity(0.6))
+            
+            Text(message)
+                .multilineTextAlignment(.center)
+                .font(.custom("Solway-Light", size: 30))
+                .padding(.bottom, 55)
+            
+        }).navigationTitle("Matches")
+        Spacer()
+    }
+}
+
+enum RecipeType: String, CaseIterable {
+    case matches = "Matches"
+    case likes   = "My Likes"
+    
+    var emptyState: String{
+        switch self {
+        case .matches:
+            return "No matches, yet. \n\n Add people to your household."
+        case .likes:
+            return "No likes, yet. \n\n Start liking recipes."
+        }
     }
 }
 
@@ -145,6 +153,7 @@ struct RecipesList_Previews: PreviewProvider {
         let recipeManager = RecipeManager(managedObjectContext: moc)
         
         //        return RecipesList(recipesType: "Matches", recipes: [])
-        return RecipesList(recipeManager: recipeManager, recipesType: "Matches", recipes: [recipeOne, recipeTwo, recipeThree])
+//        return RecipesList(recipeManager: recipeManager, recipesType: "Matches", recipes: [recipeOne, recipeTwo, recipeThree])
+        return RecipesList(recipeManager: recipeManager)
     }
 }

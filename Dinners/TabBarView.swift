@@ -23,7 +23,7 @@ struct TabBarView: View {
                 Text("Dinners   ")
             }.tag(1)
             
-            RecipesList(recipeManager: recipeManager, recipesType: "Matches")
+            RecipesList(recipeManager: recipeManager)
             .tabItem {
                 Label("Matches", systemImage: "heart")
             }.tag(2)
