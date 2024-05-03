@@ -43,8 +43,7 @@ struct RecipesList: View {
                         }
                     }
                 } else{
-                    let emptyStateMessage = recipeManager.recipeType.emptyState
-                    EmptyState(message: emptyStateMessage)
+                    EmptyState(for: $recipeManager.recipeType)
                 }
             }.navigationTitle("Matches")
                 .onAppear{
@@ -94,24 +93,52 @@ struct RecipeCell: View {
 }
 
 struct EmptyState: View {
-    var message: String
+    @Binding var recipeType: RecipeType
+    
+    init(for recipeType: Binding<RecipeType>) {
+        self._recipeType = recipeType
+    }
     
     var body: some View {
-        Spacer()
-        VStack(spacing: 20, content: {
-            Image(systemName: "person.badge.plus")
-                .resizable()
-                .scaledToFit()
-                .frame(width: 100, height: 100)
-                .foregroundColor(.gray.opacity(0.6))
+        switch recipeType {
+        case .likes:
+            VStack(spacing: 20, content: {
+                Spacer()
+                Image(systemName: "heart.slash")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(maxWidth: 100, maxHeight: 100)
+                    .foregroundColor(.gray.opacity(0.6))
+                
+                let message = recipeType.emptyState
+                Text(message)
+                    .multilineTextAlignment(.center)
+                    .font(.custom("Solway-Light", size: 30))
+                Spacer()
+            })
             
-            Text(message)
-                .multilineTextAlignment(.center)
-                .font(.custom("Solway-Light", size: 30))
-                .padding(.bottom, 55)
-            
-        }).navigationTitle("Matches")
-        Spacer()
+        case .matches:
+            VStack(spacing: -50, content: {
+                Spacer()
+//                Image(systemName: "person.badge.plus")
+//                    .resizable()
+//                    .scaledToFit()
+//                    .frame(maxWidth: 100, maxHeight: 100)
+//                    .foregroundColor(.gray.opacity(0.6))
+                
+//                VStack(spacing: 0, content: {
+                    let message = recipeType.emptyState
+                    Text(message)
+                        .multilineTextAlignment(.center)
+                        .font(.custom("Solway-Light", size: 30))
+                    Spacer()
+                    Image(.pointerArrow)
+                        .resizable()
+                        .frame(maxHeight: 265)
+                        .offset(x: 40, y: 25)
+                })
+//            }
+        }
     }
 }
 
