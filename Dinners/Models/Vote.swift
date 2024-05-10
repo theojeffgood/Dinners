@@ -16,9 +16,8 @@ public class Vote: NSManagedObject {
     @NSManaged public var ownerId: String?
     @NSManaged public var recipeId: Int64
     
-    var isCurrentUser: Bool{
-        return ownerId == UserDefaults.standard.string(forKey: "userID")!
-    }
+    var isCurrentUser: Bool{ self.ownerId == UserDefaults.standard.string(forKey: "userID")! }
+    var isImportant: Bool{ self.isLiked && !self.isCurrentUser }
     
     convenience init(for recipeId: Int64,
                      like: Bool,

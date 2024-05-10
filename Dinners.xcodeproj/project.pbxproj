@@ -17,6 +17,8 @@
 		E439227029772E8200CC9E53 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E439226F29772E8200CC9E53 /* ContentView.swift */; };
 		E439227229772E8300CC9E53 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E439227129772E8300CC9E53 /* Assets.xcassets */; };
 		E439227629772E8300CC9E53 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E439227529772E8300CC9E53 /* Preview Assets.xcassets */; };
+		E4509E7C2BEE81FF00BF474A /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = E4509E7B2BEE81FF00BF474A /* FirebaseCrashlytics */; };
+		E4509E7E2BEE81FF00BF474A /* FirebasePerformance in Frameworks */ = {isa = PBXBuildFile; productRef = E4509E7D2BEE81FF00BF474A /* FirebasePerformance */; };
 		E4512F6D2B5587E3003F9B44 /* Vote.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4512F6C2B5587E3003F9B44 /* Vote.swift */; };
 		E465A711298307D30058B564 /* RecipeCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E465A710298307D30058B564 /* RecipeCardView.swift */; };
 		E46CFA552BC59D9100CB8995 /* CannotShare.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46CFA542BC59D9100CB8995 /* CannotShare.swift */; };
@@ -31,15 +33,7 @@
 		E4A2D0842B616CA2006DA764 /* ShareController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4A2D0832B616CA2006DA764 /* ShareController.swift */; };
 		E4A5040A2BC88B4500E4A81F /* Bugsnag in Frameworks */ = {isa = PBXBuildFile; productRef = E4A504092BC88B4500E4A81F /* Bugsnag */; };
 		E4A5040C2BC88B4500E4A81F /* BugsnagNetworkRequestPlugin in Frameworks */ = {isa = PBXBuildFile; productRef = E4A5040B2BC88B4500E4A81F /* BugsnagNetworkRequestPlugin */; };
-		E4A5040F2BC88B5C00E4A81F /* BugsnagPerformance in Frameworks */ = {isa = PBXBuildFile; productRef = E4A5040E2BC88B5C00E4A81F /* BugsnagPerformance */; };
-		E4A504112BC88B5C00E4A81F /* BugsnagPerformanceSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E4A504102BC88B5C00E4A81F /* BugsnagPerformanceSwift */; };
-		E4A504132BC88B5C00E4A81F /* BugsnagPerformanceSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = E4A504122BC88B5C00E4A81F /* BugsnagPerformanceSwiftUI */; };
 		E4A504152BC8910C00E4A81F /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = E4A504142BC8910C00E4A81F /* GoogleService-Info.plist */; };
-		E4A504182BC8918200E4A81F /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = E4A504172BC8918200E4A81F /* FirebaseAnalytics */; };
-		E4A5041A2BC8918200E4A81F /* FirebaseAnalyticsOnDeviceConversion in Frameworks */ = {isa = PBXBuildFile; productRef = E4A504192BC8918200E4A81F /* FirebaseAnalyticsOnDeviceConversion */; };
-		E4A5041C2BC8918200E4A81F /* FirebaseAnalyticsSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E4A5041B2BC8918200E4A81F /* FirebaseAnalyticsSwift */; };
-		E4A5041E2BC8918200E4A81F /* FirebaseAnalyticsWithoutAdIdSupport in Frameworks */ = {isa = PBXBuildFile; productRef = E4A5041D2BC8918200E4A81F /* FirebaseAnalyticsWithoutAdIdSupport */; };
-		E4A504202BC8918200E4A81F /* FirebaseAppCheck in Frameworks */ = {isa = PBXBuildFile; productRef = E4A5041F2BC8918200E4A81F /* FirebaseAppCheck */; };
 		E4AB01C12BB5FB65004B115A /* MatchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4AB01C02BB5FB65004B115A /* MatchView.swift */; };
 		E4AB01C32BBDE27B004B115A /* HapticsHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4AB01C22BBDE27B004B115A /* HapticsHelper.swift */; };
 		E4B13FA82BC04B1F00527B38 /* ShareFailed.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B13FA72BC04B1F00527B38 /* ShareFailed.swift */; };
@@ -120,17 +114,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E4A5041C2BC8918200E4A81F /* FirebaseAnalyticsSwift in Frameworks */,
-				E4A5041E2BC8918200E4A81F /* FirebaseAnalyticsWithoutAdIdSupport in Frameworks */,
-				E4A504182BC8918200E4A81F /* FirebaseAnalytics in Frameworks */,
 				E4A5040A2BC88B4500E4A81F /* Bugsnag in Frameworks */,
-				E4A504132BC88B5C00E4A81F /* BugsnagPerformanceSwiftUI in Frameworks */,
-				E4A504112BC88B5C00E4A81F /* BugsnagPerformanceSwift in Frameworks */,
+				E4509E7C2BEE81FF00BF474A /* FirebaseCrashlytics in Frameworks */,
+				E4509E7E2BEE81FF00BF474A /* FirebasePerformance in Frameworks */,
 				E4A5040C2BC88B4500E4A81F /* BugsnagNetworkRequestPlugin in Frameworks */,
 				E4E305D32B68433300BA09B6 /* Lottie in Frameworks */,
-				E4A5040F2BC88B5C00E4A81F /* BugsnagPerformance in Frameworks */,
-				E4A5041A2BC8918200E4A81F /* FirebaseAnalyticsOnDeviceConversion in Frameworks */,
-				E4A504202BC8918200E4A81F /* FirebaseAppCheck in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -265,6 +253,8 @@
 				E439226629772E8200CC9E53 /* Sources */,
 				E439226729772E8200CC9E53 /* Frameworks */,
 				E439226829772E8200CC9E53 /* Resources */,
+				E4C02C452BEAC20900169531 /* ShellScript */,
+				E4509E7F2BEEB6DC00BF474A /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -275,14 +265,8 @@
 				E4E305D22B68433300BA09B6 /* Lottie */,
 				E4A504092BC88B4500E4A81F /* Bugsnag */,
 				E4A5040B2BC88B4500E4A81F /* BugsnagNetworkRequestPlugin */,
-				E4A5040E2BC88B5C00E4A81F /* BugsnagPerformance */,
-				E4A504102BC88B5C00E4A81F /* BugsnagPerformanceSwift */,
-				E4A504122BC88B5C00E4A81F /* BugsnagPerformanceSwiftUI */,
-				E4A504172BC8918200E4A81F /* FirebaseAnalytics */,
-				E4A504192BC8918200E4A81F /* FirebaseAnalyticsOnDeviceConversion */,
-				E4A5041B2BC8918200E4A81F /* FirebaseAnalyticsSwift */,
-				E4A5041D2BC8918200E4A81F /* FirebaseAnalyticsWithoutAdIdSupport */,
-				E4A5041F2BC8918200E4A81F /* FirebaseAppCheck */,
+				E4509E7B2BEE81FF00BF474A /* FirebaseCrashlytics */,
+				E4509E7D2BEE81FF00BF474A /* FirebasePerformance */,
 			);
 			productName = FryDay;
 			productReference = E439226A29772E8200CC9E53 /* Dinners.app */;
@@ -315,8 +299,7 @@
 			packageReferences = (
 				E4E305D12B68433300BA09B6 /* XCRemoteSwiftPackageReference "lottie-spm" */,
 				E4A504082BC88B4500E4A81F /* XCRemoteSwiftPackageReference "bugsnag-cocoa" */,
-				E4A5040D2BC88B5C00E4A81F /* XCRemoteSwiftPackageReference "bugsnag-cocoa-performance" */,
-				E4A504162BC8918200E4A81F /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				E4509E7A2BEE81FF00BF474A /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 			);
 			productRefGroup = E439226B29772E8200CC9E53 /* Products */;
 			projectDirPath = "";
@@ -345,6 +328,50 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		E4509E7F2BEEB6DC00BF474A /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}",
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${PRODUCT_NAME}",
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Info.plist",
+				"$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/GoogleService-Info.plist",
+				"$(TARGET_BUILD_DIR)/$(EXECUTABLE_PATH)",
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n\"${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run\"\n";
+		};
+		E4C02C452BEAC20900169531 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(DWARF_DSYM_FOLDER_PATH)/$(DWARF_DSYM_FILE_NAME)/Contents/Resources/DWARF/$(TARGET_NAME)",
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /usr/bin/ruby;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\napi_key = 'cc27fa7292fc7397145c718ef251c955'\n\nif ENV['ENABLE_USER_SCRIPT_SANDBOXING'] == 'YES'\n  count = ENV['SCRIPT_INPUT_FILE_COUNT'].to_i\n  abort 'error: dSYMs must be specified as build phase \"Input Files\" because ENABLE_USER_SCRIPT_SANDBOXING is enabled' unless count > 0\n  dsyms = []\n  for i in 0 .. count - 1\n    dsym = ENV[\"SCRIPT_INPUT_FILE_#{i}\"]\n    if File.exist? dsym\n      dsyms.append dsym\n    else\n      abort \"error: cannot read #{dsym}\" unless ENV['DEBUG_INFORMATION_FORMAT'] != 'dwarf-with-dsym'\n    end\n  end\nelse\n  dsyms = Dir[\"#{ENV['DWARF_DSYM_FOLDER_PATH']}/*/Contents/Resources/DWARF/*\"]\nend\n\ndsyms.each do |dsym|\n  Process.detach Process.spawn('/usr/bin/curl', '--http1.1',\n    '-F', \"apiKey=#{api_key}\",\n    '-F', \"dsym=@#{dsym}\",\n    '-F', \"projectRoot=#{ENV['PROJECT_DIR']}\",\n    'https://upload.bugsnag.com/'\n  )\nend\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		E439226629772E8200CC9E53 /* Sources */ = {
@@ -445,6 +472,7 @@
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = "-ObjC";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -496,6 +524,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
+				OTHER_LDFLAGS = "-ObjC";
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 			};
@@ -509,7 +538,8 @@
 				CODE_SIGN_ENTITLEMENTS = Dinners/Dinners.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 32;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_ASSET_PATHS = "\"Dinners/Preview Content\"";
 				DEVELOPMENT_TEAM = 78U3X38B3F;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -533,7 +563,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 12.6;
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.hellogoodman.friday2;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
@@ -552,7 +582,7 @@
 				CODE_SIGN_ENTITLEMENTS = Dinners/Dinners.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 32;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Dinners/Preview Content\"";
 				DEVELOPMENT_TEAM = 78U3X38B3F;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -576,7 +606,8 @@
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 12.6;
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.0.1;
+				"OTHER_LDFLAGS[sdk=iphoneos*]" = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.hellogoodman.friday2;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
@@ -611,28 +642,20 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		E4509E7A2BEE81FF00BF474A /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMinorVersion;
+				minimumVersion = 10.25.0;
+			};
+		};
 		E4A504082BC88B4500E4A81F /* XCRemoteSwiftPackageReference "bugsnag-cocoa" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/bugsnag/bugsnag-cocoa";
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 6.28.1;
-			};
-		};
-		E4A5040D2BC88B5C00E4A81F /* XCRemoteSwiftPackageReference "bugsnag-cocoa-performance" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/bugsnag/bugsnag-cocoa-performance";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.5.0;
-			};
-		};
-		E4A504162BC8918200E4A81F /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 10.24.0;
 			};
 		};
 		E4E305D12B68433300BA09B6 /* XCRemoteSwiftPackageReference "lottie-spm" */ = {
@@ -646,6 +669,16 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		E4509E7B2BEE81FF00BF474A /* FirebaseCrashlytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E4509E7A2BEE81FF00BF474A /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCrashlytics;
+		};
+		E4509E7D2BEE81FF00BF474A /* FirebasePerformance */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E4509E7A2BEE81FF00BF474A /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebasePerformance;
+		};
 		E4A504092BC88B4500E4A81F /* Bugsnag */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = E4A504082BC88B4500E4A81F /* XCRemoteSwiftPackageReference "bugsnag-cocoa" */;
@@ -655,46 +688,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = E4A504082BC88B4500E4A81F /* XCRemoteSwiftPackageReference "bugsnag-cocoa" */;
 			productName = BugsnagNetworkRequestPlugin;
-		};
-		E4A5040E2BC88B5C00E4A81F /* BugsnagPerformance */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = E4A5040D2BC88B5C00E4A81F /* XCRemoteSwiftPackageReference "bugsnag-cocoa-performance" */;
-			productName = BugsnagPerformance;
-		};
-		E4A504102BC88B5C00E4A81F /* BugsnagPerformanceSwift */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = E4A5040D2BC88B5C00E4A81F /* XCRemoteSwiftPackageReference "bugsnag-cocoa-performance" */;
-			productName = BugsnagPerformanceSwift;
-		};
-		E4A504122BC88B5C00E4A81F /* BugsnagPerformanceSwiftUI */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = E4A5040D2BC88B5C00E4A81F /* XCRemoteSwiftPackageReference "bugsnag-cocoa-performance" */;
-			productName = BugsnagPerformanceSwiftUI;
-		};
-		E4A504172BC8918200E4A81F /* FirebaseAnalytics */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = E4A504162BC8918200E4A81F /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseAnalytics;
-		};
-		E4A504192BC8918200E4A81F /* FirebaseAnalyticsOnDeviceConversion */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = E4A504162BC8918200E4A81F /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseAnalyticsOnDeviceConversion;
-		};
-		E4A5041B2BC8918200E4A81F /* FirebaseAnalyticsSwift */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = E4A504162BC8918200E4A81F /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseAnalyticsSwift;
-		};
-		E4A5041D2BC8918200E4A81F /* FirebaseAnalyticsWithoutAdIdSupport */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = E4A504162BC8918200E4A81F /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseAnalyticsWithoutAdIdSupport;
-		};
-		E4A5041F2BC8918200E4A81F /* FirebaseAppCheck */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = E4A504162BC8918200E4A81F /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseAppCheck;
 		};
 		E4E305D22B68433300BA09B6 /* Lottie */ = {
 			isa = XCSwiftPackageProductDependency;

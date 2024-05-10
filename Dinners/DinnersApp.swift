@@ -9,8 +9,7 @@ import SwiftUI
 import CloudKit
 import CoreData
 import Bugsnag
-import BugsnagPerformance
-import FirebaseCore
+import Firebase
 
 @main
 struct DinnersApp: App {
@@ -24,7 +23,6 @@ struct DinnersApp: App {
     
     init() {
         Bugsnag.start()
-        BugsnagPerformance.start()
         
         let appStoreManager = AppStoreManager()
         self._appStoreManager = StateObject(wrappedValue: appStoreManager)

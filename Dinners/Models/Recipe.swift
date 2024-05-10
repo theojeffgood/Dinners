@@ -37,7 +37,7 @@ extension Recipe {
         return isMatch
     }
     
-    func isCategory(_ category: Category?) -> Bool{
+    func category(is category: Category?) -> Bool{
         guard let category else { return false }
         return self.categories.contains( Int( category.id ) )
     }

@@ -42,9 +42,7 @@ struct RecipesList: View {
                             }
                         }
                     }
-                } else{
-                    EmptyState(for: $recipeManager.recipeType)
-                }
+                } else{ EmptyState(for: $recipeManager.recipeType) }
             }.navigationTitle("Matches")
                 .onAppear{
                     showTabbar = true
@@ -101,6 +99,7 @@ struct EmptyState: View {
     
     var body: some View {
         switch recipeType {
+            
         case .likes:
             VStack(spacing: 20, content: {
                 Spacer()
@@ -118,26 +117,18 @@ struct EmptyState: View {
             })
             
         case .matches:
-            VStack(spacing: -50, content: {
+            VStack(spacing: -90, content: {
                 Spacer()
-//                Image(systemName: "person.badge.plus")
-//                    .resizable()
-//                    .scaledToFit()
-//                    .frame(maxWidth: 100, maxHeight: 100)
-//                    .foregroundColor(.gray.opacity(0.6))
-                
-//                VStack(spacing: 0, content: {
-                    let message = recipeType.emptyState
-                    Text(message)
-                        .multilineTextAlignment(.center)
-                        .font(.custom("Solway-Light", size: 30))
-                    Spacer()
-                    Image(.pointerArrow)
-                        .resizable()
-                        .frame(maxHeight: 265)
-                        .offset(x: 40, y: 25)
-                })
-//            }
+                let message = recipeType.emptyState
+                Text(message)
+                    .multilineTextAlignment(.center)
+                    .font(.custom("Solway-Light", size: 30))
+                Spacer()
+                Image(.pointerArrow)
+                    .resizable()
+                    .frame(maxHeight: 350)
+                    .offset(x: 40, y: 25)
+            })
         }
     }
 }

@@ -49,16 +49,10 @@ final class CloudSharingCoordinator: NSObject, UICloudSharingControllerDelegate 
         "Join my Dinners Crew"
     }
     
-//    func itemThumbnailData(for csc: UICloudSharingController) -> Data? {
-// attempt #1
-//        guard let cover = UIImage(named: "PLACEHOLDER FOR ICON FROM JULIE"), let data = cover.pngData() else { return nil }
-//            share[CKShare.SystemFieldKey.thumbnailImageData] = data
-//            return data
-        
-// attempt #2
-//        guard let icon = NSDataAsset(name: "thumbnail") else { return nil }
-//        return icon.data
-//    }
+    func itemThumbnailData(for csc: UICloudSharingController) -> Data? {
+        guard let icon = UIImage(named: "AppIcon"), let thumbnail = icon.pngData() else { return nil }
+        return thumbnail
+    }
     
     func cloudSharingController(_ csc: UICloudSharingController, failedToSaveShareWithError error: Error) {
         Logger.sharing.info("cloudSharingController Failed to save share: \(error, privacy: .public).")

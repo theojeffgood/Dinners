@@ -3,17 +3,17 @@
 <plist version="1.0">
 <dict>
 	<key>API_KEY</key>
-	<string>AIzaSyB60xgILZ5yLK4MSFXPovRGtMYPlagSQkA</string>
+	<string>AIzaSyAB4S3vHKslw0zuEkvvmOTKvYK73Z29R6k</string>
 	<key>GCM_SENDER_ID</key>
-	<string>823832467940</string>
+	<string>641204427703</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
 	<string>com.hellogoodman.friday2</string>
 	<key>PROJECT_ID</key>
-	<string>mealswipe-fffae</string>
+	<string>dinners-app-fbf24</string>
 	<key>STORAGE_BUCKET</key>
-	<string>mealswipe-fffae.appspot.com</string>
+	<string>dinners-app-fbf24.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -25,8 +25,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:823832467940:ios:3ad23d07007da84a3d0ff1</string>
-	<key>DATABASE_URL</key>
-	<string>https://mealswipe-fffae-default-rtdb.firebaseio.com</string>
+	<string>1:641204427703:ios:7962f3c89d8c715c8fa632</string>
 </dict>
 </plist>

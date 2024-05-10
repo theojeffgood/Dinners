@@ -20,12 +20,12 @@ struct TabBarView: View {
             ContentView(recipeManager: recipeManager, filterManager: filterManager)
             .tabItem {
                 Image(.fryingpan)
-                Text("Dinners   ")
+                Text("Recipes   ")
             }.tag(1)
             
             RecipesList(recipeManager: recipeManager)
             .tabItem {
-                Label("Matches", systemImage: "heart")
+                Label("Favorites", systemImage: "heart")
             }.tag(2)
             
             Household(onDismiss: { print("Household") })
