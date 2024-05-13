@@ -46,7 +46,7 @@ struct RecipesList: View {
             }.navigationTitle("Matches")
                 .onAppear{
                     showTabbar = true
-                    recipeManager.getMatches()
+                    recipeManager.recipeType = recipeManager.recipeType /* refreshes data */
                 }
         }.toolbar(showTabbar ? .visible : .hidden, for: .tabBar)
     }

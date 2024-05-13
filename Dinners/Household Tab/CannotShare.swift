@@ -15,7 +15,7 @@ struct CannotShare: View {
                 .fontWeight(.bold)
                 .font(.largeTitle)
                 .padding(.bottom, 35)
-            Text("Only the household owner can add new members.")
+            Text("Only the owner of a household can add members.")
                 .multilineTextAlignment(.center)
                 .font(.title3)
         }.padding(.horizontal)

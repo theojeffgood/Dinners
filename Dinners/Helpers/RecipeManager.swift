@@ -107,7 +107,8 @@ extension RecipeManager: NSFetchedResultsControllerDelegate {
         
         if let votes = controller.fetchedObjects as? [Vote], !votes.isEmpty{
             var possibleNewMatches = false
-            let newVotes   = findNewVotes(in: votes, &possibleNewMatches)
+            let newVotes = findNewVotes(in: votes, &possibleNewMatches)
+            processVotes(newVotes)
             
             allVotes   = votes
             allRecipes = filterRecipes()
