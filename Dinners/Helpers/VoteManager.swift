@@ -18,17 +18,14 @@ class VoteManager{
         
         stack.localContainer.performBackgroundTask { context in
             let vote = Vote(for: recipeId, like: like, in: context)
+            try! context.save()
             
-            do{
-                try context.save()
-                if let share,
-                   UserDefaults.standard.bool(forKey: "inAHousehold"),
-                   !UserDefaults.standard.bool(forKey: "isHouseholdOwner"){
-                    
-                    self.share(vote, to: share)
-                }
-                
-            } catch{ print("Error saving vote: \(error.localizedDescription)") }
+            
+            guard let share,
+                  UserDefaults.standard.bool(forKey: "inAHousehold"),
+                  !UserDefaults.standard.bool(forKey: "isHouseholdOwner") else { return }
+            
+            self.share(vote, to: share)
         }
     }
     

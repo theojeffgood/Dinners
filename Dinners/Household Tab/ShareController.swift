@@ -29,7 +29,8 @@ final class ShareCoordinator: ObservableObject {
     private var  inAHousehold: Bool{ get{ UserDefaults.standard.bool(forKey: "inAHousehold")     } }
     
     init() {
-        fetchActiveShare(in: stack.sharedStore)
+//        fetchActiveShare(in: stack.sharedStore)
+        fetchActiveShare()
     }
     
     func setActiveShare(_ share: CKShare? = nil){
@@ -40,13 +41,14 @@ final class ShareCoordinator: ObservableObject {
     
     func fetchActiveShare(in coreDataStore: NSPersistentStore? = nil) {
         guard inAHousehold else { return }
-        var dataStore = coreDataStore
         
+        var dataStore = coreDataStore
         if dataStore == nil{
-            dataStore = ownsHousehold ? stack.privateStore : stack.sharedStore }
+           dataStore = ownsHousehold ? stack.privateStore : stack.sharedStore }
         
         do {
             let shares = try stack.localContainer.fetchShares(in: dataStore)
+            
             let existingShare = shares.filter({ $0.recordID.recordName == CKRecordNameZoneWideShare }).first // Can this falsely be nil
             self.activeShare = existingShare // no async. so don't use setActiveShare()
             
@@ -61,8 +63,7 @@ final class ShareCoordinator: ObservableObject {
         do {
             if let mainZone = try await getDefaultZone(){
                            if try await getShare(from: mainZone){ return }
-                        else{ try await shareZone(mainZone);      return }
-            }
+                        else{ try await shareZone(mainZone);      return } }
             
             else if let newZone = try await createZone(){
                                   try await shareZone(newZone); return }

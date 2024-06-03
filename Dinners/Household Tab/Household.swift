@@ -18,7 +18,7 @@ struct Household: View {
     @State private var showShareSheet = false
     @State private var cannotShare = false
     @State private var shareFailed = false
-    var onDismiss: () -> Void
+    
     var userOwnsShare: Bool{
         return (!UserDefaults.standard.bool(forKey: "inAHousehold") ||
                  UserDefaults.standard.bool(forKey: "isHouseholdOwner"))
@@ -45,8 +45,9 @@ struct Household: View {
                                         Button(role: .destructive) { share.removeParticipant(participant) }
                                     label: { Label("Exit from household", systemImage: "trash.fill") }
                                     }
-                                }.listRowSeparator(.hidden)
-                                .listRowBackground(Color.white)
+                                }
+                                    .listRowSeparator(.hidden)
+                                    .listRowBackground(Color.white)
                         }
                     } else { ZStack{ UserCard(name: "You", status: .accepted) } }
                     
@@ -119,7 +120,7 @@ extension CKShare.Participant{
 struct Household_Previews: PreviewProvider {
     
     static var previews: some View {
-        Household(onDismiss: {})
+        Household()
     }
 }
 

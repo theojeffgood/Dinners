@@ -36,7 +36,6 @@ class RecipeManager: NSObject, ObservableObject {
     }
     
     private var allRecipes: [Recipe] = []
-    private var recipeIndex: Int = 0
     private var activeFilter: Category?
     private var filterIsActive: Bool{ activeFilter != nil }
     
@@ -75,35 +74,28 @@ class RecipeManager: NSObject, ObservableObject {
             let recipes = recipesController.fetchedObjects ?? []
             
             allRecipes = filterRecipes(recipes)
-            setRecipe(to: 0)
+            nextRecipe()
             
         } catch { Logger.recipe.error("Failed to fetch recipes / votes!") }
     }
     
-    func setRecipe(to index: IndexPath.Index){
-        guard allRecipes.indices.contains(index) else { return }
-        let recipe = allRecipes[index]
+    func nextRecipe(){
+        guard !allRecipes.isEmpty else { return }
         
+        let recipe = allRecipes.removeFirst()
         DispatchQueue.main.async {
             self.recipe = recipe
         }
-    }
-    
-    @MainActor
-    func nextRecipe(){
-        recipeIndex += 1
-        setRecipe(to: recipeIndex)
+        allRecipes.append(recipe)
     }
 }
 
 extension RecipeManager: NSFetchedResultsControllerDelegate {
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
         if let recipes = controller.fetchedObjects as? [Recipe], !recipes.isEmpty{
-            
             allRecipes = filterRecipes( recipes )
-            if recipe.isNil{ setRecipe(to: recipeIndex) }
+            if recipe.isNil{ nextRecipe() }
         }
-        
         
         if let votes = controller.fetchedObjects as? [Vote], !votes.isEmpty{
             var possibleNewMatches = false
@@ -114,7 +106,7 @@ extension RecipeManager: NSFetchedResultsControllerDelegate {
             allRecipes = filterRecipes()
             
             if possibleNewMatches{ getMatches() }
-            if recipe.isNil{ setRecipe(to: recipeIndex) }
+            if recipe.isNil{ nextRecipe() }
         }
     }
 }
@@ -131,8 +123,6 @@ extension RecipeManager{
             
             let isLiked = householdLikes.contains(recipe.recipeId)
             filteredRecipes.insert(recipe, at: isLiked ? 0 : filteredRecipes.endIndex) // show likes first
-
-            Logger.recipe.log("Inserting recipe \(recipe.recipeId) - \(recipe.title ?? "") at: \(isLiked ? 0 : filteredRecipes.endIndex)")
         }
         
         return filteredRecipes
@@ -184,10 +174,9 @@ extension RecipeManager{
     func resetRecipes(){
         let request = Recipe.fetchRequest()
         let recipes = try! context.fetch(request)
-        
         allRecipes = filterRecipes(recipes)
-        recipeIndex = 0
-        setRecipe(to: recipeIndex)
+        
+        nextRecipe()
     }
 }
 
@@ -209,7 +198,6 @@ extension RecipeManager{
             case false:
                 dislikes.append(vote.recipeId)
             }
-            Logger.recipe.log("###Vote cast for rID: \(vote.recipeId) by currentUser: \(vote.isCurrentUser)")
         }
     }
     
@@ -219,6 +207,7 @@ extension RecipeManager{
         var newVotes: [Vote] = []
         for change in diffs {
             guard case let .insert(_, newVote, move) = change, move.isNil else { continue }
+            Logger.sharing.log("###Vote cast for rID: \(newVote.recipeId) by currentUser: \(newVote.isCurrentUser)")
             
             newVotes.append( newVote )
             if newVote.isImportant{ possibleNewMatches = true }
