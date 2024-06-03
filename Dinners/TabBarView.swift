@@ -28,7 +28,7 @@ struct TabBarView: View {
                 Label("Favorites", systemImage: "heart")
             }.tag(2)
             
-            Household(onDismiss: { print("Household") })
+            Household()
             .tabItem {
                 Label("Household", systemImage: "person.2.fill")
             }.tag(3)
