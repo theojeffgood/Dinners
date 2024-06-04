@@ -20,7 +20,7 @@ struct Filters: View {
     @State private var purchaseFailed = false
     
     var body: some View {
-        NavigationView{ /* Use NavView. Not NavStack. Hack to show large title. */
+        NavigationView{ /* NavView is a hack to show large title. */
             ZStack{
                 List{
                     let sortedCategoryList = categoryList.sorted(by: { $0.key < $1.key })
@@ -28,10 +28,10 @@ struct Filters: View {
                         Section{
                             ForEach(categories, id: \.self){ category in
                                 HStack{
-                                    Text(category.appStoreProduct?.displayName ?? "")
-                                        .font(.custom("Solway-Light", size: 16))
+                                    Text(category.appStoreProduct?.displayName ?? "").font(.custom("Solway-Light", size: 16))
                                     Spacer()
                                     if purchaseManager.purchasedProductIDs.contains(category.appStoreProductId){
+//                                    if category.isPurchased{ //to do: try to use this instead
                                         Image(systemName: "checkmark.circle.fill")
                                             .resizable()
                                             .foregroundStyle(.green)
@@ -39,27 +39,15 @@ struct Filters: View {
                                             .padding(.trailing)
                                     } else{
                                         Button {
-                                            if let product = category.appStoreProduct{
-                                                Task<Void, Never> {
-                                                    do {
-                                                        let result = try await purchaseManager.purchase(product)
-                                                        switch result {
-                                                        case .success:
-                                                            playConfetti = true
-                                                            purchase(category: category)
-                                                            
-                                                        case .pending, .userCancelled:
-                                                            handlePurchaseFail()
-                                                        @unknown default:
-                                                            fatalError("Purchase failed for unknown reason.")
-                                                        }
-                                                    } catch {
-                                                        print(error)
-                                                    }
-                                                }
+                                            Task{
+                                                do {
+                                                    let result = try await purchaseManager.buy(category.appStoreProduct)
+                                                    handlePurchase( result, in: category )
+                                                    
+                                                } catch { Logger.store.error("Purchase failed: \(error, privacy: .public)") }
                                             }
                                         } label: {
-                                            Text(verbatim: category.appStoreProduct?.displayPrice ?? "")
+                                            Text(category.appStoreProduct?.displayPrice ?? "")
                                                 .padding(8.5)
                                                 .foregroundStyle(.blue)
                                                 .background(.gray.opacity(0.3))
@@ -71,12 +59,12 @@ struct Filters: View {
                             }
                         }
                     header: { Text(verbatim: categoryTitle).font(.custom("Solway-Bold", size: 18)) }
+                    footer: { if categoryTitle == sortedCategoryList.last?.key{ Links() } }
                     }
                 }
                 .navigationTitle("Filters")
                 .navigationBarTitleDisplayMode(.large)
                 .environment(\.defaultMinListRowHeight, 60)
-                //            .listStyle(.grouped)
                 .headerProminence(.increased)
                 .onAppear{
                     for category in allCategories {
@@ -115,14 +103,60 @@ struct Filters: View {
 }
 
 extension Filters{
-    func purchase(category: Category){
-        category.isPurchased = true
+    func sharePurchase(id categoryId: Int64){
         let purchaseManager = PurchaseManager()
         let share = ShareCoordinator.shared.activeShare
-        purchaseManager.createPurchase(for: category.id, share: share)
+        purchaseManager.createPurchase(for: categoryId, share: share)
     }
     
-    func handlePurchaseFail(){
-        purchaseFailed.toggle()
+    func handlePurchase(_ result: Product.PurchaseResult?, in category: Category){
+        guard let result else { return }
+        switch result {
+        case .success:
+            category.isPurchased = true
+//            try! moc.save()
+            playConfetti = true
+            sharePurchase(id: category.id)
+            
+        case .pending, .userCancelled:
+            purchaseFailed.toggle()
+            
+        @unknown default:
+            fatalError("Purchase failed for unknown reason.")
+        }
+    }
+}
+
+struct Links: View {
+    
+    var body: some View {
+        HStack{
+            Spacer()
+            Link("Privacy \nPolicy", destination: URL(string: "https://www.dinnersapp.com/privacy-policy-dinners-app")!)
+            Spacer()
+            
+            Text("  |  ")
+            
+            Spacer()
+            Link("User \nAgreement", destination: URL(string: "https://www.dinnersapp.com/privacy-policy-dinners-app")!)
+            Spacer()
+            
+            Text("  |  ")
+            
+            Spacer()
+            Button("Already \nPaid?") {
+                Task{
+                    try? await AppStore.sync()
+                }
+            }
+            Spacer()
+        }
+        .font(.custom("Solway-Light", size: 12))
+        .foregroundStyle(.blue)
+        .padding(.vertical)
+    }
+    
+    func openUrl(_ url: URL){
+        
     }
 }

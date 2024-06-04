@@ -17,14 +17,14 @@ class FilterManager: NSObject, ObservableObject {
     
     var allFilters: [Category]{
         didSet{
-            appliedFilters = Set(allFilters.filter({ $0.isPurchased }))
+            let purchasedFilters = allFilters.filter({ $0.isPurchased })
+            appliedFilters = Set(purchasedFilters)
         }
     }
     private var allPurchases: [Purchase]{
         didSet{
             for purchase in allPurchases{
                 if let householdPurchase = allFilters.filter({ $0.id == purchase.categoryId && !$0.isPurchased }).first{
-//                    appliedFilters.append(householdPurchase)
                     appliedFilters.insert(householdPurchase)
                 }
             }
@@ -63,11 +63,10 @@ class FilterManager: NSObject, ObservableObject {
             try categoryController.performFetch() // this must come first for applying purchases to work
             try purchaseController.performFetch()
             
-            allFilters = categoryController.fetchedObjects ?? []
-            allPurchases  = purchaseController.fetchedObjects ?? []
-        } catch {
-            print("failed to fetch items!")
-        }
+            allFilters   = categoryController.fetchedObjects ?? []
+            allPurchases = purchaseController.fetchedObjects ?? []
+            
+        } catch { print("failed to fetch items!") }
     }
 }
 
@@ -93,11 +92,13 @@ extension FilterManager{
         switch filterIsActive {
         case true:
             appliedFilters = [filter]
+            
         case false:
-            appliedFilters = Set(allFilters.filter({ $0.isPurchased }))
+            let purchasedFilters = allFilters.filter({ $0.isPurchased })
+            appliedFilters = Set(purchasedFilters)
+            
             for purchase in allPurchases{
                 if let householdPurchase = allFilters.filter({ $0.id == purchase.categoryId && !$0.isPurchased }).first{
-//                    appliedFilters.append(householdPurchase)
                     appliedFilters.insert(householdPurchase)
                 }
             }

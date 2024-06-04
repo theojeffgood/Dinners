@@ -20,7 +20,6 @@ class VoteManager{
             let vote = Vote(for: recipeId, like: like, in: context)
             try! context.save()
             
-            
             guard let share,
                   UserDefaults.standard.bool(forKey: "inAHousehold"),
                   !UserDefaults.standard.bool(forKey: "isHouseholdOwner") else { return }

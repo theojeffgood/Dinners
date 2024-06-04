@@ -49,6 +49,19 @@ class AppStoreManager: NSObject, ObservableObject {
             category.appStoreProduct = appStoreProduct
         }
     }
+    
+    func buy(_ product: Product? = nil) async throws -> Product.PurchaseResult? {
+        guard let product else { return nil }
+        
+        do {
+            let result = try await purchase(product)
+            return result
+            
+        } catch {
+            Logger.store.info("Purchase succeeded, but not verified: \(error, privacy: .public)")
+            return nil
+        }
+    }
 
     func purchase(_ product: Product) async throws -> Product.PurchaseResult {
         let result = try await product.purchase()
