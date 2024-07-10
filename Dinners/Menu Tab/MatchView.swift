@@ -27,7 +27,7 @@ struct MatchView: View {
             .opacity(play ? 1.0 : 0.0)
             .animation(.easeInOut, value: play)
             .onChange(of: play, perform: { newValue in
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.25) {
                     play = false
                 }
             })
