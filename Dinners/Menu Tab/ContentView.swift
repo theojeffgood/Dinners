@@ -41,42 +41,28 @@ struct ContentView: View {
                         filterManager.toggleFilter(item)
                         filterManager.filterIsActive ?
                         recipeManager.applyFilter(item) : recipeManager.cancelFilter()
-                    }.padding(.bottom, 15)
+                    }.padding(.bottom, 10)
                     
                     if let recipe = recipeManager.recipe{
                         ZStack(alignment: .center) {
                             RecipeCardView(recipe: recipe)
                                 .opacity(recipeCardOpacity)
                                 .offset(x: offset.width, y: offset.height * 0.85)
-                                .gesture(
-                                    DragGesture()
-                                        .onChanged { gesture in offset = gesture.translation }
-                                        .onEnded { _ in
-                                            if abs(offset.width) > 100 {
-                                                animateCardAway(recipe, offset: offset)
-                                                
-                                            } else { /* Swipe abandoned. Reset offset */
-                                                withAnimation(.spring) { offset = .zero }
-                                            }
-                                        }
-                                )
-                            if showModal{
-                                MatchView()
-                                    .onAppear {
-                                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                                            withAnimation { showModal = false }
-                                        }
+                                .gesture( DragGesture()
+                                    .onChanged { gesture in offset = gesture.translation }
+                                    .onEnded { _ in
+                                        if abs(offset.width) > 100 {
+                                            swipeCard(recipe, offset: offset)
+                                            
+                                        } else { /* Swipe abandoned. Reset offset */
+                                            withAnimation(.spring) { offset = .zero } }
                                     }
-                            }
-                            if playConfetti{
-                                CelebrationView("Confetti", play: $playConfetti)
-                                    .id(recipe.recipeId) // swiftui unique-ness thing
-                                    .allowsHitTesting(false)
-                            }
-                            ActionButtons() { liked in
-                                if liked{       animateCardAway(recipe, offset: CGSize(width:  300, height: 0)) }
-                                else if !liked{ animateCardAway(recipe, offset: CGSize(width: -300, height: 0)) }
-                            }
+                                )
+                            ActionButtons() { offset in swipeCard(recipe, offset: offset) }
+                            MatchView(play: $showModal)
+                            CelebrationView("Confetti", play: $playConfetti)
+                                .id(recipe.recipeId) // swiftui unique-ness thing
+                                .allowsHitTesting(false)
                         }
                     }
                 }.padding(10)
@@ -104,7 +90,7 @@ struct ContentView: View {
 
 extension ContentView{
     
-    func animateCardAway(_ recipe: Recipe, offset direction: CGSize) {
+    func swipeCard(_ recipe: Recipe, offset direction: CGSize) {
         let liked = (direction.width > 0)
 
         withAnimation(.linear(duration: 0.2)) {

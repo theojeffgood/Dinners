@@ -24,6 +24,7 @@ struct CelebrationView: UIViewRepresentable {
          play: Binding<Bool> = .constant(true)) {
         self.name = name
         self.animationView = LottieAnimationView(name: name)
+//        self.animationView.isHidden = true
         self.loopMode = loopMode
         self.animationSpeed = animationSpeed
         self.contentMode = contentMode
@@ -45,8 +46,10 @@ struct CelebrationView: UIViewRepresentable {
     
     func updateUIView(_ uiView: UIView, context: Context) {
         if play {
+//            animationView.isHidden = false
             animationView.play { _ in
                 play = false
+//                animationView.isHidden = true
             }
         }
     }

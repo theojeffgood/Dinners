@@ -26,16 +26,9 @@ struct FiltersBar: View {
                 withAnimation { showFilters = true }
             } label: {
                 Label("filters", systemImage: "slider.horizontal.3")
-                    .labelStyle(.titleAndIcon) // .titleAndIcon crashes app
             }
-            .font(.custom("Solway-Light", size: 16))
-            .foregroundColor(.black)
-            .padding(.vertical, 10)
-            .padding(.horizontal)
-            .cornerRadius(20, corners: .allCorners)
-            .overlay(content: {
-                RoundedRectangle(cornerRadius: 20).stroke(Color.init(hex: 0xE8EAEA), lineWidth: 1)
-            })
+            .buttonStyle( FilterButtonStyle() )
+            
             if !items.isEmpty{
                 ScrollView(.horizontal){
                     HStack {
@@ -74,3 +67,4 @@ struct FiltersBar: View {
                items: .constant(Set()),
                buttonPressed: { _ in })
 }
+

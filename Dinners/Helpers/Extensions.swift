@@ -18,6 +18,25 @@ extension View {
 //    }
 }
 
+//adapted from: https://www.swiftwithvincent.com/blog/bad-practice-not-using-a-buttonstyle
+struct FilterButtonStyle: ButtonStyle {
+    
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+        
+            .labelStyle(.titleAndIcon) // .titleAndIcon crashes app
+            .font(.custom("Solway-Light", size: 16))
+            .foregroundColor(.black)
+            .padding(.vertical, 10)
+            .padding(.horizontal)
+            .cornerRadius(20, corners: .allCorners)
+            .overlay(content: {
+                RoundedRectangle(cornerRadius: 20).stroke(Color.init(hex: 0xE8EAEA), lineWidth: 1)
+            })
+//            .background(configuration.isPressed ? .blue.opacity(0.5) : .blue)
+    }
+}
+
 struct RoundedCorner: Shape {
     
     var radius: CGFloat = .infinity
@@ -30,12 +49,14 @@ struct RoundedCorner: Shape {
 }
 
 struct ActionButtons: View {
-    var action: (Bool) -> Void
+    var action: (CGSize) -> Void
+    private let leftSwipe: CGSize = CGSize(width: -300, height: 0)
+    private let rightSwipe: CGSize = CGSize(width: 300, height: 0)
     
     var body: some View{
         HStack() {
 //            VStack(alignment: .trailing) {
-                Button(action: { action(false) }) {
+                Button(action: { action( leftSwipe ) }) {
                     VStack(alignment: .leading, spacing: 0) {
                         Image(.voteNay)
                             .resizable()
@@ -50,7 +71,7 @@ struct ActionButtons: View {
 //            }
             Spacer()
 //            VStack(alignment: .leading) {
-                Button(action: { action(true) }) {
+                Button(action: { action( rightSwipe ) }) {
                     VStack(alignment: .trailing, spacing: 0) {
                         Image(.voteYay)
                             .resizable()
