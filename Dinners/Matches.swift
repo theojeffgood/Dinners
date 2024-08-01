@@ -11,13 +11,14 @@ import CloudKit
 struct RecipesList: View {
     
     @ObservedObject var recipeManager: RecipeManager
-    @FetchRequest(fetchRequest: Vote.allVotes) var allVotes
+//    @FetchRequest(fetchRequest: Vote.allVotes) var allVotes
     @State private var showTabbar: Bool = true
+    @State private var isMenuOpen: Bool = false
 
     var body: some View {
         NavigationStack{
             VStack{
-                Picker("Recipes?", selection: $recipeManager.recipeType) {
+                Picker("", selection: $recipeManager.recipeType) {
                     ForEach(RecipeType.allCases, id: \.self) {
                         Text($0.rawValue)
                     }
@@ -31,15 +32,33 @@ struct RecipesList: View {
                                             GridItem(.flexible())]) {
                             ForEach(recipeManager.recipes, id: \.self) { recipe in
                                 
-                                NavigationLink {
-                                    RecipeDetailsView(recipe: recipe,
-                                                      recipeTitle: recipe.title!)
-                                    .onAppear(perform: {
-                                        withAnimation { showTabbar = false }
-                                    })
+                                ZStack(alignment: .topTrailing){
+                                    NavigationLink { RecipeDetailsView(recipe: recipe,
+                                                                       recipeTitle: recipe.title!)
+                                    .onAppear { withAnimation { showTabbar = false } }
+                                    } label: { RecipeCell(recipe: recipe) }
+                                    
+                                    Menu {
+                                        Button("Unlike this recipe", action: { withAnimation{ unlikeRecipe(recipe) } } )
+                                    } label: {
+                                        Image(systemName: "ellipsis.circle")
+                                            .resizable()
+                                            .frame(width: 22, height: 22)
+                                            .padding([.top, .trailing], 15)
+                                            .colorInvert()
+                                    }
+                                    .onTapGesture { isMenuOpen = true }
                                 }
-                            label: { RecipeCell(recipe: recipe) }
                             }
+                        }
+                    }
+                    .overlay{
+                        if isMenuOpen {
+                            Color.white.opacity(0.001)
+                                .ignoresSafeArea()
+                                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                .gesture( DragGesture().onEnded({ _ in isMenuOpen = false }))
+                                .gesture(  TapGesture().onEnded({ _ in isMenuOpen = false }))
                         }
                     }
                 } else{ EmptyState(for: $recipeManager.recipeType) }
@@ -50,23 +69,31 @@ struct RecipesList: View {
                 }
         }.toolbar(showTabbar ? .visible : .hidden, for: .tabBar)
     }
+    
+    func unlikeRecipe(_ recipe: Recipe){
+        recipeManager.deleteVote(for: recipe)
+        isMenuOpen = false
+    }
 }
 
 struct RecipeCell: View {
     var recipe: Recipe
+//    @State private var isPressed: Bool = false
     
     var body: some View {
         VStack(alignment: .center){
             GeometryReader { geo in
-                AsyncImage(url: URL(string: recipe.imageUrl!)) { phase in
-                    if let image = phase.image {
-                        image
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                    } else {
-                        ProgressView()
+                    AsyncImage(url: URL(string: recipe.imageUrl!)) { phase in
+                        if let image = phase.image {
+                            image
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                            
+                        } else { ProgressView() }
                     }
-                }.frame(width: geo.size.width, height: 200)
+                    .frame(width: geo.size.width, height: 200)
+                    .clipped() // prevents taps outside clipped image frame
+                    .allowsHitTesting(false) // prevents taps outside clipped image frame
             }
             
             Text(recipe.title!)
@@ -87,6 +114,15 @@ struct RecipeCell: View {
                 .fill(Color.clear)
         )
         .shadow(radius: 10)
+
+//        .scaleEffect(isPressed ? 0.95 : 1.0)
+//        .animation(.easeInOut(duration: 0.1), value: isPressed)
+//        .onTapGesture {
+//            isPressed = true
+//            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+//                isPressed = false
+//            }
+//        }
     }
 }
 

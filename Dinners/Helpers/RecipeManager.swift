@@ -13,8 +13,8 @@ import OSLog
 class RecipeManager: NSObject, ObservableObject {
     
     @Published var recipe: Recipe?
-    
     @Published var recipes: [Recipe] = []
+    
     var matches: [Recipe] = []{
         didSet{
             if recipeType == .matches {
@@ -213,5 +213,17 @@ extension RecipeManager{
             if newVote.isImportant{ possibleNewMatches = true }
         }
         return newVotes
+    }
+}
+
+extension RecipeManager{
+    func deleteVote(for recipe: Recipe){
+        guard let vote = allVotes.first(where: { $0.recipeId == recipe.recipeId && $0.isCurrentUser }) else { return }
+        vote.isLiked = false
+        try! context.save()
+        
+        userLikes.removeAll(where: { $0 == vote.recipeId })
+        dislikes.append(vote.recipeId)
+        recipeType = .likes // Triggers UI refresh on Likes list        
     }
 }

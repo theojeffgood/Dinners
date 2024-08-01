@@ -50,13 +50,7 @@ struct ContentView: View {
                                 .offset(x: offset.width, y: offset.height * 0.85)
                                 .gesture( DragGesture()
                                     .onChanged { gesture in offset = gesture.translation }
-                                    .onEnded { _ in
-                                        if abs(offset.width) > 100 {
-                                            swipeCard(recipe, offset: offset)
-                                            
-                                        } else { /* Swipe abandoned. Reset offset */
-                                            withAnimation(.spring) { offset = .zero } }
-                                    }
+                                    .onEnded   { _       in handleSwipe(length: offset.width) }
                                 )
                             ActionButtons() { offset in swipeCard(recipe, offset: offset) }
                             MatchView(play: $showModal)
@@ -127,12 +121,23 @@ extension ContentView{
         showModal = true
     }
     
+    func handleSwipe(length: CGFloat){
+        if abs(offset.width) > 100 {
+            let recipe = recipeManager.recipe!
+            swipeCard(recipe, offset: offset)
+            
+        } else { /* No Swipe. Reset offset */
+            withAnimation(.spring) { offset = .zero } }
+    }
+    
     func loadRecipes(){
         if !UserDefaults.standard.bool(forKey: "appOpenedBefore"){
-            Task{
-                try? await Webservice(context: moc).load (Recipe.all)
-                try? await Webservice(context: moc).load (Category.all)
-                try! moc.save()
+            if recipeManager.recipes.isEmpty {
+                Task{
+                    try? await Webservice(context: moc).load (Recipe.all)
+                    try? await Webservice(context: moc).load (Category.all)
+                    try! moc.save()
+                }
             }
             UserDefaults.standard.set(true, forKey: "appOpenedBefore")
         }
