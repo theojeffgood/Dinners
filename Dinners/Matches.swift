@@ -13,7 +13,7 @@ struct RecipesList: View {
     @ObservedObject var recipeManager: RecipeManager
 //    @FetchRequest(fetchRequest: Vote.allVotes) var allVotes
     @State private var showTabbar: Bool = true
-    @State private var isMenuOpen: Bool = false
+    @State private var isMenuOpen: Bool = false // 0 of 4: hack to block taps when menu is open
 
     var body: some View {
         NavigationStack{
@@ -47,7 +47,7 @@ struct RecipesList: View {
                                             .padding([.top, .trailing], 15)
                                             .colorInvert()
                                     }
-                                    .onTapGesture { isMenuOpen = true }
+                                    .onTapGesture { isMenuOpen = true } // 1 of 4: hack to block taps when menu is open
                                 }
                             }
                         }
@@ -57,8 +57,8 @@ struct RecipesList: View {
                             Color.white.opacity(0.001)
                                 .ignoresSafeArea()
                                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                                .gesture( DragGesture().onEnded({ _ in isMenuOpen = false }))
-                                .gesture(  TapGesture().onEnded({ _ in isMenuOpen = false }))
+                                .gesture( DragGesture().onEnded({ _ in isMenuOpen = false })) // 2 of 4: hack to block taps when menu is open
+                                .gesture(  TapGesture().onEnded({ _ in isMenuOpen = false }))// 3 of 4: hack to block taps when menu is open
                         }
                     }
                 } else{ EmptyState(for: $recipeManager.recipeType) }
@@ -72,7 +72,7 @@ struct RecipesList: View {
     
     func unlikeRecipe(_ recipe: Recipe){
         recipeManager.deleteVote(for: recipe)
-        isMenuOpen = false
+        isMenuOpen = false // 4 of 4: hack to block taps when menu is open
     }
 }
 
